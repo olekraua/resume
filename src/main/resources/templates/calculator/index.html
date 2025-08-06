@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Taschenrechner</title>
+</head>
+<body>
+    
+    <h1>🧮 Schriftliche Division</h1>
+    <form th:action="@{/calculator/divide}" method="post">
+        <label>Dividend:</label>
+        <input type="text" name="dividend" /><br/><br/>
+        <label>Divisor:</label>
+        <input type="text" name="divisor" /><br/><br/>
+        <button type="submit">Berechnen</button>
+    </form>
+
+    <pre th:if="${message}" th:text="${message}">[Ergebnis]</pre>
+    
+<ul th:if="${history != null}">
+    <li th:each="item : ${history}" th:text="${item}"></li>
+</ul>
+
+</body>
+</html>
