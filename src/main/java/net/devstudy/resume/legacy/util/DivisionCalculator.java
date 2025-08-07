@@ -1,5 +1,9 @@
 package net.devstudy.resume.legacy.util;
 
+/**
+ * @deprecated Verschoben in neuen Ordner "Calculator"
+ */
+@Deprecated
 public class DivisionCalculator {
 
     public String calculateDivision(int dividend, int divisor) {
