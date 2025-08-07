@@ -1,6 +1,6 @@
-package net.devstudy.resume.controller;
+package net.devstudy.resume.legacy.controller;
 
-import net.devstudy.resume.util.DivisionCalculator;
+import net.devstudy.resume.legacy.util.DivisionCalculator;
 
 import java.util.ArrayList;
 import java.util.List;

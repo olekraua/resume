@@ -1,4 +1,4 @@
-package net.devstudy.resume.util;
+package net.devstudy.resume.legacy.util;
 
 public class DivisionCalculator {
 
