@@ -1,9 +1,10 @@
-package net.devstudy.resume.controller;
+package net.devstudy.resume.legacy.controller;
 
-import org.springframework.stereotype.Controller;
+//import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-@Controller
+//@Controller
+@Deprecated
 public class HomeController {
     
     @GetMapping("/")
