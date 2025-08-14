@@ -2,7 +2,18 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head><meta charset="UTF-8"><title>Welcome</title></head>
 <body>
-<h1>Welcome</h1>
-<a th:href="@{/}">Zur Startseite</a>
+<ul>
+  <li th:each="p : ${profiles}">
+    <span th:text="${p.id}">1</span>
+    <span th:text="${p.name}">Max</span>
+  </li>
+</ul>
+
+<nav>
+  <a th:if="${page.hasPrevious()}" th:href="@{/welcome(page=${page.number - 1})}">« Zurück</a>
+  <span>Seite [[${page.number + 1}]] / [[${page.totalPages}]]</span>
+  <a th:if="${page.hasNext()}" th:href="@{/welcome(page=${page.number + 1})}">Weiter »</a>
+</nav>
+
 </body>
 </html>
