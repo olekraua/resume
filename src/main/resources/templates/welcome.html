@@ -5,7 +5,8 @@
 <h1>Profiles</h1>
 <ul>
   <li th:each="p : ${profiles}"
-      th:text="${p.firstName} + ' ' + ${p.lastName} + ' (' + ${p.uid} + ')'">John Doe</li>
+      th:text="|${p.firstName} ${p.lastName} (${p.uid})|">
+      John Doe</li>
 </ul>
 </body>
 </html>
