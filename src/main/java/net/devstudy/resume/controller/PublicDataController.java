@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import static net.devstudy.resume.Constants.UI.MAX_PROFILES_PER_PAGE;
 
 @Controller
-public class WelcomeController {
+public class PublicDataController {
     private final FindProfileService findProfileService;
 
-    public WelcomeController(FindProfileService findProfileService) {
+    public PublicDataController(FindProfileService findProfileService) {
         this.findProfileService = findProfileService;
     }
 
