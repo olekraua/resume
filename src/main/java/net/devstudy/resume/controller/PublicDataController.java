@@ -22,11 +22,11 @@ public class PublicDataController {
 
     @GetMapping({"/", "/welcome"})
     public String showProfiles(Model model) {
-        Page<Profile> page = findProfileService.findAll(
+        Page<Profile> profilesPage = findProfileService.findAll(
                 PageRequest.of(0, MAX_PROFILES_PER_PAGE, Sort.by("id"))
         );
-        model.addAttribute("profiles", page.getContent());
-        model.addAttribute("page", page);
+        model.addAttribute("profiles", profilesPage.getContent());
+        model.addAttribute("page", profilesPage);
         return "welcome";
     }
 }
