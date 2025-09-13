@@ -1,0 +1,42 @@
+import org.springframework.beans.factory.annotation.Value;
+
+public abstract class AbstractCreateProfileService {
+
+    protected final ProfileRepository profileRepository;
+    protected final DataBuilder dataBuilder;
+
+    @Value("${uid.max-tries:20}")
+    protected int maxTryCountToGenerateUid;
+
+    @Value("${uid.suffix.alphabet:abcdefghijklmnopqrstuvwxyz0123456789}")
+    protected String generateUidAlphabet;
+
+    @Value("${uid.suffix.length:2}")
+    protected int generateUidSuffixLength;
+
+    // Konstruktor-Injection für Abhängigkeiten
+    protected AbstractCreateProfileService(ProfileRepository profileRepository, DataBuilder dataBuilder) {
+        this.profileRepository = profileRepository;
+        this.dataBuilder = dataBuilder;
+    }
+
+   
+    protected String buildProfileUid(String firstName, String lastName)
+            throws CantCompleteClientRequestException {
+
+        String baseUid = dataBuilder.buildProfileUid(firstName, lastName);
+        String uid = baseUid;
+
+        for (int i = 0; profileRepository.countByUid(uid) > 0; i++) {
+            uid = dataBuilder.rebuildUidWithRandomSuffix(
+                baseUid, generateUidAlphabet, generateUidSuffixLength
+            );
+            if (i >= maxTryCountToGenerateUid) {
+                throw new CantCompleteClientRequestException(
+                    "Can‘t generate unique uid for profile: " + uid
+                );
+            }
+        }
+        return uid;
+    }
+}
