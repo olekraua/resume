@@ -111,11 +111,6 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.webjars</groupId>
-			<artifactId>bootstrap</artifactId>
-			<version>5.3.3</version>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -141,6 +136,25 @@
 					<mainClass>net.devstudy.resume.testenv.TestDataMongoGenerator</mainClass>
 				</configuration>
 			</plugin>
+			<plugin>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
+            <version>4.8.3.0</version> <!-- актуальна стабільна версія -->
+            <configuration>
+                <!-- необов'язково: звіт у консоль -->
+                <xmlOutput>false</xmlOutput>
+                <effort>Max</effort>
+                <threshold>Low</threshold>
+            </configuration>
+            <executions>
+                <execution>
+                    <phase>verify</phase>
+                    <goals>
+                        <goal>check</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
 		</plugins>
 	</build>
 
