@@ -1,6 +1,7 @@
 package net.devstudy.resume.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
 import jakarta.validation.constraints.Pattern;
 import static net.devstudy.resume.util.SanitizationUtils.cleanToPlainText;
 
@@ -76,18 +77,19 @@ public class Certificate implements Serializable, ProfileCollectionField {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode(); // entspricht Object#hashCode() (Identität)
-        result = prime * result + (largeUrl == null ? 0 : largeUrl.hashCode());
-        result = prime * result + (name == null ? 0 : name.hashCode());
-        result = prime * result + (smallUrl == null ? 0 : smallUrl.hashCode());
-        return result;
-    }
+    return Objects.hash(super.hashCode(), largeUrl, name, smallUrl, issuer);
+}
+
 
     @Override
     public boolean equals(Object obj) {
-        // effektives Verhalten der alten Methode war Identitätsgleichheit
-        return this == obj;
-    }
+    if (this == obj) return true;
+    if (!(obj instanceof Certificate other)) return false;
+    return Objects.equals(largeUrl, other.largeUrl)
+        && Objects.equals(name, other.name)
+        && Objects.equals(smallUrl, other.smallUrl)
+        && Objects.equals(issuer, other.issuer);
+}
+
 }
 
