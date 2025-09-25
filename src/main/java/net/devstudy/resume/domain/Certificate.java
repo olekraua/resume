@@ -1,10 +1,14 @@
 package net.devstudy.resume.domain;
 
 import java.io.Serializable;
+import jakarta.validation.constraints.Pattern;
+import static net.devstudy.resume.util.SanitizationUtils.cleanToPlainText;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.validation.constraints.Size;
 import net.devstudy.resume.annotation.constraints.EnglishLanguage;
+import net.devstudy.resume.validator.HtmlSanitized;
 
 /**
  * Certificate model.
@@ -23,7 +27,16 @@ public class Certificate implements Serializable, ProfileCollectionField {
     private String smallUrl;
 
     @EnglishLanguage
+    @Size(max = 160)
+    @HtmlSanitized
     private String name;
+
+    @EnglishLanguage
+    @Size(max = 120)
+    @HtmlSanitized
+    // Додатково (необов’язково): заборона символів < і >
+    @Pattern(regexp = "^[^<>]*$", message = "HTML angle brackets are not allowed")
+    private String issuer;
 
     public Certificate() {
         // no-args constructor
@@ -50,7 +63,15 @@ public class Certificate implements Serializable, ProfileCollectionField {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = cleanToPlainText(name);
+    }
+
+    public String getIssuer() {
+        return issuer;
+    }
+
+    public void setIssuer(String issuer) {
+        this.issuer = cleanToPlainText(issuer);
     }
 
     @Override
