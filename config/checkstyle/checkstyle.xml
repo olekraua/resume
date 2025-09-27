@@ -6,8 +6,6 @@
 <module name="Checker">
   <!-- Erlaubt @SuppressWarnings("checkstyle:RuleName") -->
   <module name="SuppressWarningsFilter"/>
-  <!-- Kommentarbasierte Ausnahmen: // CHECKSTYLE:OFF ... ON -->
-  <module name="SuppressionCommentFilter"/>
   <!-- Globale Suppressions-Datei -->
   <module name="SuppressionFilter">
     <property name="file" value="config/checkstyle/suppressions.xml"/>
@@ -71,14 +69,6 @@
       <property name="scope" value="public"/>
       <property name="allowMissingParamTags" value="true"/>
       <property name="allowUnknownTags" value="true"/>
-      <property name="severity" value="warning"/>
-    </module>
-    <module name="JavadocMethod">
-      <property name="scope" value="public"/>
-      <property name="allowMissingParamTags" value="true"/>
-      <property name="allowMissingThrowsTags" value="true"/>
-      <property name="allowMissingReturnTag" value="true"/>
-      <property name="minLineCount" value="0"/>
       <property name="severity" value="warning"/>
     </module>
   </module>
