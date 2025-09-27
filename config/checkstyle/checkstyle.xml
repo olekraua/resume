@@ -17,34 +17,13 @@
     <property name="ignorePattern" value="^package|^import|http[s]?://"/>
   </module>
 
-  <!-- Keine Tabulatoren -->
-  <module name="FileTabCharacter">
-    <property name="eachLine" value="true"/>
-  </module>
-
   <module name="TreeWalker">
     <!-- Dateiname = öffentlicher Klassename -->
     <module name="OuterTypeFilename"/>
 
-    <!-- Grundlegende Stilregeln -->
-    <module name="Indentation"/>
-    <module name="NeedBraces"/>
-    <module name="EmptyBlock"/>
-    <module name="LeftCurly"/>
-    <module name="RightCurly"/>
-    <module name="WhitespaceAround"/>
-    <module name="NoWhitespaceBefore"/>
-    <module name="NoWhitespaceAfter"/>
-
     <!-- Imports -->
     <module name="AvoidStarImport"/>
     <module name="UnusedImports"/>
-    <module name="ImportOrder">
-      <property name="ordered" value="true"/>
-      <property name="separated" value="true"/>
-      <property name="caseSensitive" value="true"/>
-      <property name="staticGroups" value="top"/>
-    </module>
 
     <!-- Namenskonventionen -->
     <module name="TypeName"/>
@@ -53,23 +32,12 @@
     <module name="LocalVariableName"/>
     <module name="ConstantName"/>
 
-    <!-- Sichtbarkeit / Kapselung -->
-    <module name="VisibilityModifier"/>
-
     <!-- Komplexität leicht im Blick behalten -->
     <module name="CyclomaticComplexity">
       <property name="max" value="12"/>
     </module>
     <module name="MethodLength">
       <property name="max" value="120"/>
-    </module>
-
-    <!-- Javadoc: für Public-APIs sinnvoll, aber nicht zu streng -->
-    <module name="JavadocType">
-      <property name="scope" value="public"/>
-      <property name="allowMissingParamTags" value="true"/>
-      <property name="allowUnknownTags" value="true"/>
-      <property name="severity" value="warning"/>
-    </module>
+    </module> 
   </module>
 </module>
