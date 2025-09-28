@@ -25,7 +25,9 @@ public class AdulthoodConstraintValidator implements ConstraintValidator<Adultho
                 .atZone(ZoneId.systemDefault())
                 .toLocalDate();
 
-        return !birthDate.isAfter(LocalDate.now().minusYears(adulthoodAge));
+        LocalDate cutoff = LocalDate.now().minusYears(adulthoodAge);
+
+        return !birthDate.isAfter(cutoff);
     }
 
 }
