@@ -1,11 +1,34 @@
 package net.devstudy.resume.domain;
 
+import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Column;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document; // ES документ
+import org.springframework.data.mongodb.core.index.Indexed;   // Mongo індекси
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import net.devstudy.resume.annotation.ProfileDataFieldGroup;
+import net.devstudy.resume.annotation.ProfileInfoField;
+import net.devstudy.resume.annotation.constraints.Adulthood;
+import net.devstudy.resume.annotation.constraints.EnglishLanguage;
+import net.devstudy.resume.annotation.constraints.Phone;
 
 @Entity
 @Table(name = "profile")
