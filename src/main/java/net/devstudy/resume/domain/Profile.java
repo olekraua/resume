@@ -1,6 +1,5 @@
 package net.devstudy.resume.domain;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -11,16 +10,10 @@ import java.util.List;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document; // ES документ
-import org.springframework.data.mongodb.core.index.Indexed;   // Mongo індекси
+import org.springframework.data.mongodb.core.index.Indexed; // Mongo індекси
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -30,59 +23,210 @@ import net.devstudy.resume.annotation.constraints.Adulthood;
 import net.devstudy.resume.annotation.constraints.EnglishLanguage;
 import net.devstudy.resume.annotation.constraints.Phone;
 
-@Entity
-@Table(name = "profile")
-public class Profile {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+/**
+ * Профіль користувача (ES+Mongo mapping).
+ */
+@Document(indexName = "profile") // Elasticsearch
+@org.springframework.data.mongodb.core.mapping.Document(collection = "profile") // MongoDB
+public class Profile extends AbstractDocument <String> {
 
-    @Column(unique = true, nullable = false, length = 64)
-    private String uid;
+    @Id
+    private String id;
 
-    @Column(nullable = false)
-    private boolean completed;
+    @ProfileDataFieldGroup
+    @Adulthood
+    @NotNull
+    private Date birthDay;
 
-    @Column(nullable = false, length = 64)
+    @ProfileDataFieldGroup
+    @Size(max = 100)
+    @NotNull
+    // @SafeHtml // ← видалено: у Hibernate Validator 7 більше не існує
+    @EnglishLanguage(withNumbers = false, withSpecialSymbols = false)
+    private String city;
+
+    @ProfileDataFieldGroup
+    @Size(max = 60)
+    @NotNull
+    // @SafeHtml // ← видалено
+    @EnglishLanguage(withNumbers = false, withSpecialSymbols = false)
+    private String country;
+
     private String firstName;
 
-    @Column(nullable = false, length = 64)
     private String lastName;
 
-    // JPA-потрібний конструктор без аргументів
-    public Profile() {}
+    @ProfileDataFieldGroup
+    @NotNull
+    // @SafeHtml // ← видалено
+    @EnglishLanguage
+    private String objective;
 
-    // Зручний all-args конструктор
-    public Profile(Long id, String uid, boolean completed, String firstName, String lastName) {
-        this.id = id;
-        this.uid = uid;
-        this.completed = completed;
-        this.firstName = firstName;
-        this.lastName = lastName;
+    @JsonIgnore
+    @Size(max = 255)
+    private String largePhoto;
+
+    @Size(max = 255)
+    private String smallPhoto;
+
+    @JsonIgnore
+    @ProfileDataFieldGroup
+    @NotNull
+    @Size(max = 20)
+    @Phone
+    @Indexed(unique = true, name = "phone_idx")
+    private String phone;
+
+    @JsonIgnore
+    @ProfileDataFieldGroup
+    @NotNull
+    @Size(max = 100)
+    @Email
+    @EnglishLanguage
+    @Indexed(unique = true, name = "email_idx")
+    private String email;
+
+    @ProfileInfoField
+    private String info;
+
+    @ProfileDataFieldGroup
+    @NotNull
+    //@SafeHtml  // ← видалено
+    @EnglishLanguage
+    private String summary;
+
+    @Indexed(unique = true, name = "uid_idx")
+    private String uid;
+
+    @JsonIgnore
+    private String password;
+
+    @JsonIgnore
+    @Indexed(name = "completed_idx")
+    private boolean completed;
+
+    @Indexed(name = "created_idx")
+    private Date created;
+
+    private List<Certificate> certificates;
+
+    @JsonIgnore
+    private List<Education> educations;
+
+    @JsonIgnore
+    private List<Hobby> hobbies;
+
+    private List<Language> languages;
+
+    private List<Practic> practics;
+
+    private List<Skill> skills;
+
+    private List<Course> courses;
+
+    @JsonIgnore
+    private Contacts contacts;
+
+    // JPA-потрібний конструктор без аргументів
+    public Profile() {
     }
 
-    // Getters / Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getId() { return this.id; }
+    public void setId(String id) { this.id = id; }
 
-    public String getUid() { return uid; }
+    public Date getBirthDay() { return this.birthDay; }
+    public void setBirthDay(Date birthDay) { this.birthDay = birthDay; }
+
+    public String getCity() { return this.city; }
+    public void setCity(String city) { this.city = city; }
+
+    public String getCountry() { return this.country; }
+    public void setCountry(String country) { this.country = country; }
+
+    public String getFirstName() { return this.firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+
+    public String getLastName() { return this.lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+
+    public String getObjective() { return this.objective; }
+    public void setObjective(String objective) { this.objective = objective; }
+
+    public String getSummary() { return this.summary; }
+    public void setSummary(String summary) { this.summary = summary; }
+
+    public String getUid() { return this.uid; }
     public void setUid(String uid) { this.uid = uid; }
+
+    public List<Certificate> getCertificates() { return this.certificates; }
+    public void setCertificates(List<Certificate> certificates) { this.certificates = certificates; }
+
+    public List<Education> getEducations() { return this.educations; }
+    public void setEducations(List<Education> educations) { this.educations = educations; }
+
+    public List<Hobby> getHobbies() { return this.hobbies; }
+    public void setHobbies(List<Hobby> hobbies) { this.hobbies = hobbies; }
+
+    public List<Language> getLanguages() { return this.languages; }
+    public void setLanguages(List<Language> languages) { this.languages = languages; }
+
+    public List<Practic> getPractics() { return this.practics; }
+    public void setPractics(List<Practic> practics) { this.practics = practics; }
+
+    public List<Skill> getSkills() { return this.skills; }
+    public void setSkills(List<Skill> skills) { this.skills = skills; }
+
+    public List<Course> getCourses() { return courses; }
+    public void setCourses(List<Course> courses) { this.courses = courses; }
+
+    public String getLargePhoto() { return largePhoto; }
+    public void setLargePhoto(String largePhoto) { this.largePhoto = largePhoto; }
+
+    public String getSmallPhoto() { return smallPhoto; }
+    public void setSmallPhoto(String smallPhoto) { this.smallPhoto = smallPhoto; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
     public boolean isCompleted() { return completed; }
     public void setCompleted(boolean completed) { this.completed = completed; }
 
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public Date getCreated() { return created; }
+    public void setCreated(Date created) { this.created = created; }
 
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public String getFullName() { return firstName + " " + lastName; }
 
-    @Override
-    public String toString() {
-        return "Profile{id=" + id +
-                ", uid='" + uid + '\'' +
-                ", completed=" + completed +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                '}';
+    public int getAge() {
+        if (birthDay == null) return 0;
+        LocalDate birthdate = Instant.ofEpochMilli(birthDay.getTime())
+                                     .atZone(ZoneId.systemDefault())
+                                     .toLocalDate();
+        return Period.between(birthdate, LocalDate.now()).getYears();
     }
+
+    public String getProfilePhoto() {
+        return (largePhoto != null) ? largePhoto : "/static/img/profile-placeholder.png";
+    }
+
+    public void updateProfilePhotos(String largePhoto, String smallPhoto) {
+        setLargePhoto(largePhoto);
+        setSmallPhoto(smallPhoto);
+    }
+
+    public String getInfo() { return info; }
+    public void setInfo(String info) { this.info = info; }
+
+    public Contacts getContacts() {
+        if (contacts == null) {
+            contacts = new Contacts();
+        }
+        return contacts;
+    }
+    public void setContacts(Contacts contacts) { this.contacts = contacts; }
 }
