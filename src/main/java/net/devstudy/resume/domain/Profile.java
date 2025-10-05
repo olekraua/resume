@@ -26,6 +26,7 @@ import net.devstudy.resume.annotation.constraints.Phone;
 /**
  * Профіль користувача (ES+Mongo mapping).
  */
+@SuppressWarnings("java:S2160") // рівність успадкована з AbstractDocument (тільки по id) — так і задумано
 @Document(indexName = "profile") // Elasticsearch
 @org.springframework.data.mongodb.core.mapping.Document(collection = "profile") // MongoDB
 public class Profile extends AbstractDocument <String> {
