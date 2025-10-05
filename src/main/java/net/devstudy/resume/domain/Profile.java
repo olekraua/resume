@@ -130,6 +130,7 @@ public class Profile extends AbstractDocument <String> {
 
     // JPA-потрібний конструктор без аргументів
     public Profile() {
+        // Required by frameworks (Spring Data, Jackson) for object creation
     }
 
     public String getId() { return this.id; }
