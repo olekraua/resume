@@ -29,7 +29,7 @@ import net.devstudy.resume.annotation.constraints.Phone;
 @SuppressWarnings("java:S2160") // рівність успадкована з AbstractDocument (тільки по id) — так і задумано
 @Document(indexName = "profile") // Elasticsearch
 @org.springframework.data.mongodb.core.mapping.Document(collection = "profile") // MongoDB
-public class Profile extends AbstractDocument<String> {
+public class Profile extends AbstractDocument<String>{
 
     @Id
     private String id;
