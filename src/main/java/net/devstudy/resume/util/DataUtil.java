@@ -1,11 +1,9 @@
 package net.devstudy.resume.util;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
+import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -13,9 +11,6 @@ import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.ReflectionUtils.FieldCallback;
-import org.springframework.util.ReflectionUtils.FieldFilter;
 
 import net.devstudy.resume.domain.Certificate;
 import net.devstudy.resume.domain.ProfileCollectionField;
@@ -36,19 +31,14 @@ public final class DataUtil {
      * @return кількість полів, що були змінені у {@code to}
      */
     public static <T extends Annotation> int copyFields(final Object from, final Object to, Class<T> annotation) {
-        final CopiedFieldsCounter copiedFieldsCounter = new CopiedFieldsCounter();
-        ReflectionUtils.doWithFields(to.getClass(), new FieldCallback() {
-            @Override
-            public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {
-                ReflectionUtils.makeAccessible(field);
-                copyAccessibleField(field, from, to, copiedFieldsCounter);
-            }
-        }, createFieldFilter(annotation));
-        return copiedFieldsCounter.counter;
+        if (annotation == null) {
+            return BeanCopyUtil.copyAnnotated(from, to, null); // копіюємо всі доступні проперті
+        }
+        return BeanCopyUtil.copyAnnotated(from, to, annotation); // копіюємо лише анотовані
     }
 
     public static int copyFields(final Object from, final Object to) {
-        return copyFields(from, to, null);
+        return BeanCopyUtil.copyAnnotated(from, to, null);
     }
 
     public static Object readProperty(Object obj, String propertyName) {
@@ -184,39 +174,26 @@ public final class DataUtil {
 
     // ======== private helpers ========
 
+    /**
+     * Перевіряє, що всі JavaBean-властивості (з гетерами) дорівнюють null.
+     * Без доступу до private-полів (жодного setAccessible) → не порушує
+     * інкапсуляцію.
+     */
     private static boolean isAllFieldsNull(Object element) {
-        Field[] fields = element.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            ReflectionUtils.makeAccessible(field);
-            if (!Modifier.isStatic(field.getModifiers())
-                    && ReflectionUtils.getField(field, element) != null) {
-                return false;
+        try {
+            for (PropertyDescriptor pd : BeanUtils.getPropertyDescriptors(element.getClass())) {
+                if ("class".equals(pd.getName()))
+                    continue; // службова
+                var read = pd.getReadMethod();
+                if (read != null) {
+                    Object val = read.invoke(element);
+                    if (val != null)
+                        return false;
+                }
             }
+            return true;
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("Failed to inspect bean properties for " + element.getClass(), e);
         }
-        return true;
-    }
-
-    @SuppressWarnings("java:S3011") // свідомо використовуємо reflection для копіювання приватних полів
-    private static void copyAccessibleField(Field field, Object from, Object to, CopiedFieldsCounter counter)
-            throws IllegalAccessException {
-        Object fromValue = field.get(from);
-        Object toValue = field.get(to);
-        if (!Objects.equals(fromValue, toValue)) {
-            field.set(to, fromValue);
-            counter.counter++;
-        }
-    }
-
-    private static <T extends Annotation> FieldFilter createFieldFilter(Class<T> annotation) {
-        if (annotation == null) {
-            return ReflectionUtils.COPYABLE_FIELDS;
-        } else {
-            // Spring Data Commons filter by annotation
-            return new org.springframework.data.util.ReflectionUtils.AnnotationFieldFilter(annotation);
-        }
-    }
-
-    private static final class CopiedFieldsCounter {
-        private int counter;
     }
 }
