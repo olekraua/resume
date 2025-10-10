@@ -56,7 +56,7 @@ public final class SecurityUtil {
      * Authenticate and issue remember-me cookie using your custom
      * RememberMeService.
      */
-    public static void authenticateWithRememberMe(Profile profile) {
+    public static void authentificateWithRememberMe(Profile profile) {
     // 1) Authentifizieren (bevorzugt die Variante mit createEmptyContext())
     Authentication authentication = authenticate(profile);
 

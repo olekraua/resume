@@ -11,5 +11,6 @@ public interface FindProfileService {
     Profile findByUid(String uid);
     Page<Profile> findAll(Pageable pageable);
     Page<Profile> findBySearchQuery(String query, Pageable pageable);
+    void restoreAccess(@Nonnull String anyUnigueId);
     @Nullable Profile findByRestoreToken(@Nonnull String token);
 }
