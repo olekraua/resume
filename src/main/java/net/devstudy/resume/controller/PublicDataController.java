@@ -5,6 +5,7 @@ import net.devstudy.resume.component.FormErrorConverter;
 import net.devstudy.resume.domain.Profile;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.service.FindProfileService;
+import net.devstudy.resume.service.EditProfileService;
 
 import org.apache.catalina.security.SecurityUtil;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 public class PublicDataController {
     private final FindProfileService findProfileService;
     private final FormErrorConverter formErrorConverter;
+    private final EditProfileService editProfileService;
 
     public PublicDataController(FindProfileService findProfileService,
             EditProfileService editProfileService,
