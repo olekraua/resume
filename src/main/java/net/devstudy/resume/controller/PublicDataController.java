@@ -3,13 +3,16 @@ package net.devstudy.resume.controller;
 import net.devstudy.resume.annotation.constraints.FieldMatch;
 import net.devstudy.resume.component.FormErrorConverter;
 import net.devstudy.resume.domain.Profile;
+import net.devstudy.resume.form.SignUpForm;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.service.FindProfileService;
 import net.devstudy.resume.service.EditProfileService;
+import net.devstudy.resume.util.SecurityUtil;
 
-import org.apache.catalina.security.SecurityUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
@@ -170,7 +173,7 @@ public class PublicDataController {
     @GetMapping("/restore/{token}")
     public String restoreAccess(@PathVariable("token") String token) {
         Profile profile = findProfileService.findByRestoreToken(token);
-        SecurityUtil.authentificate(profile);
+        SecurityUtil.authenticate(profile);
         return "redirect:/edit/password";
     }
 }
