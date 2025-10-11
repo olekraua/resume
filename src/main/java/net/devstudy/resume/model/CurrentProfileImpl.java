@@ -1,5 +1,6 @@
 package net.devstudy.resume.model;
 
+
 import java.io.Serial;
 import java.util.List;
 import java.util.Objects;
@@ -21,13 +22,13 @@ public final class CurrentProfileImpl extends User implements CurrentProfile {
 
     public CurrentProfileImpl(@NonNull Profile profile) {
         super(
-            Objects.requireNonNull(profile, "profile").getUid(),
-            Objects.requireNonNull(profile.getPassword(), "profile.password"),
-            true,  // enabled
-            true,  // accountNonExpired
-            true,  // credentialsNonExpired
-            true,  // accountNonLocked
-            List.<GrantedAuthority>of(new SimpleGrantedAuthority(Constants.USER)) // z.B. "ROLE_USER"
+                Objects.requireNonNull(profile, "profile").getUid(),
+                Objects.requireNonNull(profile.getPassword(), "profile.password"),
+                true, // enabled
+                true, // accountNonExpired
+                true, // credentialsNonExpired
+                true, // accountNonLocked
+                List.<GrantedAuthority>of(new SimpleGrantedAuthority(Constants.USER)) // z.B. "ROLE_USER"
         );
         this.id = Objects.requireNonNull(profile.getId(), "profile.id");
         this.fullName = Objects.requireNonNull(profile.getFullName(), "profile.fullName");
@@ -53,18 +54,18 @@ public final class CurrentProfileImpl extends User implements CurrentProfile {
     }
 
     @Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof CurrentProfileImpl))
-			return false;
-		CurrentProfileImpl that = (CurrentProfileImpl) o;
-		return id != null && id.equals(that.id);
-	}
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        CurrentProfileImpl that = (CurrentProfileImpl) o;
+        return Objects.equals(id, that.id);
+    }
 
     @Override
-	public int hashCode() {
-		return getClass().hashCode();
-	}
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }
-
+    
