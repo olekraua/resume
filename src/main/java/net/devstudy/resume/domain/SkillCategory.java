@@ -1,22 +1,18 @@
 package net.devstudy.resume.domain;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * 
  * @author devstudy
  * @see http://devstudy.net
  */
-@SuppressWarnings("java:S2160")
-@Document(collection = "skillCategory")
-public class SkillCategory extends AbstractDocument<String> {
+public class SkillCategory extends AbstractDocument<Long> {
     private static final long serialVersionUID = -8959739023562086833L;
     public static final String ORDER_FIELD_NAME = "idCategory";
     @Id
-    private String id;
+    private Long id;
 
-    @org.springframework.data.mongodb.core.index.Indexed(unique = true)
     private Short idCategory;
 
     @jakarta.validation.constraints.NotBlank
@@ -31,11 +27,11 @@ public class SkillCategory extends AbstractDocument<String> {
         this.category = category;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -54,4 +50,19 @@ public class SkillCategory extends AbstractDocument<String> {
     public void setCategory(String category) {
         this.category = category;
     }
+
+    @Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof SkillCategory))
+			return false;
+		SkillCategory that = (SkillCategory) o;
+		return id != null && id.equals(that.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
+	}
 }
