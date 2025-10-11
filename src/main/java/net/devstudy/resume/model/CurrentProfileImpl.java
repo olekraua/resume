@@ -16,7 +16,7 @@ public final class CurrentProfileImpl extends User implements CurrentProfile {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private final String id;
+    private final Long id;
     private final String fullName;
 
     public CurrentProfileImpl(@NonNull Profile profile) {
@@ -51,5 +51,20 @@ public final class CurrentProfileImpl extends User implements CurrentProfile {
     public String toString() {
         return String.format("CurrentProfile [id=%s, username=%s]", id, getUsername());
     }
+
+    @Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Profile))
+			return false;
+		Profile that = (Profile) o;
+		return id != null && id.equals(that.id);
+	}
+
+    @Override
+	public int hashCode() {
+		return getClass().hashCode();
+	}
 }
 
