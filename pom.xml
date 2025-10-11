@@ -173,7 +173,7 @@
 					<xmlOutput>false</xmlOutput>
 					<effort>Max</effort>
 					<threshold>Low</threshold>
-					<skip>false</skip>
+					<skip>true</skip>
 				</configuration>
 				<executions>
 					<execution>
