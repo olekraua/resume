@@ -1,15 +1,16 @@
 package net.devstudy.resume.domain;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.ZoneId;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -27,6 +28,12 @@ import net.devstudy.resume.annotation.constraints.Phone;
 
 
 @Entity
+@Table(name="profile",
+    uniqueConstraints={
+      @UniqueConstraint(name="profile_uid_key", columnNames="uid"),
+      @UniqueConstraint(name="profile_email_key", columnNames="email"),
+      @UniqueConstraint(name="profile_phone_key", columnNames="phone")
+    })
 public class Profile extends AbstractDocument<Long>{
 
     @Id
@@ -36,7 +43,8 @@ public class Profile extends AbstractDocument<Long>{
     @ProfileDataFieldGroup
     @Adulthood
     @NotNull
-    private Date birthDay;
+    @Column(name = "birth_day")
+    private LocalDate birthDay;
 
     @ProfileDataFieldGroup
     @Size(max = 100)
@@ -50,8 +58,10 @@ public class Profile extends AbstractDocument<Long>{
     @EnglishLanguage(withNumbers = false, withSpecialSymbols = false)
     private String country;
 
+    @Column(nullable=false, length=64)
     private String firstName;
 
+    @Column(nullable=false, length=64)
     private String lastName;
 
     @ProfileDataFieldGroup
@@ -71,14 +81,13 @@ public class Profile extends AbstractDocument<Long>{
     @NotNull
     @Size(max = 20)
     @Phone
+    @Column(length=20)
     private String phone;
 
-    @JsonIgnore
-    @ProfileDataFieldGroup
     @NotNull
-    @Size(max = 100)
     @Email
     @EnglishLanguage
+    @Column(length=20)
     private String email;
 
     @ProfileInfoField
@@ -89,15 +98,18 @@ public class Profile extends AbstractDocument<Long>{
     @EnglishLanguage
     private String summary;
 
+    @Column(nullable=false, length=64)
     private String uid;
 
     @JsonIgnore
     private String password;
 
     @JsonIgnore
+    @Column(nullable=false)
     private boolean completed;
 
-    private Date created;
+    @Column(nullable=false)
+    private LocalDateTime created;
 
     private List<Certificate> certificates;
 
@@ -131,11 +143,11 @@ public class Profile extends AbstractDocument<Long>{
         this.id = id;
     }
 
-    public Date getBirthDay() {
+    public LocalDate getBirthDay() {
         return this.birthDay;
     }
 
-    public void setBirthDay(Date birthDay) {
+    public void setBirthDay(LocalDate birthDay) {
         this.birthDay = birthDay;
     }
 
@@ -299,11 +311,11 @@ public class Profile extends AbstractDocument<Long>{
         this.completed = completed;
     }
 
-    public Date getCreated() {
+    public LocalDateTime getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(LocalDateTime created) {
         this.created = created;
     }
 
@@ -314,9 +326,7 @@ public class Profile extends AbstractDocument<Long>{
     public int getAge() {
         if (birthDay == null)
             return 0;
-        LocalDate birthdate = Instant.ofEpochMilli(birthDay.getTime())
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate();
+        LocalDate birthdate = birthDay;
         return Period.between(birthdate, LocalDate.now()).getYears();
     }
 
