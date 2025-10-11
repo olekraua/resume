@@ -13,7 +13,6 @@ import jakarta.validation.constraints.Size;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document; // ES документ
-import org.springframework.data.mongodb.core.index.Indexed; // Mongo індекси
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

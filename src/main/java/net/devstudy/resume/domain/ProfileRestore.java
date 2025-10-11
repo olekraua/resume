@@ -1,23 +1,27 @@
 package net.devstudy.resume.domain;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 /**
  * 
  * @author devstudy
  * @see http://devstudy.net
  */
-@SuppressWarnings("java:S2160")
-@Document(collection="profileRestore")
-public class ProfileRestore extends AbstractDocument<String>{
+@Entity
+public class ProfileRestore extends AbstractDocument<Long>{
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	private String id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	
-	@DBRef(lazy = true)
+	@ManyToOne(optional = false)
+    @JoinColumn(name = "profile_id")
 	private Profile profile;
 
 	private String token;
@@ -26,11 +30,11 @@ public class ProfileRestore extends AbstractDocument<String>{
         // default ctor required by frameworks (Jackson/Spring Data)
 	}
 
-	public String getId() {
+	public Long getId() {
 		return this.id;
 	}
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -49,4 +53,5 @@ public class ProfileRestore extends AbstractDocument<String>{
 	public void setToken(String token) {
 		this.token = token;
 	}
+
 }
