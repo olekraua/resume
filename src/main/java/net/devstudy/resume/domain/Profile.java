@@ -7,12 +7,14 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.Document; // ES документ
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -22,16 +24,14 @@ import net.devstudy.resume.annotation.constraints.Adulthood;
 import net.devstudy.resume.annotation.constraints.EnglishLanguage;
 import net.devstudy.resume.annotation.constraints.Phone;
 
-/**
- * Профіль користувача (ES+Mongo mapping).
- */
-@SuppressWarnings("java:S2160") // рівність успадкована з AbstractDocument (тільки по id) — так і задумано
-@Document(indexName = "profile") // Elasticsearch
-@org.springframework.data.mongodb.core.mapping.Document(collection = "profile") // MongoDB
-public class Profile extends AbstractDocument<String>{
+
+
+@Entity
+public class Profile extends AbstractDocument<Long>{
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ProfileDataFieldGroup
     @Adulthood
@@ -41,14 +41,12 @@ public class Profile extends AbstractDocument<String>{
     @ProfileDataFieldGroup
     @Size(max = 100)
     @NotNull
-    // @SafeHtml // ← видалено: у Hibernate Validator 7 більше не існує
     @EnglishLanguage(withNumbers = false, withSpecialSymbols = false)
     private String city;
 
     @ProfileDataFieldGroup
     @Size(max = 60)
     @NotNull
-    // @SafeHtml // ← видалено
     @EnglishLanguage(withNumbers = false, withSpecialSymbols = false)
     private String country;
 
@@ -58,7 +56,6 @@ public class Profile extends AbstractDocument<String>{
 
     @ProfileDataFieldGroup
     @NotNull
-    // @SafeHtml // ← видалено
     @EnglishLanguage
     private String objective;
 
@@ -74,7 +71,6 @@ public class Profile extends AbstractDocument<String>{
     @NotNull
     @Size(max = 20)
     @Phone
-    @Indexed(unique = true, name = "phone_idx")
     private String phone;
 
     @JsonIgnore
@@ -83,7 +79,6 @@ public class Profile extends AbstractDocument<String>{
     @Size(max = 100)
     @Email
     @EnglishLanguage
-    @Indexed(unique = true, name = "email_idx")
     private String email;
 
     @ProfileInfoField
@@ -91,21 +86,17 @@ public class Profile extends AbstractDocument<String>{
 
     @ProfileDataFieldGroup
     @NotNull
-    // @SafeHtml // ← видалено
     @EnglishLanguage
     private String summary;
 
-    @Indexed(unique = true, name = "uid_idx")
     private String uid;
 
     @JsonIgnore
     private String password;
 
     @JsonIgnore
-    @Indexed(name = "completed_idx")
     private boolean completed;
 
-    @Indexed(name = "created_idx")
     private Date created;
 
     private List<Certificate> certificates;
@@ -132,11 +123,11 @@ public class Profile extends AbstractDocument<String>{
         // Required by frameworks (Spring Data, Jackson) for object creation
     }
 
-    public String getId() {
+    public Long getId() {
         return this.id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -356,4 +347,19 @@ public class Profile extends AbstractDocument<String>{
     public void setContacts(Contacts contacts) {
         this.contacts = contacts;
     }
+
+    @Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof Profile))
+			return false;
+		Profile that = (Profile) o;
+		return id != null && id.equals(that.id);
+	}
+
+    @Override
+	public int hashCode() {
+		return getClass().hashCode();
+	}
 }
