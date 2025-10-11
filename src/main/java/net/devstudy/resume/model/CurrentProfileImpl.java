@@ -34,7 +34,7 @@ public final class CurrentProfileImpl extends User implements CurrentProfile {
     }
 
     @Override
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
@@ -56,9 +56,9 @@ public final class CurrentProfileImpl extends User implements CurrentProfile {
 	public boolean equals(Object o) {
 		if (this == o)
 			return true;
-		if (!(o instanceof Profile))
+		if (!(o instanceof CurrentProfileImpl))
 			return false;
-		Profile that = (Profile) o;
+		CurrentProfileImpl that = (CurrentProfileImpl) o;
 		return id != null && id.equals(that.id);
 	}
 

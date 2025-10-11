@@ -36,6 +36,7 @@ import java.nio.charset.StandardCharsets;
 @Controller
 @RequestMapping
 public class PublicDataController {
+
     private final FindProfileService findProfileService;
     private final FormErrorConverter formErrorConverter;
     private final EditProfileService editProfileService;
@@ -77,7 +78,7 @@ public class PublicDataController {
     public String listAll(Model model) {
         Page<Profile> profiles = findProfileService.findAll(
                 PageRequest.of(0, MAX_PROFILES_PER_PAGE, Sort.by("id")));
-        model.addAttribute("profiles", profiles.getContent());
+        model.addAttribute("profiless", profiles.getContent());
         model.addAttribute("page", profiles);
         return "welcome";
     }

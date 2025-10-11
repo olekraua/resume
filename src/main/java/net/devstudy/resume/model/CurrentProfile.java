@@ -12,7 +12,7 @@ public interface CurrentProfile {
 
     /** Унікальний ідентифікатор профілю (БД). */
     @Nonnull
-    String getId();
+    Long getId();
 
     /** Публічний UID профілю (для URL тощо). */
     @Nonnull
