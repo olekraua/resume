@@ -164,17 +164,4 @@ public class PublicDataController {
     public String getRestoreSuccess() {
         return "restore-success";
     }
-
-    @PostMapping("/restore")
-    public String processRestoreAccess(@RequestParam("uid") String anyUniqueId) {
-        findProfileService.restoreAccess(anyUniqueId);
-        return "redirect:/restore/success";
-    }
-
-    @GetMapping("/restore/{token}")
-    public String restoreAccess(@PathVariable("token") String token) {
-        Profile profile = findProfileService.findByRestoreToken(token);
-        SecurityUtil.authenticate(profile);
-        return "redirect:/edit/password";
-    }
 }
