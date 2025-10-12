@@ -87,11 +87,6 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 		</dependency>
@@ -130,14 +125,6 @@
 				<configuration>
 					<source>21</source>
 					<target>21</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<version>3.2.0</version>
-				<configuration>
-					<mainClass>net.devstudy.resume.testenv.TestDataMongoGenerator</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>
