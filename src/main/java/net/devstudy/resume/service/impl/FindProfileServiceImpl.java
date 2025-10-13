@@ -1,7 +1,7 @@
 package net.devstudy.resume.service.impl;
 
 import net.devstudy.resume.domain.Profile;
-import net.devstudy.resume.repository.ProfileRepository;
+import net.devstudy.resume.repository.storage.ProfileRepository;
 import net.devstudy.resume.service.FindProfileService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
