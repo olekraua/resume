@@ -24,7 +24,7 @@ public class FindProfileServiceImpl implements FindProfileService {
         return repo.findAll(pageable);
     }
 
-    @Override public Page<Profile> findBySearchQuery(String query, Pageable pageable) {
+    @Override public Page<Profile> searchProfiles(String query, Pageable pageable) {
         return repo.search(query, pageable);
     }
 }
