@@ -22,10 +22,10 @@ public class WelcomeController {
 
     @GetMapping({ "/", "/welcome" })
     public String showProfiles(Model model) {
-        Page<Profile> page = profileService.findAll(
+        Page<Profile> profilePage = profileService.findAll(
                 PageRequest.of(0, MAX_PROFILES_PER_PAGE, Sort.by("id")));
-        model.addAttribute("pagedProfiles", page.getContent());
-        model.addAttribute("page", page);
+        model.addAttribute("pagedProfiles", profilePage.getContent());
+        model.addAttribute("prifilePage", profilePage);
         return "welcome";
     }
 }

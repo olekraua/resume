@@ -4,8 +4,8 @@
 <body>
 <h1>Profiles</h1>
 <ul>
-  <li th:each="profile : ${pagedProfiles}"
-      th:text="|${profile.firstName} ${profile.lastName} (${profile.uid})|">
+  <li th:each="userPofile : ${pagedProfiles}"
+      th:text="|${userPofile.firstName} ${userPofile.lastName} (${userPofile.uid})|">
       John Doe</li>
 </ul>
 </body>
