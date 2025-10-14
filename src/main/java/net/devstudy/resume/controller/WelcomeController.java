@@ -24,7 +24,7 @@ public class WelcomeController {
     public String showProfiles(Model model) {
         Page<Profile> page = profileService.findAll(
                 PageRequest.of(0, MAX_PROFILES_PER_PAGE, Sort.by("id")));
-        model.addAttribute("profiles", page.getContent());
+        model.addAttribute("pagedProfiles", page.getContent());
         model.addAttribute("page", page);
         return "welcome";
     }
