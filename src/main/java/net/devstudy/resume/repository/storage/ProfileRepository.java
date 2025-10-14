@@ -15,12 +15,13 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
     Optional<Profile> findByUid(String uid);
 
     @Query("""
-            select p from Profile p
-            where lower(p.firstName) like lower(concat('%', :q, '%'))
-            or lower(p.lastName) like lower(concat('%', :q, '%'))
+            select profile from Profile profile
+            where lower(profile.firstName) like lower(concat('%', :searchText, '%'))
+            or lower(profile.lastName) like lower(concat('%', :searchText, '%'))
                            """)
 
-    Page<Profile> search(@Param("q") String q, Pageable pageable);
+    Page<Profile> search(@Param("searchText") String searchText, Pageable pageable);
 
-    Page<Profile> findAllByCompletedTrue(Pageable pageable);
+    @Query("select profile from Profile profile where profile.completed = true")
+    Page<Profile> findCompleted(Pageable pageable);
 }

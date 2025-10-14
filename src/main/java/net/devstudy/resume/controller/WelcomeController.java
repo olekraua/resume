@@ -21,7 +21,7 @@ public class WelcomeController {
     }
 
     @GetMapping({"/", "/welcome"})
-    public String listAll(Model model) {
+    public String showProfiles(Model model) {
         Page<Profile> page = findProfileService.findAll(
                 PageRequest.of(0, MAX_PROFILES_PER_PAGE, Sort.by("id"))
         );
