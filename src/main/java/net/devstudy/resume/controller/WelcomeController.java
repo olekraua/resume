@@ -1,7 +1,7 @@
 package net.devstudy.resume.controller;
 
 import net.devstudy.resume.domain.Profile;
-import net.devstudy.resume.service.FindProfileService;
+import net.devstudy.resume.service.ProfileService;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,17 +14,16 @@ import static net.devstudy.resume.Constants.UI.MAX_PROFILES_PER_PAGE;
 
 @Controller
 public class WelcomeController {
-    private final FindProfileService findProfileService;
+    private final ProfileService profileService;
 
-    public WelcomeController(FindProfileService findProfileService) {
-        this.findProfileService = findProfileService;
+    public WelcomeController(ProfileService profileService) {
+        this.profileService = profileService;
     }
 
-    @GetMapping({"/", "/welcome"})
+    @GetMapping({ "/", "/welcome" })
     public String showProfiles(Model model) {
-        Page<Profile> page = findProfileService.findAll(
-                PageRequest.of(0, MAX_PROFILES_PER_PAGE, Sort.by("id"))
-        );
+        Page<Profile> page = profileService.findAll(
+                PageRequest.of(0, MAX_PROFILES_PER_PAGE, Sort.by("id")));
         model.addAttribute("profiles", page.getContent());
         model.addAttribute("page", page);
         return "welcome";
