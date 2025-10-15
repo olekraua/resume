@@ -1,12 +1,30 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="utf-8"><title>Welcome</title></head>
+
+<head>
+  <meta charset="utf-8">
+  <title>Welcome</title>
+</head>
+
 <body>
-<h1>Profiles</h1>
-<ul>
-  <li th:each="userPofile : ${profiles}"
-      th:text="|${userPofile.firstName} ${userPofile.lastName} (${userPofile.uid})|">
-      John Doe</li>
-</ul>
+  <div class="panel panel-default">
+    <div class="panel-body">
+    <h1 class="text-center caption" th:text="'Web система ''My Resume'' создайте Ваше резюме в 10 кликов'">
+      Web система 'My Resume' создайте Ваше резюме в 10 кликов
+    </h1>
+
+    <img class="img-responsive"
+    th:src="@{/static/img/logo-large.png}"
+    alt="logo-large"
+    style="width: 100%;">
+
+    <ul>
+      <li th:each="userPofile : ${profiles}"
+        th:text="|${userPofile.firstName} ${userPofile.lastName} (${userPofile.uid})|">
+        John Doe</li>
+    </ul>
+    </div>
+  </div>
 </body>
+
 </html>
