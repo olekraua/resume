@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import static net.devstudy.resume.Constants.UI.MAX_PROFILES_PER_PAGE;
 
@@ -27,5 +28,17 @@ public class WelcomeController {
         model.addAttribute("profiles", profilePage.getContent());
         model.addAttribute("profilesPage", profilePage);
         return "welcome";
+    }
+
+    @GetMapping("/{uid}")
+    public String profile (@PathVariable String uid, Model model){
+        Profile profile = profileService.findByUid(uid);
+        if (profile == null) {
+            return "error/profile-not-found";
+        }else{
+            model.addAttribute("profile", profile);
+            return "profile";
+        }
+        
     }
 }

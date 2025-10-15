@@ -10,7 +10,7 @@ import jakarta.persistence.Column;
 
 @Entity
 @Table(name = "profile")
-public class Profile {
+public class Profile{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
