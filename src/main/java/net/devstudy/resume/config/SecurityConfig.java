@@ -13,9 +13,11 @@ public class SecurityConfig {
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 http
                                 .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers("/css/**", "/favicon/**", "/fonts/**", "/img/**",
+                                                                "/js/**", "/media/**", "/favicon.ico")
+                                                .permitAll()
                                                 .anyRequest().authenticated())
                                 .formLogin(Customizer.withDefaults());
                 return http.build();
         }
 }
-
