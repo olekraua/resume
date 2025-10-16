@@ -1,4 +1,4 @@
-package net.devstudy.resume.domain;
+package net.devstudy.resume.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;

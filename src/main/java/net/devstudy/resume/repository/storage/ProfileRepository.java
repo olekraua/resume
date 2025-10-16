@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import net.devstudy.resume.domain.Profile;
+import net.devstudy.resume.entity.Profile;
 
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
 

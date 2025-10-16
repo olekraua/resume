@@ -1,8 +1,9 @@
 package net.devstudy.resume.service;
 
-import net.devstudy.resume.domain.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import net.devstudy.resume.entity.Profile;
 
 public interface ProfileService {
     Profile findByUid(String uid);

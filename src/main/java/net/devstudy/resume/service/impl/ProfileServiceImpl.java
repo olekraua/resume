@@ -1,6 +1,6 @@
 package net.devstudy.resume.service.impl;
 
-import net.devstudy.resume.domain.Profile;
+import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.repository.storage.ProfileRepository;
 import net.devstudy.resume.service.ProfileService;
 import org.springframework.data.domain.Page;

@@ -1,6 +1,6 @@
 package net.devstudy.resume.controller;
 
-import net.devstudy.resume.domain.Profile;
+import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.service.ProfileService;
 
 import org.springframework.data.domain.Page;
