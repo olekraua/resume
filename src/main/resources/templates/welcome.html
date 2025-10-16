@@ -9,23 +9,22 @@
 <body>
   <div class="panel panel-default">
     <div class="panel-body">
-    <h1 class="text-center caption">
-      Web система 'My Resume' - создайте Ваше резюме в 10 кликов
-    </h1>
+      <h1 class="text-center caption">
+        Web система 'My Resume' - создайте Ваше резюме в 10 кликов
+      </h1>
 
-    <img class="img-responsive"
-    th:src="@{/img/logo-large.png}"
-    alt="logo-large"
-    style="width: 100%;">
+      <img class="img-responsive" th:src="@{/img/logo-large.png}" alt="logo-large" style="width: 100%;">
 
-    <ul>
-      <li th:each="userProfile : ${profiles}"
-        th:text="|${userProfile.firstName} ${userProfile.lastName} (${userProfile.uid})|">
-        John Doe</li>
-    </ul>
+      <ul>
+        <li th:each="userProfile : ${profiles}"
+          th:text="|${userProfile.firstName} ${userProfile.lastName} (${userProfile.uid})|">
+          John Doe</li>
+      </ul>
     </div>
   </div>
-  <div th:replace="profiles :: content">
+  <th:block th:replace="~{profiles :: content}">
+
+  </th:block>
 
   </div>
 </body>
