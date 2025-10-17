@@ -24,11 +24,11 @@ public class PublicDataController {
     }
 
     @GetMapping({ "/", "/welcome" })
-    public String showProfiles(Model model) {
-        Page<Profile> profilePage = profileService.findAll(
+    public String listAll(Model model) {
+        Page<Profile> page = profileService.findAll(
                 PageRequest.of(0, MAX_PROFILES_PER_PAGE, Sort.by("id")));
-        model.addAttribute("profiles", profilePage.getContent());
-        model.addAttribute("profilesPage", profilePage);
+        model.addAttribute("profiles", page.getContent());
+        model.addAttribute("page", page);
         return "welcome";
     }
 
