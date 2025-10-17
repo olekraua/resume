@@ -43,7 +43,7 @@ public class Practic extends AbstractFinishDateEntity<Long> implements ProfileEn
     @Column(length = 255)
     private String src;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "job_position", nullable = false, length = 100)
     private String position;
 
     @Column(nullable = false, length = 2147483647)
