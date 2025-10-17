@@ -13,8 +13,10 @@ public class SecurityConfig {
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 http
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/css/**", "/favicon/**", "/fonts/**", "/img/**",
-                                                                "/js/**", "/media/**", "/favicon.ico")
+                                                .requestMatchers("/", "/welcome", "/error/**", "/css/**", "/favicon/**",
+                                                                "/fonts/**", "/img/**",
+                                                                "/js/**", "/media/**", "/favicon.ico",
+                                                                "/{uid:[a-zA-Z0-9\\-]+}")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .formLogin(Customizer.withDefaults());

@@ -20,8 +20,6 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-import org.springframework.data.elasticsearch.annotations.Document;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -30,7 +28,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @Entity
 @Table(name = "profile")
-@Document(indexName = "profile")
 public class Profile extends AbstractEntity<Long> {
     @Serial
     private static final long serialVersionUID = 1L;
