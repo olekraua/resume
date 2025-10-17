@@ -1,7 +1,6 @@
 package net.devstudy.resume.entity;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,7 +22,7 @@ import net.devstudy.resume.model.LanguageType;
 
 @Entity
 @Table(name = "language")
-public class Language extends AbstractEntity<Long> implements Serializable, ProfileEntity {
+public class Language extends AbstractEntity<Long> implements ProfileEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;

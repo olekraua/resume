@@ -1,7 +1,6 @@
 package net.devstudy.resume.entity;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,7 +21,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "certificate")
-public class Certificate extends AbstractEntity<Long> implements Serializable, ProfileEntity {
+public class Certificate extends AbstractEntity<Long> implements ProfileEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;

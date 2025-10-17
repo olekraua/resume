@@ -1,7 +1,6 @@
 package net.devstudy.resume.entity;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -25,7 +24,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @Table(name = "practic")
-public class Practic extends AbstractFinishDateEntity<Long> implements Serializable, ProfileEntity {
+public class Practic extends AbstractFinishDateEntity<Long> implements ProfileEntity {
     @Serial
     private static final long serialVersionUID = 1L;
 

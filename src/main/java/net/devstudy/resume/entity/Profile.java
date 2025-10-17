@@ -1,7 +1,6 @@
 package net.devstudy.resume.entity;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -32,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "profile")
 @Document(indexName = "profile")
-public class Profile extends AbstractEntity<Long> implements Serializable {
+public class Profile extends AbstractEntity<Long> {
     @Serial
     private static final long serialVersionUID = 1L;
 

@@ -1,6 +1,5 @@
 package net.devstudy.resume.entity;
 
-import java.io.Serializable;
 import java.util.Objects;
 
 import jakarta.persistence.Column;
@@ -21,7 +20,7 @@ import jakarta.persistence.Transient;
  */
 @Entity
 @Table(name = "education")
-public class Education extends AbstractEntity<Long> implements Serializable, ProfileEntity {
+public class Education extends AbstractEntity<Long> implements ProfileEntity {
     private static final long serialVersionUID = 1L;
 
     @Id

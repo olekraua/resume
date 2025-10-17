@@ -1,7 +1,6 @@
 package net.devstudy.resume.entity;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDate;
 
 import jakarta.persistence.Column;
@@ -9,7 +8,7 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
 
 @MappedSuperclass
-public abstract class AbstractFinishDateEntity<T> extends AbstractEntity<T> implements Serializable {
+public abstract class AbstractFinishDateEntity<T> extends AbstractEntity<T> {
     @Serial
     private static final long serialVersionUID = -3388293457711051284L;
 

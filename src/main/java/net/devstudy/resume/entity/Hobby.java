@@ -1,7 +1,6 @@
 package net.devstudy.resume.entity;
 
 import java.io.Serial;
-import java.io.Serializable;
 import java.util.Objects;
 
 import jakarta.persistence.Column;
@@ -18,7 +17,7 @@ import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "hobby")
-public class Hobby extends AbstractEntity<Long> implements Serializable, Comparable<Hobby>, ProfileEntity {
+public class Hobby extends AbstractEntity<Long> implements Comparable<Hobby>, ProfileEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;

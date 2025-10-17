@@ -74,15 +74,12 @@ public class ProfileServiceImpl implements ProfileService, UserDetailsService {
     }
 
     private Profile findProfile(String anyUniqueId) {
-        Profile profile = profileRepository.findByUid(anyUniqueId);
-        if (profile == null) {
-            profile = profileRepository.findByEmail(anyUniqueId);
-            if (profile == null) {
-                profile = profileRepository.findByPhone(anyUniqueId);
-            }
-        }
-        return profile;
-    }
+    return profileRepository.findByUid(anyUniqueId)
+            .or(() -> profileRepository.findByEmail(anyUniqueId))
+            .or(() -> profileRepository.findByPhone(anyUniqueId))
+            .orElse(null);
+}
+
 
 
 

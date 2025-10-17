@@ -2,6 +2,7 @@ package net.devstudy.resume.repository.storage;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,11 +12,11 @@ import net.devstudy.resume.entity.Profile;
 
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
-    Profile findByUid(String uid);
+    Optional<Profile> findByUid(String uid);
 
-    Profile findByEmail(String email);
+    Optional<Profile> findByEmail(String email);
 
-    Profile findByPhone(String phone);
+    Optional<Profile> findByPhone(String phone);
 
     int countByUid(String uid);
 
