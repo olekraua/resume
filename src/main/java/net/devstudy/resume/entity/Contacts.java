@@ -14,12 +14,6 @@ public class Contacts implements Serializable {
     @Serial
     private static final long serialVersionUID = -3685720846934765841L;
 
-    @Column(length = 80)
-    private String skype;
-
-    @Column(length = 255)
-    private String vkontakte;
-
     @Column(length = 255)
     private String facebook;
 
@@ -33,22 +27,6 @@ public class Contacts implements Serializable {
     private String stackoverflow;
 
     public Contacts() { }
-
-    public String getSkype() {
-        return skype;
-    }
-
-    public void setSkype(String skype) {
-        this.skype = skype;
-    }
-
-    public String getVkontakte() {
-        return vkontakte;
-    }
-
-    public void setVkontakte(String vkontakte) {
-        this.vkontakte = vkontakte;
-    }
 
     public String getFacebook() {
         return facebook;
