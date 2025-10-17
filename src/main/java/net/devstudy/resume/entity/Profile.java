@@ -1,67 +1,258 @@
 package net.devstudy.resume.entity;
 
+import java.io.Serial;
+import java.io.Serializable;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Id;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
+import org.springframework.data.elasticsearch.annotations.Document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+/**
+ * @author devstudy
+ * @see http://devstudy.net
+ */
 @Entity
 @Table(name = "profile")
-public class Profile{
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+@Document(indexName = "profile")
+public class Profile extends AbstractEntity<Long> implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @SequenceGenerator(name = "PROFILE_ID_GENERATOR", sequenceName = "PROFILE_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PROFILE_ID_GENERATOR")
+    @Column(unique = true, nullable = false)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 64)
-    private String uid;
+    @Column(name = "birth_day")
+    private Date birthDay;
 
-    @Column(nullable = false)
-    private boolean completed;
+    @Column private String city;
+    @Column private String country;
 
-    @Column(nullable = false, length = 64)
+    @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
 
-    @Column(nullable = false, length = 64)
+    @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
 
-    // JPA-потрібний конструктор без аргументів
+    @Column(length = 2147483647)
+    private String objective;
+
+    @Column(name = "large_photo", length = 255)
+    @JsonIgnore
+    private String largePhoto;
+
+    @Column(name = "small_photo", length = 255)
+    private String smallPhoto;
+
+    @Column(length = 20)
+    @JsonIgnore
+    private String phone;
+
+    @Column(length = 100)
+    @JsonIgnore
+    private String email;
+
+    @Column private String info;
+
+    @Column(length = 2147483647)
+    private String summary;
+
+    @Column(nullable = false, length = 100)
+    private String uid;
+
+    @Column(nullable = false, length = 100)
+    @JsonIgnore
+    private String password;
+
+    @Column(nullable = false)
+    @JsonIgnore
+    private boolean completed;
+
+    @Column(insertable = false)
+    @JsonIgnore
+    private Timestamp created;
+
+    @OneToMany(mappedBy = "profile", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    private List<Certificate> certificates;
+
+    @OneToMany(mappedBy = "profile", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @OrderBy("finishYear DESC, beginYear DESC, id DESC")
+    @JsonIgnore
+    private List<Education> educations;
+
+    @OneToMany(mappedBy = "profile", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @OrderBy("name ASC")
+    @JsonIgnore
+    private List<Hobby> hobbies;
+
+    @OneToMany(mappedBy = "profile", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    private List<Language> languages;
+
+    @OneToMany(mappedBy = "profile", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @OrderBy("finishDate DESC")
+    private List<Practic> practics;
+
+    @OneToMany(mappedBy = "profile", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @OrderBy("id ASC")
+    private List<Skill> skills;
+
+    @OneToMany(mappedBy = "profile", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
+    @OrderBy("finishDate DESC")
+    private List<Course> courses;
+
+    @Embedded
+    private Contacts contacts;
+
     public Profile() {}
 
-    // Зручний all-args конструктор
-    public Profile(Long id, String uid, boolean completed, String firstName, String lastName) {
-        this.id = id;
-        this.uid = uid;
-        this.completed = completed;
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
-
-    // Getters / Setters
-    public Long getId() { return id; }
+    @Override
+    public Long getId() { return this.id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getUid() { return uid; }
+    public Date getBirthDay() { return this.birthDay; }
+    public void setBirthDay(Date birthDay) { this.birthDay = birthDay; }
+
+    public String getCity() { return this.city; }
+    public void setCity(String city) { this.city = city; }
+
+    public String getCountry() { return this.country; }
+    public void setCountry(String country) { this.country = country; }
+
+    public String getFirstName() { return this.firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+
+    public String getLastName() { return this.lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
+
+    public String getObjective() { return this.objective; }
+    public void setObjective(String objective) { this.objective = objective; }
+
+    public String getSummary() { return this.summary; }
+    public void setSummary(String summary) { this.summary = summary; }
+
+    public String getUid() { return this.uid; }
     public void setUid(String uid) { this.uid = uid; }
+
+    public List<Certificate> getCertificates() { return this.certificates; }
+    public void setCertificates(List<Certificate> certificates) {
+        this.certificates = certificates;
+        updateListSetProfile(this.certificates);
+    }
+
+    public List<Education> getEducations() { return this.educations; }
+    public void setEducations(List<Education> educations) {
+        this.educations = educations;
+        updateListSetProfile(this.educations);
+    }
+
+    public List<Hobby> getHobbies() { return this.hobbies; }
+    public void setHobbies(List<Hobby> hobbies) {
+        this.hobbies = hobbies;
+        updateListSetProfile(this.hobbies);
+    }
+
+    public List<Language> getLanguages() { return this.languages; }
+    public void setLanguages(List<Language> languages) {
+        this.languages = languages;
+        updateListSetProfile(this.languages);
+    }
+
+    public List<Practic> getPractics() { return this.practics; }
+    public void setPractics(List<Practic> practics) {
+        this.practics = practics;
+        updateListSetProfile(this.practics);
+    }
+
+    public List<Skill> getSkills() { return this.skills; }
+    public void setSkills(List<Skill> skills) {
+        this.skills = skills;
+        updateListSetProfile(this.skills);
+    }
+
+    public List<Course> getCourses() { return courses; }
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
+        updateListSetProfile(this.courses);
+    }
+
+    public String getLargePhoto() { return largePhoto; }
+    public void setLargePhoto(String largePhoto) { this.largePhoto = largePhoto; }
+
+    public String getSmallPhoto() { return smallPhoto; }
+    public void setSmallPhoto(String smallPhoto) { this.smallPhoto = smallPhoto; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
     public boolean isCompleted() { return completed; }
     public void setCompleted(boolean completed) { this.completed = completed; }
 
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public Timestamp getCreated() { return created; }
+    public void setCreated(Timestamp created) { this.created = created; }
 
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    @Transient
+    public String getFullName() { return firstName + " " + lastName; }
 
-    @Override
-    public String toString() {
-        return "Profile{id=" + id +
-                ", uid='" + uid + '\'' +
-                ", completed=" + completed +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                '}';
+    @Transient
+    public int getAge() {
+        if (birthDay == null) return 0;
+        LocalDate birth = birthDay.toLocalDate();
+        return Period.between(birth, LocalDate.now()).getYears();
+    }
+
+    @Transient
+    public String getProfilePhoto() {
+        return (largePhoto != null) ? largePhoto : "/static/img/profile-placeholder.png";
+    }
+
+    public String updateProfilePhotos(String largePhoto, String smallPhoto) {
+        String oldLargeImage = this.largePhoto;
+        setLargePhoto(largePhoto);
+        setSmallPhoto(smallPhoto);
+        return oldLargeImage;
+    }
+
+    public String getInfo() { return info; }
+    public void setInfo(String info) { this.info = info; }
+
+    // https://hibernate.atlassian.net/browse/HHH-7610
+    public Contacts getContacts() {
+        if (contacts == null) { contacts = new Contacts(); }
+        return contacts;
+    }
+    public void setContacts(Contacts contacts) { this.contacts = contacts; }
+
+    private void updateListSetProfile(List<? extends ProfileEntity> list) {
+        if (list != null) {
+            for (ProfileEntity entity : list) {
+                entity.setProfile(this);
+            }
+        }
     }
 }
-
