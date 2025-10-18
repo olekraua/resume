@@ -150,9 +150,9 @@
 				<configuration>
 					<!-- необов'язково: звіт у консоль -->
 					<xmlOutput>false</xmlOutput>
+					<failOnError>false</failOnError>
 					<effort>Max</effort>
 					<threshold>Low</threshold>
-					<skip>true</skip>
 				</configuration>
 				<executions>
 					<execution>
