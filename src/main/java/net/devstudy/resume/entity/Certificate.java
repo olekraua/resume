@@ -3,16 +3,12 @@ package net.devstudy.resume.entity;
 import java.io.Serial;
 import java.util.Objects;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 /**
@@ -27,8 +23,6 @@ public class Certificate extends AbstractEntity<Long> implements ProfileEntity {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @SequenceGenerator(name = "CERTIFICATE_ID_GENERATOR", sequenceName = "CERTIFICATE_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CERTIFICATE_ID_GENERATOR")
     @Column(unique = true, nullable = false)
     private Long id;
 
@@ -41,10 +35,8 @@ public class Certificate extends AbstractEntity<Long> implements ProfileEntity {
     @Column(nullable = false, length = 50)
     private String name;
 
-    // bi-directional many-to-one association to Profile
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_profile", nullable = false)
-    @JsonIgnore
     private Profile profile;
 
     public Certificate() {
