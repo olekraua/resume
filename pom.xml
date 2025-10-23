@@ -143,26 +143,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>com.github.spotbugs</groupId>
-				<artifactId>spotbugs-maven-plugin</artifactId>
-				<version>4.8.3.0</version> <!-- актуальна стабільна версія -->
-				<configuration>
-					<!-- необов'язково: звіт у консоль -->
-					<xmlOutput>false</xmlOutput>
-					<failOnError>false</failOnError>
-					<effort>Max</effort>
-					<threshold>Low</threshold>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>verify</phase>
-						<goals>
-							<goal>check</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 	<reporting>
