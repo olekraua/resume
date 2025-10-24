@@ -2,7 +2,7 @@ package net.devstudy.resume.entity;
 
 import java.io.Serial;
 import java.sql.Date;
-import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
@@ -79,9 +79,9 @@ public class Profile extends AbstractEntity<Long> {
     @JsonIgnore
     private boolean completed;
 
-    @Column(insertable = false)
+    @Column(name = "created", insertable = false)
     @JsonIgnore
-    private Timestamp created;
+    private Instant created;
 
     @OneToMany(mappedBy = "profile", cascade = { CascadeType.MERGE, CascadeType.PERSIST })
     private List<Certificate> certificates;
@@ -204,8 +204,8 @@ public class Profile extends AbstractEntity<Long> {
     public boolean isCompleted() { return completed; }
     public void setCompleted(boolean completed) { this.completed = completed; }
 
-    public Timestamp getCreated() { return created; }
-    public void setCreated(Timestamp created) { this.created = created; }
+    public Instant getCreated() { return created; }
+    public void setCreated(Instant created) { this.created = created; }
 
     @Transient
     public String getFullName() { return firstName + " " + lastName; }
