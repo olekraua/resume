@@ -1,0 +1,74 @@
+{
+  "properties": [
+    {
+      "name": "ui.max-profiles-per-page",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of profiles displayed per page."
+    },
+    {
+      "name": "ui.versions.css-common",
+      "type": "java.lang.String",
+      "description": "Static version token appended to the common CSS bundle."
+    },
+    {
+      "name": "ui.versions.css-ex",
+      "type": "java.lang.String",
+      "description": "Static version token appended to the extra CSS bundle."
+    },
+    {
+      "name": "ui.versions.js-common",
+      "type": "java.lang.String",
+      "description": "Static version token appended to the common JS bundle."
+    },
+    {
+      "name": "ui.versions.js-ex",
+      "type": "java.lang.String",
+      "description": "Static version token appended to the extra JS bundle."
+    },
+    {
+      "name": "ui.versions.js-messages",
+      "type": "java.lang.String",
+      "description": "Static version token appended to the i18n messages JS bundle."
+    },
+    {
+      "name": "uid.max-tries",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of attempts to generate a unique UID."
+    },
+    {
+      "name": "uid.suffix.alphabet",
+      "type": "java.lang.String",
+      "description": "Alphabet used when generating UID suffixes."
+    },
+    {
+      "name": "uid.suffix.length",
+      "type": "java.lang.Integer",
+      "description": "Length of the generated UID suffix."
+    },
+    {
+      "name": "media.storage.root-path",
+      "type": "java.nio.file.Path",
+      "description": "Root directory that stores uploaded media assets."
+    },
+    {
+      "name": "media.optimization.jpegtran",
+      "type": "java.nio.file.Path",
+      "description": "Absolute path to the jpegtran binary used for image optimization."
+    },
+    {
+      "name": "notification.config.path",
+      "type": "java.lang.String",
+      "description": "Classpath resource that contains notification definitions."
+    },
+    {
+      "name": "social.facebook.client-id",
+      "type": "java.lang.String",
+      "description": "Facebook application client identifier."
+    },
+    {
+      "name": "social.facebook.client-secret",
+      "type": "java.lang.String",
+      "description": "Facebook application client secret."
+    }
+  ]
+}
