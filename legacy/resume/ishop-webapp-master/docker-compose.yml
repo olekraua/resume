@@ -1,0 +1,61 @@
+#
+# @author devstudy
+# @see http://devstudy.net
+# @see https://docs.docker.com/compose/compose-file/
+#
+# docker-compose build
+# docker-compose up
+# docker-compose down
+
+version: '3.7'
+
+services:
+  ishop-postgres:
+    image: postgres:9.5-alpine
+    container_name: ishop-postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=ishop
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=ishop
+    ports:
+      - 5432:5432
+    volumes:
+      - ./docker/postgres/:/docker-entrypoint-initdb.d/:ro
+    networks:
+      - private-network
+
+  ishop-web-server:
+    restart: always
+    build:
+      context: ./
+      dockerfile: docker/ishop-web-server.dockerfile
+    image: devstudy/ishop-web-server:1.0
+    container_name: ishop-web-server
+    environment:
+      # Database settings:
+      - dbUrl=jdbc:postgresql://ishop-postgres/ishop
+      - dbUser=ishop
+      - dbPassword=password
+      # App settings:
+      - appHost=http://localhost
+      # Facebook
+      - facebookIdClient=${DEVSTUDY_ISHOP_FACEBOOK_ID_CLIENT}
+      - facebookSecret=${DEVSTUDY_ISHOP_FACEBOOK_SECRET}
+      # Remote debugging
+      - JPDA_ADDRESS=8000
+      - JPDA_TRANSPORT=dt_socket
+    ports:
+      - 80:8080
+      - 8765:8000
+    volumes:
+      - ./docker/media/:/opt/tomcat/webapps/ROOT/media
+    networks:
+      - private-network
+    depends_on:
+      - ishop-postgres
+    command: sh -c '/wait-for-service-up.sh ishop-postgres:5432 -- catalina.sh jpda run'
+
+networks:
+  private-network:
+    driver: bridge
