@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 
 import static net.devstudy.resume.Constants.UI.MAX_PROFILES_PER_PAGE;
 
+import java.util.Optional;
+
 @Controller
 @RequestMapping
 @RequiredArgsConstructor
@@ -34,11 +36,11 @@ public class PublicDataController {
 
     @GetMapping("/{uid}")
     public String profile(@PathVariable String uid, Model model) {
-        Profile profile = profileService.findByUid(uid);
-        if (profile == null) {
+        Optional<Profile> profile = profileService.findByUid(uid);
+        if (profile.isEmpty()) {
             return "error/profile-not-found";
         } else {
-            model.addAttribute("profile", profile);
+            model.addAttribute("profile", profile.get());
             return "profile";
         }
 
