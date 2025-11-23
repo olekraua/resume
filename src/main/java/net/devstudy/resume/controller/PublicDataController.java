@@ -11,17 +11,17 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import lombok.RequiredArgsConstructor;
 
 import static net.devstudy.resume.Constants.UI.MAX_PROFILES_PER_PAGE;
 
 @Controller
 @RequestMapping
+@RequiredArgsConstructor
 public class PublicDataController {
     private final ProfileService profileService;
 
-    public PublicDataController(ProfileService profileService) {
-        this.profileService = profileService;
-    }
+    
 
     @GetMapping({ "/", "/welcome" })
     public String listAll(Model model) {
