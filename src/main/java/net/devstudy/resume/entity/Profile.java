@@ -16,6 +16,11 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -23,8 +28,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author devstudy
  * @see http://devstudy.net
  */
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "profile")
+@ToString(exclude = {"certificates","educations","hobbies","languages","practics","skills","courses","contacts"})
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Profile extends AbstractEntity<Long> {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -113,8 +123,6 @@ public class Profile extends AbstractEntity<Long> {
 
     @Embedded
     private Contacts contacts;
-
-    public Profile() {}
 
     @Override
     public Long getId() { return this.id; }
