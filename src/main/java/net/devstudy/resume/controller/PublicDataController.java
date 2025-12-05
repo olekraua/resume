@@ -25,7 +25,12 @@ public class PublicDataController {
 
     
 
-    @GetMapping({ "/", "/welcome" })
+    @GetMapping("/")
+    public String redirectToWelcome() {
+        return "redirect:/welcome";
+    }
+
+    @GetMapping("/welcome")
     public String listAll(Model model) {
         Page<Profile> page = profileService.findAll(
                 PageRequest.of(0, MAX_PROFILES_PER_PAGE, Sort.by("id")));
