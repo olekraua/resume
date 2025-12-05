@@ -1,0 +1,31 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <title>Sign in</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap-3.3.6.css}" />
+  <link rel="stylesheet" th:href="@{/css/font-awesome-4.5.0.css}" />
+  <link rel="stylesheet" th:href="@{/css/bootstrap-theme-3.3.6.css}" />
+  <link rel="stylesheet" th:href="@{/css/app.css}" />
+</head>
+<body>
+  <div style="max-width: 400px; margin: 80px auto; padding: 24px; border: 1px solid #ddd; border-radius: 6px;">
+    <h2 style="margin-top: 0; text-align: center;">Вхід</h2>
+    <form th:action="@{/login}" method="post">
+      <div style="margin-bottom: 12px;">
+        <label for="username">Логін (uid)</label><br>
+        <input id="username" name="username" type="text" required style="width: 100%; padding: 8px;">
+      </div>
+      <div style="margin-bottom: 12px;">
+        <label for="password">Пароль</label><br>
+        <input id="password" name="password" type="password" required style="width: 100%; padding: 8px;">
+      </div>
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+      <div th:if="${param.error}" style="color: #b71c1c; margin-bottom: 12px;">
+        Невірний логін або пароль
+      </div>
+      <button type="submit" style="width: 100%; padding: 10px;">Увійти</button>
+    </form>
+  </div>
+</body>
+</html>

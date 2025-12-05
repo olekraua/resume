@@ -1,7 +1,9 @@
 package net.devstudy.resume.controller;
 
 import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.service.ProfileService;
+import net.devstudy.resume.util.SecurityUtil;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,13 +43,22 @@ public class PublicDataController {
 
     @GetMapping("/{uid}")
     public String profile(@PathVariable String uid, Model model) {
-        Optional<Profile> profile = profileService.findByUid(uid);
-        if (profile.isEmpty()) {
+        Optional<Profile> profileOptional = profileService.findByUid(uid);
+        if (profileOptional.isEmpty()) {
             return "error/profile-not-found";
-        } else {
-            model.addAttribute("profile", profile.get());
-            return "profile";
         }
 
+        Profile profile = profileOptional.get();
+
+        if (!profile.isCompleted()) {
+            CurrentProfile currentProfile = SecurityUtil.getCurrentProfile();
+            if (currentProfile == null || !currentProfile.getId().equals(profile.getId())) {
+                return "error/profile-not-found";
+            }
+            return "redirect:/edit";
+        }
+
+        model.addAttribute("profile", profile);
+        return "profile";
     }
 }

@@ -14,4 +14,5 @@ public interface ProfileService {
 
     Iterable<Profile> findAllForIndexing();
 
+    void updatePassword(Long profileId, String rawPassword);
 }
