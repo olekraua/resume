@@ -1,15 +1,10 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head>
-  <meta charset="utf-8">
-  <title>Sign in</title>
-  <link rel="stylesheet" th:href="@{/css/bootstrap-3.3.6.css}" />
-  <link rel="stylesheet" th:href="@{/css/font-awesome-4.5.0.css}" />
-  <link rel="stylesheet" th:href="@{/css/bootstrap-theme-3.3.6.css}" />
-  <link rel="stylesheet" th:href="@{/css/app.css}" />
-</head>
-<body>
-  <div style="max-width: 400px; margin: 80px auto; padding: 24px; border: 1px solid #ddd; border-radius: 6px;">
+<head th:replace="fragments/layout :: head('Sign in')"></head>
+<body class="resume">
+  <div th:replace="fragments/layout :: header"></div>
+  <div class="layout-content" style="display: flex; justify-content: center;">
+    <div style="max-width: 400px; width: 100%; margin: 40px auto; padding: 24px; border: 1px solid #ddd; border-radius: 6px; background: #fff;">
     <h2 style="margin-top: 0; text-align: center;">Вхід</h2>
     <form th:action="@{/login}" method="post">
       <div style="margin-bottom: 12px;">
@@ -35,6 +30,9 @@
       <a th:href="@{/register}">Зареєструватися</a>
     </div>
   </div>
+  </div>
+  <div th:replace="fragments/layout :: footer"></div>
+  <th:block th:replace="fragments/layout :: scripts"></th:block>
   <script>
     (function() {
       var toggle = document.getElementById('togglePassword');
