@@ -26,7 +26,7 @@ public class SecurityConfig {
                                 .userDetailsService(userDetailsService)
                                 .formLogin(form -> form
                                                 .loginPage("/login")
-                                                .defaultSuccessUrl("/me", true)
+                                                .defaultSuccessUrl("/me", false)
                                                 .permitAll())
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")

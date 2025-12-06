@@ -28,6 +28,9 @@
             <div th:if="${errorMessage}" style="color: #b71c1c; margin-bottom: 8px;" th:text="${errorMessage}"></div>
             <button type="submit" style="padding: 8px 12px;">Змінити логін</button>
         </form>
+        <div style="margin-top: 12px;">
+            <a th:href="@{/account/password}">Змінити пароль</a>
+        </div>
     </div>
     <div th:id="'profile-' + ${profile.id}" class="row profile">
         <div>

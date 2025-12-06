@@ -32,9 +32,6 @@
       <button type="submit" style="width: 100%; padding: 10px;">Увійти</button>
     </form>
     <div style="margin-top: 12px; text-align: center;">
-      <a th:href="@{/account/password}">Змінити пароль</a>
-    </div>
-    <div style="margin-top: 6px; text-align: center;" sec:authorize="!isAuthenticated()">
       <a th:href="@{/register}">Зареєструватися</a>
     </div>
   </div>
