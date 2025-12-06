@@ -20,7 +20,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/", "/welcome", "/error/**", "/css/**", "/favicon/**",
                                                                 "/fonts/**", "/img/**",
                                                                 "/js/**", "/media/**", "/favicon.ico",
-                                                                "/login")
+                                                                "/login", "/register")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .userDetailsService(userDetailsService)

@@ -15,4 +15,10 @@ public interface ProfileService {
     Iterable<Profile> findAllForIndexing();
 
     void updatePassword(Long profileId, String rawPassword);
+
+    Profile register(String uid, String firstName, String lastName, String rawPassword);
+
+    Optional<Profile> findById(Long id);
+
+    void updateUid(Long profileId, String newUid);
 }
