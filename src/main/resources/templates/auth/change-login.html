@@ -16,11 +16,6 @@
     </div>
     <form th:action="@{/account/login}" th:object="${changeLoginForm}" method="post">
       <div style="margin-bottom: 12px;">
-        <label for="currentPassword">Поточний пароль</label><br>
-        <input id="currentPassword" th:field="*{currentPassword}" type="password" required style="width: 100%; padding: 8px;">
-        <div th:if="${#fields.hasErrors('currentPassword')}" style="color: #b71c1c;" th:errors="*{currentPassword}">Помилка</div>
-      </div>
-      <div style="margin-bottom: 12px;">
         <label for="newUid">Новий логін (uid)</label><br>
         <input id="newUid" th:field="*{newUid}" type="text" required style="width: 100%; padding: 8px;">
         <div th:if="${#fields.hasErrors('newUid')}" style="color: #b71c1c;" th:errors="*{newUid}">Помилка</div>

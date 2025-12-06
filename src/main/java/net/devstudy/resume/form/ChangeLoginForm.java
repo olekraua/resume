@@ -10,9 +10,6 @@ import lombok.Setter;
 public class ChangeLoginForm {
 
     @NotBlank
-    private String currentPassword;
-
-    @NotBlank
     @Size(max = 100)
     private String newUid;
 }

@@ -58,7 +58,7 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setFirstName(firstName);
         profile.setLastName(lastName);
         profile.setPassword(passwordEncoder.encode(rawPassword));
-        profile.setCompleted(false);
+        profile.setCompleted(true);
         return profileRepository.save(profile);
     }
 

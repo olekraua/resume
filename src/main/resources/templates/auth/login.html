@@ -1,5 +1,5 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="utf-8">
   <title>Sign in</title>
@@ -29,10 +29,7 @@
     <div style="margin-top: 12px; text-align: center;">
       <a th:href="@{/account/password}">Змінити пароль</a>
     </div>
-    <div style="margin-top: 6px; text-align: center;">
-      <a th:href="@{/account/login}">Змінити логін</a>
-    </div>
-    <div style="margin-top: 6px; text-align: center;">
+    <div style="margin-top: 6px; text-align: center;" sec:authorize="!isAuthenticated()">
       <a th:href="@{/register}">Зареєструватися</a>
     </div>
   </div>

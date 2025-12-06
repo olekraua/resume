@@ -73,24 +73,31 @@ public class AccountController {
 
     @PostMapping("/login")
     public String changeLogin(@Valid ChangeLoginForm form, BindingResult bindingResult, Model model) {
-        if (bindingResult.hasErrors()) {
-            return "auth/change-login";
-        }
         Long currentId = SecurityUtil.getCurrentId();
         if (currentId == null) {
             return "redirect:/login";
         }
         Optional<Profile> profileOpt = profileService.findById(currentId);
-        if (profileOpt.isEmpty()
-                || !passwordEncoder.matches(form.getCurrentPassword(), profileOpt.get().getPassword())) {
-            model.addAttribute("errorMessage", "Невірний поточний пароль");
-            return "auth/change-login";
+        if (profileOpt.isEmpty()) {
+            return "redirect:/login";
+        }
+
+        Profile profile = profileOpt.get();
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("profile", profile);
+            model.addAttribute("ownProfile", true);
+            model.addAttribute("currentUid", profile.getUid());
+            return "profile";
         }
         try {
             profileService.updateUid(currentId, form.getNewUid());
         } catch (IllegalArgumentException ex) {
             model.addAttribute("errorMessage", ex.getMessage());
-            return "auth/change-login";
+            model.addAttribute("profile", profile);
+            model.addAttribute("ownProfile", true);
+            model.addAttribute("currentUid", profile.getUid());
+            return "profile";
         }
         return "redirect:/login?loginChanged";
     }

@@ -1,6 +1,7 @@
 package net.devstudy.resume.controller;
 
 import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.form.ChangeLoginForm;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.service.ProfileService;
 import net.devstudy.resume.util.SecurityUtil;
@@ -50,8 +51,17 @@ public class PublicDataController {
 
         Profile profile = profileOptional.get();
 
+        CurrentProfile currentProfile = SecurityUtil.getCurrentProfile();
+        boolean ownProfile = currentProfile != null && currentProfile.getId().equals(profile.getId());
+        model.addAttribute("ownProfile", ownProfile);
+        if (ownProfile) {
+            ChangeLoginForm changeLoginForm = new ChangeLoginForm();
+            changeLoginForm.setNewUid(profile.getUid());
+            model.addAttribute("changeLoginForm", changeLoginForm);
+            model.addAttribute("currentUid", profile.getUid());
+        }
+
         if (!profile.isCompleted()) {
-            CurrentProfile currentProfile = SecurityUtil.getCurrentProfile();
             if (currentProfile == null || !currentProfile.getId().equals(profile.getId())) {
                 return "error/profile-not-found";
             }
