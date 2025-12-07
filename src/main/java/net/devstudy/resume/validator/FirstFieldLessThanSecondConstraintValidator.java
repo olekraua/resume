@@ -8,7 +8,8 @@ import jakarta.validation.ConstraintValidatorContext;
 import net.devstudy.resume.annotation.constraints.FirstFieldLessThanSecond;
 import org.springframework.beans.BeanWrapperImpl;
 
-public class FirstFieldLessThanSecondConstraintValidator implements ConstraintValidator<FirstFieldLessThanSecond, Object> {
+public class FirstFieldLessThanSecondConstraintValidator
+        implements ConstraintValidator<FirstFieldLessThanSecond, Object> {
     private String first;
     private String second;
 
