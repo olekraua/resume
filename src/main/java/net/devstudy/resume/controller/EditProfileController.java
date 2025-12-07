@@ -75,6 +75,11 @@ public class EditProfileController {
         return prepareLanguages(model);
     }
 
+    @GetMapping("/certificates")
+    public String editCertificates(Model model) {
+        return prepareCertificates(model);
+    }
+
     @GetMapping("/hobbies")
     public String editHobbies(Model model) {
         return prepareHobbies(model);
@@ -174,7 +179,20 @@ public class EditProfileController {
             return prepareLanguages(model);
         }
         profileService.updateLanguages(profileId, form.getItems());
-        return "redirect:/edit/languages?success";
+        return "redirect:/edit/hobbies?success";
+    }
+
+    @PostMapping("/certificates")
+    public String saveCertificates(@Valid @ModelAttribute("form") net.devstudy.resume.form.CertificateForm form,
+            BindingResult bindingResult, Model model) {
+        Long profileId = SecurityUtil.getCurrentId();
+        if (profileId == null)
+            return "redirect:/login";
+        if (bindingResult.hasErrors()) {
+            return prepareCertificates(model);
+        }
+        profileService.updateCertificates(profileId, form.getItems());
+        return "redirect:/edit/certificates?success";
     }
 
     @PostMapping("/hobbies")
@@ -266,6 +284,10 @@ public class EditProfileController {
         model.addAttribute("languageTypes", staticDataService.findAllLanguageTypes());
         model.addAttribute("languageLevels", staticDataService.findAllLanguageLevels());
         return prepareProfileModel(model, "edit/languages", new LanguageForm());
+    }
+
+    private String prepareCertificates(Model model) {
+        return prepareProfileModel(model, "edit/certificates", new net.devstudy.resume.form.CertificateForm());
     }
 
     private String prepareHobbies(Model model) {

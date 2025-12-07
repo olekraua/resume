@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import net.devstudy.resume.entity.Profile;
 
@@ -25,4 +27,13 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
     Page<Profile> findAllByCompletedTrue(Pageable pageable);
 
     List<Profile> findByCompletedFalseAndCreatedBefore(Timestamp oldDate);
+
+    @Query("""
+            select p from Profile p
+            where lower(p.firstName) like lower(concat('%', :query, '%'))
+               or lower(p.lastName) like lower(concat('%', :query, '%'))
+               or lower(p.objective) like lower(concat('%', :query, '%'))
+               or lower(p.summary) like lower(concat('%', :query, '%'))
+            """)
+    Page<Profile> search(@Param("query") String query, Pageable pageable);
 }

@@ -25,6 +25,8 @@ public interface ProfileService {
 
     Iterable<Profile> findAllForIndexing();
 
+    Page<Profile> search(String query, Pageable pageable);
+
     void updatePassword(Long profileId, String rawPassword);
 
     Profile register(String uid, String firstName, String lastName, String rawPassword);

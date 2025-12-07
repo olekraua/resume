@@ -84,4 +84,19 @@ public class PublicDataController {
         model.addAttribute("profile", profile);
         return "profile";
     }
+
+    @GetMapping("/search")
+    public String search(@RequestParam("q") String query,
+            @RequestParam(value = "page", defaultValue = "0") int pageNumber,
+            Model model) {
+        if (query == null || query.trim().isEmpty()) {
+            return "redirect:/welcome";
+        }
+        Page<Profile> page = profileService.search(query.trim(),
+                PageRequest.of(pageNumber, MAX_PROFILES_PER_PAGE, Sort.by("id")));
+        model.addAttribute("profiles", page.getContent());
+        model.addAttribute("page", page);
+        model.addAttribute("query", query.trim());
+        return "search-results";
+    }
 }

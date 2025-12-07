@@ -1,0 +1,130 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Edit Certificates')"></head>
+<body class="resume">
+<div th:replace="fragments/layout :: header"></div>
+<div class="layout-content container certificates">
+  <h2>Certificates</h2>
+  <div th:replace="edit/_nav :: nav"></div>
+
+  <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+    <ul>
+      <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
+    </ul>
+  </div>
+
+  <form th:action="@{/edit/certificates}" method="post" th:object="${form}">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <div id="ui-block-container">
+      <div th:each="cert,iter : *{items}" class="row ui-item certificate-item" th:id="|ui-item-${iter.index}|">
+        <div class="col-xs-12 col-sm-4">
+          <a class="thumbnail certificate-link" href="#"
+             th:attr="data-title=${cert.name},data-url=${cert.largeUrl}">
+            <img class="img-responsive" th:src="${cert.smallUrl}" th:alt="${cert.name}">
+            <span th:text="${cert.name}">Certificate</span>
+          </a>
+        </div>
+        <div class="col-xs-12 col-sm-8">
+          <button type="button" class="close" th:onclick="|$('#ui-item-${iter.index}').remove();|">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <input type="hidden" th:field="*{items[__${iter.index}__].smallUrl}"/>
+          <input type="hidden" th:field="*{items[__${iter.index}__].largeUrl}"/>
+          <div class="form-group">
+            <label>Name</label>
+            <input class="form-control" type="text" th:field="*{items[__${iter.index}__].name}" required="required"/>
+          </div>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div class="row">
+      <div class="col-xs-12">
+        <a href="javascript:resume.certificates.showUploadDialog();">+ Добавить сертификат</a>
+      </div>
+    </div>
+    <hr/>
+    <div class="row">
+      <div class="col-xs-12 text-center">
+        <input type="submit" class="btn btn-primary" value="Сохранить">
+      </div>
+    </div>
+  </form>
+</div>
+
+<!-- шаблон для Handlebars -->
+<script id="ui-block-template" type="text/x-handlebars-template">
+  <div class="row ui-item certificate-item" id="ui-item-{{blockIndex}}">
+    <div class="col-xs-12 col-sm-4">
+      <a class="thumbnail certificate-link" href="#" data-title="{{name}}" data-url="{{largeUrl}}">
+        <img class="img-responsive" src="{{smallUrl}}" alt="{{name}}">
+        <span>{{name}}</span>
+      </a>
+    </div>
+    <div class="col-xs-12 col-sm-8">
+      <button type="button" class="close" onclick="$('#ui-item-{{blockIndex}}').remove();">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <input type="hidden" name="items[{{blockIndex}}].smallUrl" value="{{smallUrl}}"/>
+      <input type="hidden" name="items[{{blockIndex}}].largeUrl" value="{{largeUrl}}"/>
+      <div class="form-group">
+        <label>Name</label>
+        <input class="form-control" type="text" name="items[{{blockIndex}}].name" value="{{name}}" required="required"/>
+      </div>
+    </div>
+  </div>
+</script>
+
+<!-- Certificate viewer modal -->
+<div class="modal fade" id="certificateViewer" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Certificate</h4>
+      </div>
+      <div class="modal-body text-center">
+        <img class="img-responsive" src="#" alt="certificate">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Certificate uploader modal -->
+<div class="modal fade" id="certificateUploader" tabindex="-1" role="dialog" data-small-url="" data-large-url="">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Загрузить сертификат</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Название</label>
+          <input id="certificateName" class="form-control" type="text" placeholder="Название сертификата">
+        </div>
+        <div class="form-group">
+          <label>Файл</label>
+          <input id="certificateFile" name="certificateFile" type="file" class="file-loading">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Отмена</button>
+        <button type="button" class="btn btn-primary" onclick="resume.certificates.add();">Добавить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div th:replace="fragments/layout :: footer"></div>
+<th:block th:replace="fragments/layout :: scripts"></th:block>
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  $(document).ready(function () {
+    resume.initCertificateViewer();
+    resume.createCertificateUploader(/*[[${_csrf.token}]]*/'');
+  });
+  /*]]>*/
+</script>
+</body>
+</html>

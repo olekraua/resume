@@ -69,6 +69,11 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    public Page<Profile> search(String query, Pageable pageable) {
+        return profileRepository.search(query, pageable);
+    }
+
+    @Override
     @Transactional
     public void updatePassword(Long profileId, String rawPassword) {
         Profile profile = getProfileOrThrow(profileId);
