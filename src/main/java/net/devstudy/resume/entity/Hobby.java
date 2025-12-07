@@ -11,7 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -23,8 +22,7 @@ public class Hobby extends AbstractEntity<Long> implements Comparable<Hobby>, Pr
     private static final long serialVersionUID = 1L;
 
     @Id
-    @SequenceGenerator(name = "HOBBY_ID_GENERATOR", sequenceName = "HOBBY_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "HOBBY_ID_GENERATOR")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
     private Long id;
 
@@ -113,5 +111,4 @@ public class Hobby extends AbstractEntity<Long> implements Comparable<Hobby>, Pr
         return "Hobby[name=%s]".formatted(name);
     }
 }
-
 

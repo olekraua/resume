@@ -13,17 +13,23 @@
         </h1>
 
         <img class="img-responsive" th:src="@{/img/logo-large.png}" alt="logo-large" style="width: 100%;">
-
-        <ul>
-          <li th:each="userProfile : ${profiles}"
-            th:text="|${userProfile.firstName} ${userProfile.lastName} (${userProfile.uid})|">
-            John Doe</li>
-        </ul>
       </div>
     </div>
-    <th:block th:replace="~{profiles :: content}">
-
-    </th:block>
+    <div class="row profiles">
+      <div id="profileContainer" class="col-xs-12"
+           th:attr="data-profile-total=${page.totalPages},data-profile-number=${page.number}">
+        <div th:replace="profiles :: items(${profiles})"></div>
+      </div>
+      <div id="loadMoreContainer" class="col-xs-12 text-center"
+           th:if="${page.number < page.totalPages - 1}">
+        <a class="btn btn-primary"
+           th:attr="href=|javascript:resume.moreProfiles('${query}')|">Загрузить еще</a>
+      </div>
+      <div id="loadMoreIndicator" class="col-xs-12 text-center" style="display:none;"
+           th:if="${page.number < page.totalPages - 1}">
+        <img th:src="@{/img/large-loading.gif}" alt="loading...">
+      </div>
+    </div>
   </div>
   <div th:replace="fragments/layout :: footer"></div>
   <th:block th:replace="fragments/layout :: scripts"></th:block>

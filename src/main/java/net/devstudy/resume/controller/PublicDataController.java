@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import lombok.RequiredArgsConstructor;
 
@@ -34,17 +35,29 @@ public class PublicDataController {
     }
 
     @GetMapping("/welcome")
-    public String listAll(Model model) {
+    public String listAll(Model model, @RequestParam(value = "page", defaultValue = "0") int pageNumber,
+            @RequestParam(value = "query", required = false) String query) {
         Page<Profile> page = profileService.findAll(
-                PageRequest.of(0, MAX_PROFILES_PER_PAGE, Sort.by("id")));
+                PageRequest.of(pageNumber, MAX_PROFILES_PER_PAGE, Sort.by("id")));
         model.addAttribute("profiles", page.getContent());
         model.addAttribute("page", page);
+        model.addAttribute("query", query == null ? "" : query);
         return "welcome";
+    }
+
+    @GetMapping("/fragment/more")
+    public String loadMoreProfiles(@RequestParam("page") int pageNumber,
+            @RequestParam(value = "query", required = false) String query, Model model) {
+        Page<Profile> page = profileService.findAll(
+                PageRequest.of(pageNumber, MAX_PROFILES_PER_PAGE, Sort.by("id")));
+        model.addAttribute("profiles", page.getContent());
+        model.addAttribute("query", query == null ? "" : query);
+        return "profiles :: items";
     }
 
     @GetMapping("/{uid}")
     public String profile(@PathVariable String uid, Model model) {
-        Optional<Profile> profileOptional = profileService.findByUid(uid);
+        Optional<Profile> profileOptional = profileService.findWithAllByUid(uid);
         if (profileOptional.isEmpty()) {
             return "error/profile-not-found";
         }

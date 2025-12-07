@@ -3,38 +3,44 @@
 <head th:replace="fragments/layout :: head('Реєстрація')"></head>
 <body class="resume">
   <div th:replace="fragments/layout :: header"></div>
-  <div class="layout-content" style="display: flex; justify-content: center;">
-    <div style="max-width: 480px; width: 100%; margin: 40px auto; padding: 24px; border: 1px solid #ddd; border-radius: 6px; background: #fff;">
-    <h2 style="margin-top: 0; text-align: center;">Реєстрація</h2>
-    <form th:action="@{/register}" th:object="${registrationForm}" method="post">
-      <div style="margin-bottom: 12px;">
-        <label for="uid">Логін (uid)</label><br>
-        <input id="uid" th:field="*{uid}" type="text" required style="width: 100%; padding: 8px;">
-        <div th:if="${#fields.hasErrors('uid')}" style="color: #b71c1c;" th:errors="*{uid}">Помилка</div>
+  <div class="layout-content">
+    <div class="container" style="max-width: 520px;">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title"><i class="fa fa-user-plus"></i> Реєстрація</h4>
+        </div>
+        <div class="panel-body">
+          <form th:action="@{/register}" th:object="${registrationForm}" method="post">
+            <div class="form-group">
+              <label for="uid">Логін (uid)</label>
+              <input id="uid" th:field="*{uid}" type="text" class="form-control" required>
+              <div th:if="${#fields.hasErrors('uid')}" class="text-danger" th:errors="*{uid}">Помилка</div>
+            </div>
+            <div class="form-group">
+              <label for="firstName">Ім'я</label>
+              <input id="firstName" th:field="*{firstName}" type="text" class="form-control" required>
+              <div th:if="${#fields.hasErrors('firstName')}" class="text-danger" th:errors="*{firstName}">Помилка</div>
+            </div>
+            <div class="form-group">
+              <label for="lastName">Прізвище</label>
+              <input id="lastName" th:field="*{lastName}" type="text" class="form-control" required>
+              <div th:if="${#fields.hasErrors('lastName')}" class="text-danger" th:errors="*{lastName}">Помилка</div>
+            </div>
+            <div class="form-group">
+              <label for="password">Пароль</label>
+              <input id="password" th:field="*{password}" type="password" class="form-control" required>
+              <div th:if="${#fields.hasErrors('password')}" class="text-danger" th:errors="*{password}">Помилка</div>
+            </div>
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}" style="margin-top: 10px;"></div>
+            <button type="submit" class="btn btn-success btn-block">Зареєструватися</button>
+          </form>
+          <div class="text-center" style="margin-top: 10px;">
+            <a th:href="@{/login}">Уже є акаунт? Увійти</a>
+          </div>
+        </div>
       </div>
-      <div style="margin-bottom: 12px;">
-        <label for="firstName">Ім'я</label><br>
-        <input id="firstName" th:field="*{firstName}" type="text" required style="width: 100%; padding: 8px;">
-        <div th:if="${#fields.hasErrors('firstName')}" style="color: #b71c1c;" th:errors="*{firstName}">Помилка</div>
-      </div>
-      <div style="margin-bottom: 12px;">
-        <label for="lastName">Прізвище</label><br>
-        <input id="lastName" th:field="*{lastName}" type="text" required style="width: 100%; padding: 8px;">
-        <div th:if="${#fields.hasErrors('lastName')}" style="color: #b71c1c;" th:errors="*{lastName}">Помилка</div>
-      </div>
-      <div style="margin-bottom: 12px;">
-        <label for="password">Пароль</label><br>
-        <input id="password" th:field="*{password}" type="password" required style="width: 100%; padding: 8px;">
-        <div th:if="${#fields.hasErrors('password')}" style="color: #b71c1c;" th:errors="*{password}">Помилка</div>
-      </div>
-      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-      <div th:if="${errorMessage}" style="color: #b71c1c; margin-bottom: 12px;" th:text="${errorMessage}"></div>
-      <button type="submit" style="width: 100%; padding: 10px;">Зареєструватися</button>
-    </form>
-    <div style="margin-top: 12px; text-align: center;">
-      <a th:href="@{/login}">Уже є акаунт? Увійти</a>
     </div>
-  </div>
   </div>
   <div th:replace="fragments/layout :: footer"></div>
   <th:block th:replace="fragments/layout :: scripts"></th:block>

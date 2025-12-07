@@ -1,0 +1,51 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Edit Hobbies')"></head>
+<body class="resume">
+<div th:replace="fragments/layout :: header"></div>
+<div class="layout-content container">
+  <h2>Edit Hobbies</h2>
+  <div th:replace="edit/_nav :: nav"></div>
+
+  <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+    <ul>
+      <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
+    </ul>
+  </div>
+
+  <form th:action="@{/edit/hobbies}" method="post" th:object="${form}" class="form-horizontal">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <div class="form-group">
+      <label class="col-sm-3 control-label">Selected hobby IDs (comma separated)</label>
+      <div class="col-sm-9">
+        <input class="form-control" type="text"
+               th:value="${form.hobbyIds != null ? #strings.listJoin(form.hobbyIds, ',') : ''}"
+               name="hobbyIdsComma"/>
+        <p class="help-block">Тимчасово: введіть ID хобі через кому (список з БД). UI вибору довідника ще не додано.</p>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary"
+            onclick="event.preventDefault(); splitHobbyIdsAndSubmit(this);">Save</button>
+  </form>
+</div>
+<div th:replace="fragments/layout :: footer"></div>
+<th:block th:replace="fragments/layout :: scripts"></th:block>
+<script>
+  function splitHobbyIdsAndSubmit(btn) {
+    var form = btn.closest('form');
+    var input = form.querySelector('input[name=\"hobbyIdsComma\"]');
+    var ids = (input.value || '').split(',').map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 0; });
+    // remove previous hidden inputs
+    form.querySelectorAll('input[name=\"hobbyIds\"]').forEach(function (n) { n.remove(); });
+    ids.forEach(function (id) {
+      var hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = 'hobbyIds';
+      hidden.value = id;
+      form.appendChild(hidden);
+    });
+    form.submit();
+  }
+</script>
+</body>
+</html>

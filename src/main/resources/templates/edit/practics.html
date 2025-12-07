@@ -1,0 +1,56 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/layout :: head('Edit Practics')"></head>
+<body class="resume">
+<div th:replace="fragments/layout :: header"></div>
+<div class="layout-content container">
+  <h2>Edit Practic Experience</h2>
+  <div th:replace="edit/_nav :: nav"></div>
+
+  <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+    <ul>
+      <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
+    </ul>
+  </div>
+
+  <form th:action="@{/edit/practics}" method="post" th:object="${form}" class="form-horizontal">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <div th:each="item,iter : *{items}" class="panel panel-default">
+      <div class="panel-heading">Position <span th:text="${iter.index + 1}"></span></div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Position</label>
+          <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].position}"/></div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Company</label>
+          <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].company}"/></div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Begin date</label>
+          <div class="col-sm-4"><input class="form-control" type="date" th:field="*{items[__${iter.index}__].beginDate}"/></div>
+          <label class="col-sm-1 control-label">Finish</label>
+          <div class="col-sm-1"><input type="checkbox" th:field="*{items[__${iter.index}__].finish}"/></div>
+          <div class="col-sm-3"><input class="form-control" type="date" th:field="*{items[__${iter.index}__].finishDate}"/></div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Demo URL</label>
+          <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].demo}"/></div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Source URL</label>
+          <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].src}"/></div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-3 control-label">Responsibilities</label>
+          <div class="col-sm-9"><textarea class="form-control" rows="3" th:field="*{items[__${iter.index}__].responsibilities}"></textarea></div>
+        </div>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+  </form>
+</div>
+<div th:replace="fragments/layout :: footer"></div>
+<th:block th:replace="fragments/layout :: scripts"></th:block>
+</body>
+</html>

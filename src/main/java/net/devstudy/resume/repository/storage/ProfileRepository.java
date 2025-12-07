@@ -14,6 +14,8 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     Optional<Profile> findByUid(String uid);
 
+    Optional<Profile> findWithAllByUid(String uid);
+
     Optional<Profile> findByEmail(String email);
 
     Optional<Profile> findByPhone(String phone);

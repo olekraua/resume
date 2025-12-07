@@ -14,7 +14,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -29,8 +28,7 @@ public class Practic extends AbstractFinishDateEntity<Long> implements ProfileEn
     private static final long serialVersionUID = 1L;
 
     @Id
-    @SequenceGenerator(name = "PRACTIC_ID_GENERATOR", sequenceName = "PRACTIC_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PRACTIC_ID_GENERATOR")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
     private Long id;
 
@@ -176,5 +174,4 @@ public class Practic extends AbstractFinishDateEntity<Long> implements ProfileEn
             && Objects.equals(src, other.src);
     }
 }
-
 

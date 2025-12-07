@@ -1,0 +1,36 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="nav">
+  <ul class="nav nav-tabs" style="margin-bottom: 15px;">
+    <li th:classappend="${#httpServletRequest.requestURI.endsWith('/skills')}? 'active'">
+      <a th:href="@{/edit/skills}">Skills</a>
+    </li>
+    <li th:classappend="${#httpServletRequest.requestURI.endsWith('/practics')}? 'active'">
+      <a th:href="@{/edit/practics}">Practics</a>
+    </li>
+    <li th:classappend="${#httpServletRequest.requestURI.endsWith('/education')}? 'active'">
+      <a th:href="@{/edit/education}">Education</a>
+    </li>
+    <li th:classappend="${#httpServletRequest.requestURI.endsWith('/courses')}? 'active'">
+      <a th:href="@{/edit/courses}">Courses</a>
+    </li>
+    <li th:classappend="${#httpServletRequest.requestURI.endsWith('/languages')}? 'active'">
+      <a th:href="@{/edit/languages}">Languages</a>
+    </li>
+    <li th:classappend="${#httpServletRequest.requestURI.endsWith('/hobbies')}? 'active'">
+      <a th:href="@{/edit/hobbies}">Hobbies</a>
+    </li>
+    <li th:classappend="${#httpServletRequest.requestURI.endsWith('/contacts')}? 'active'">
+      <a th:href="@{/edit/contacts}">Contacts</a>
+    </li>
+    <li th:classappend="${#httpServletRequest.requestURI.endsWith('/info')}? 'active'">
+      <a th:href="@{/edit/info}">Info</a>
+    </li>
+    <li th:classappend="${#httpServletRequest.requestURI.endsWith('/password')}? 'active'">
+      <a th:href="@{/edit/password}">Password</a>
+    </li>
+  </ul>
+</div>
+</body>
+</html>

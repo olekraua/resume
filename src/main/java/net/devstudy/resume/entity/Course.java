@@ -12,7 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
 /**
@@ -26,8 +25,7 @@ public class Course extends AbstractFinishDateEntity<Long> implements ProfileEnt
     private static final long serialVersionUID = 4206575925684228495L;
 
     @Id
-    @SequenceGenerator(name = "COURSE_ID_GENERATOR", sequenceName = "COURSE_SEQ", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "COURSE_ID_GENERATOR")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
     private Long id;
 
@@ -103,5 +101,4 @@ public class Course extends AbstractFinishDateEntity<Long> implements ProfileEnt
                 && Objects.equals(school, other.school);
     }
 }
-
 
