@@ -37,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.List;
 import java.beans.PropertyEditorSupport;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -208,14 +209,20 @@ public class EditProfileController {
     }
 
     @PostMapping("/hobbies")
-    public String saveHobbies(@Valid @ModelAttribute("form") HobbyForm form, BindingResult bindingResult, Model model) {
+    public String saveHobbies(@Valid @ModelAttribute("form") HobbyForm form,
+            @RequestParam(value = "hobbies", required = false) String hobbiesParam,
+            BindingResult bindingResult, Model model) {
         Long profileId = SecurityUtil.getCurrentId();
         if (profileId == null)
             return "redirect:/login";
-        if (bindingResult.hasErrors()) {
-            return prepareHobbies(model);
+        List<Long> ids = form.getHobbyIds();
+        if ((ids == null || ids.isEmpty()) && hobbiesParam != null) {
+            ids = java.util.Arrays.stream(hobbiesParam.split(","))
+                    .filter(s -> !s.isBlank())
+                    .map(Long::valueOf)
+                    .toList();
         }
-        profileService.updateHobbies(profileId, form.getHobbyIds());
+        profileService.updateHobbies(profileId, ids);
         return "redirect:/edit/hobbies?success";
     }
 
@@ -303,8 +310,17 @@ public class EditProfileController {
     }
 
     private String prepareHobbies(Model model) {
-        model.addAttribute("hobbies", staticDataService.findAllHobbies());
-        return prepareProfileModel(model, "edit/hobbies", new HobbyForm());
+        Long profileId = SecurityUtil.getCurrentId();
+        HobbyForm form = new HobbyForm();
+        if (profileId != null) {
+            profileService.findById(profileId).ifPresent(profile -> {
+                if (profile.getHobbies() != null) {
+                    form.setHobbyIds(profile.getHobbies().stream().map(Hobby::getId).toList());
+                }
+            });
+        }
+        model.addAttribute("hobbies", staticDataService.findAllHobbiesWithSelected(form.getHobbyIds()));
+        return prepareProfileModel(model, "edit/hobbies", form);
     }
 
     private String prepareContacts(Model model) {

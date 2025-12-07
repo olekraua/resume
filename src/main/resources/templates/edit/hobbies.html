@@ -4,48 +4,33 @@
 <body class="resume">
 <div th:replace="fragments/layout :: header"></div>
 <div class="layout-content container">
-  <h2>Edit Hobbies</h2>
+  <h2>Хобі</h2>
   <div th:replace="edit/_nav :: nav"></div>
 
-  <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
-    <ul>
-      <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
-    </ul>
-  </div>
-
-  <form th:action="@{/edit/hobbies}" method="post" th:object="${form}" class="form-horizontal">
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-    <div class="form-group">
-      <label class="col-sm-3 control-label">Selected hobby IDs (comma separated)</label>
-      <div class="col-sm-9">
-        <input class="form-control" type="text"
-               th:value="${form.hobbyIds != null ? #strings.listJoin(form.hobbyIds, ',') : ''}"
-               name="hobbyIdsComma"/>
-        <p class="help-block">Тимчасово: введіть ID хобі через кому (список з БД). UI вибору довідника ще не додано.</p>
+  <div id="hobbyContainer" class="row" th:attr="data-csrf-value=${_csrf.token},data-max-hobbies=5">
+    <div class="col-xs-12">
+      <div id="errorAlert" class="alert alert-danger" style="display:none;">
+        <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        Максимальна кількість хобі перевищена.
+      </div>
+      <div class="btn-group" data-toggle="buttons">
+        <label th:each="hobby : ${hobbies}"
+               class="btn btn-default hobby-btn"
+               th:classappend="${hobby.selected} ? ' active' : ''"
+               th:attr="data-hobby=${hobby.id}">
+          <input type="checkbox" autocomplete="off" th:checked="${hobby.selected}"> <i class="fa" th:classappend="' hobby hobby-' + ${hobby.cssClassName}"></i> <span th:text="${hobby.name}">Hobby</span>
+        </label>
       </div>
     </div>
-    <button type="submit" class="btn btn-primary"
-            onclick="event.preventDefault(); splitHobbyIdsAndSubmit(this);">Save</button>
-  </form>
+  </div>
+
+  <div class="row" style="margin-top:20px;">
+    <div class="col-xs-12">
+      <button class="btn btn-primary" onclick="resume.hobbies.save();">Зберегти</button>
+    </div>
+  </div>
 </div>
 <div th:replace="fragments/layout :: footer"></div>
 <th:block th:replace="fragments/layout :: scripts"></th:block>
-<script>
-  function splitHobbyIdsAndSubmit(btn) {
-    var form = btn.closest('form');
-    var input = form.querySelector('input[name=\"hobbyIdsComma\"]');
-    var ids = (input.value || '').split(',').map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 0; });
-    // remove previous hidden inputs
-    form.querySelectorAll('input[name=\"hobbyIds\"]').forEach(function (n) { n.remove(); });
-    ids.forEach(function (id) {
-      var hidden = document.createElement('input');
-      hidden.type = 'hidden';
-      hidden.name = 'hobbyIds';
-      hidden.value = id;
-      form.appendChild(hidden);
-    });
-    form.submit();
-  }
-</script>
 </body>
 </html>

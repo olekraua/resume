@@ -71,6 +71,15 @@ public class StaticDataServiceImpl implements StaticDataService {
         return hobbyRepository.findAll();
     }
 
+    @Override
+    public List<Hobby> findAllHobbiesWithSelected(List<Long> selectedIds) {
+        List<Hobby> all = hobbyRepository.findAll();
+        if (selectedIds != null && !selectedIds.isEmpty()) {
+            all.forEach(h -> h.setSelected(selectedIds.contains(h.getId())));
+        }
+        return all;
+    }
+
     private List<Integer> generateYears(int from, int toInclusive) {
         List<Integer> years = new ArrayList<>();
         for (int y = from; y >= toInclusive; y--) {

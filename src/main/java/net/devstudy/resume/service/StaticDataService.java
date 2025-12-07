@@ -24,4 +24,6 @@ public interface StaticDataService {
     List<LanguageLevel> findAllLanguageLevels();
 
     List<Hobby> findAllHobbies();
+
+    List<Hobby> findAllHobbiesWithSelected(List<Long> selectedIds);
 }
