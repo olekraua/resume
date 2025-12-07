@@ -15,8 +15,10 @@ import net.devstudy.resume.form.SkillForm;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.model.LanguageLevel;
 import net.devstudy.resume.model.LanguageType;
+import net.devstudy.resume.model.UploadCertificateResult;
 import net.devstudy.resume.service.ProfileService;
 import net.devstudy.resume.service.StaticDataService;
+import net.devstudy.resume.service.CertificateStorageService;
 import net.devstudy.resume.util.SecurityUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +31,9 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -43,6 +48,7 @@ public class EditProfileController {
 
     private final ProfileService profileService;
     private final StaticDataService staticDataService;
+    private final CertificateStorageService certificateStorageService;
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping
@@ -180,6 +186,12 @@ public class EditProfileController {
         }
         profileService.updateLanguages(profileId, form.getItems());
         return "redirect:/edit/hobbies?success";
+    }
+
+    @PostMapping("/certificates/upload")
+    @ResponseBody
+    public UploadCertificateResult uploadCertificate(@RequestParam("certificateFile") MultipartFile certificateFile) {
+        return certificateStorageService.store(certificateFile);
     }
 
     @PostMapping("/certificates")
