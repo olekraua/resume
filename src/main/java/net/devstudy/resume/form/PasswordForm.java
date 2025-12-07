@@ -1,2 +1,20 @@
 package net.devstudy.resume.form;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import net.devstudy.resume.annotation.constraints.FieldMatch;
+
+@Getter
+@Setter
+@FieldMatch(first = "newPassword", second = "confirmPassword", message = "{password.match}")
+public class PasswordForm {
+    @NotBlank
+    @Size(min = 6, max = 100)
+    private String newPassword;
+
+    @NotBlank
+    @Size(min = 6, max = 100)
+    private String confirmPassword;
+}

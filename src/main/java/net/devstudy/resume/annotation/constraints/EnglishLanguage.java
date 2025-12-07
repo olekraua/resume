@@ -1,7 +1,6 @@
 package net.devstudy.resume.annotation.constraints;
 
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
@@ -13,34 +12,17 @@ import java.lang.annotation.Target;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
-
 import net.devstudy.resume.validator.EnglishLanguageConstraintValidator;
 
-/**
- * @author devstudy
- * @see http://devstudy.net
- */
-@Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
+@Target({ METHOD, FIELD, ANNOTATION_TYPE, PARAMETER })
 @Retention(RUNTIME)
+@Constraint(validatedBy = EnglishLanguageConstraintValidator.class)
 @Documented
-@Constraint(validatedBy = { EnglishLanguageConstraintValidator.class })
 public @interface EnglishLanguage {
+    String message() default "{EnglishLanguage}";
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
 
-    String message() default "EnglishLanguage";
-
-    // 0123456789
-    boolean withNumbers() default true;
-
-    // . , ? ! - : ( ) ' " [ ] { } ; <space>\t\n
     boolean withPunctuations() default true;
-
-    // ~ # $ % ^ & * - + = _ \ | / @ ` ! ' \" ; : > < , . ? { }
-    boolean withSpechSymbols() default true;
-
-    Class<? extends Payload>[] payload() default { };
-
-    Class<?>[] groups() default { };
+    boolean withNumbers() default true;
 }
-
-
-
