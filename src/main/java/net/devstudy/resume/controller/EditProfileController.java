@@ -13,7 +13,10 @@ import net.devstudy.resume.form.LanguageForm;
 import net.devstudy.resume.form.PracticForm;
 import net.devstudy.resume.form.SkillForm;
 import net.devstudy.resume.model.CurrentProfile;
+import net.devstudy.resume.model.LanguageLevel;
+import net.devstudy.resume.model.LanguageType;
 import net.devstudy.resume.service.ProfileService;
+import net.devstudy.resume.service.StaticDataService;
 import net.devstudy.resume.util.SecurityUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,8 +25,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.beans.PropertyEditorSupport;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Controller
 @RequestMapping("/edit")
@@ -31,6 +42,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class EditProfileController {
 
     private final ProfileService profileService;
+    private final StaticDataService staticDataService;
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping
@@ -81,6 +93,24 @@ public class EditProfileController {
     @GetMapping("/password")
     public String editPassword(Model model) {
         return preparePassword(model);
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true));
+        binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+        binder.registerCustomEditor(LanguageType.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                setValue(text == null || text.isBlank() ? null : LanguageType.valueOf(text.trim()));
+            }
+        });
+        binder.registerCustomEditor(LanguageLevel.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                setValue(text == null || text.isBlank() ? null : LanguageLevel.valueOf(text.trim()));
+            }
+        });
     }
 
     @PostMapping("/skills")
@@ -210,26 +240,36 @@ public class EditProfileController {
     }
 
     private String prepareSkills(Model model) {
+        model.addAttribute("skillCategories", staticDataService.findSkillCategories());
         return prepareProfileModel(model, "edit/skills", new SkillForm());
     }
 
     private String preparePractics(Model model) {
+        model.addAttribute("years", staticDataService.findPracticsYears());
+        model.addAttribute("months", staticDataService.findMonthMap());
         return prepareProfileModel(model, "edit/practics", new PracticForm());
     }
 
     private String prepareEducation(Model model) {
+        model.addAttribute("years", staticDataService.findEducationYears());
+        model.addAttribute("months", staticDataService.findMonthMap());
         return prepareProfileModel(model, "edit/education", new EducationForm());
     }
 
     private String prepareCourses(Model model) {
+        model.addAttribute("years", staticDataService.findCoursesYears());
+        model.addAttribute("months", staticDataService.findMonthMap());
         return prepareProfileModel(model, "edit/courses", new CourseForm());
     }
 
     private String prepareLanguages(Model model) {
+        model.addAttribute("languageTypes", staticDataService.findAllLanguageTypes());
+        model.addAttribute("languageLevels", staticDataService.findAllLanguageLevels());
         return prepareProfileModel(model, "edit/languages", new LanguageForm());
     }
 
     private String prepareHobbies(Model model) {
+        model.addAttribute("hobbies", staticDataService.findAllHobbies());
         return prepareProfileModel(model, "edit/hobbies", new HobbyForm());
     }
 
