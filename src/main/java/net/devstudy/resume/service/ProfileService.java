@@ -52,4 +52,6 @@ public interface ProfileService {
     void updateInfo(Long profileId, InfoForm form);
 
     void updateCertificates(Long profileId, List<Certificate> items);
+
+    void updatePhoto(Long profileId, String largeUrl, String smallUrl);
 }

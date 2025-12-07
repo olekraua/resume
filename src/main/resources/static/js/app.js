@@ -49,6 +49,9 @@ var resume = {
 		    }
 		    $('#certificateUploader').attr('data-small-url', response.smallUrl);
 		    $('#certificateUploader').attr('data-large-url', response.largeUrl);
+		    if(response.issuer != null && $('#certificateIssuer').val().trim() === '') {
+		    	$('#certificateIssuer').val(response.issuer);
+		    }
 		});
 		$('#certificateFile').on('fileuploaderror', function(event, data, msg) {
 		    resume.showErrorDialog(messages.errorUploadCertificate);
@@ -168,12 +171,14 @@ var resume = {
 			var context = {
 				blockIndex : blockIndex,
 				name : $('#certificateName').val(),
+				issuer : $('#certificateIssuer').val(),
 				smallUrl : $('#certificateUploader').attr('data-small-url'),
 				largeUrl : $('#certificateUploader').attr('data-large-url')
 			};
 			container.append(template(context));
 			$('#certificateUploader').modal('hide');
 			$('#certificateName').val('');
+			$('#certificateIssuer').val('');
 			$('#certificateFile').fileinput('clear');
 		}
 	},

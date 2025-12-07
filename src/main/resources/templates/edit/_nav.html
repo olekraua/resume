@@ -21,6 +21,9 @@
     <li th:classappend="${#httpServletRequest.requestURI.endsWith('/hobbies')}? 'active'">
       <a th:href="@{/edit/hobbies}">Hobbies</a>
     </li>
+    <li th:classappend="${#httpServletRequest.requestURI.endsWith('/photo')}? 'active'">
+      <a th:href="@{/edit/photo}">Photo</a>
+    </li>
     <li th:classappend="${#httpServletRequest.requestURI.endsWith('/contacts')}? 'active'">
       <a th:href="@{/edit/contacts}">Contacts</a>
     </li>

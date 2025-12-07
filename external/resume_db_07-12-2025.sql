@@ -17,7 +17,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: certificate_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: certificate_seq; Type: SEQUENCE; Schema: public; Owner: resume
 --
 
 CREATE SEQUENCE public.certificate_seq
@@ -28,12 +28,14 @@ CREATE SEQUENCE public.certificate_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.certificate_seq OWNER TO resume;
+
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: certificate; Type: TABLE; Schema: public; Owner: -
+-- Name: certificate; Type: TABLE; Schema: public; Owner: resume
 --
 
 CREATE TABLE public.certificate (
@@ -46,8 +48,10 @@ CREATE TABLE public.certificate (
 );
 
 
+ALTER TABLE public.certificate OWNER TO resume;
+
 --
--- Name: course_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: course_seq; Type: SEQUENCE; Schema: public; Owner: resume
 --
 
 CREATE SEQUENCE public.course_seq
@@ -58,8 +62,10 @@ CREATE SEQUENCE public.course_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.course_seq OWNER TO resume;
+
 --
--- Name: course; Type: TABLE; Schema: public; Owner: -
+-- Name: course; Type: TABLE; Schema: public; Owner: resume
 --
 
 CREATE TABLE public.course (
@@ -71,8 +77,10 @@ CREATE TABLE public.course (
 );
 
 
+ALTER TABLE public.course OWNER TO resume;
+
 --
--- Name: education_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: education_seq; Type: SEQUENCE; Schema: public; Owner: resume
 --
 
 CREATE SEQUENCE public.education_seq
@@ -83,8 +91,10 @@ CREATE SEQUENCE public.education_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.education_seq OWNER TO resume;
+
 --
--- Name: education; Type: TABLE; Schema: public; Owner: -
+-- Name: education; Type: TABLE; Schema: public; Owner: resume
 --
 
 CREATE TABLE public.education (
@@ -98,8 +108,10 @@ CREATE TABLE public.education (
 );
 
 
+ALTER TABLE public.education OWNER TO resume;
+
 --
--- Name: hobby_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: hobby_seq; Type: SEQUENCE; Schema: public; Owner: resume
 --
 
 CREATE SEQUENCE public.hobby_seq
@@ -110,8 +122,10 @@ CREATE SEQUENCE public.hobby_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.hobby_seq OWNER TO resume;
+
 --
--- Name: hobby; Type: TABLE; Schema: public; Owner: -
+-- Name: hobby; Type: TABLE; Schema: public; Owner: resume
 --
 
 CREATE TABLE public.hobby (
@@ -121,8 +135,10 @@ CREATE TABLE public.hobby (
 );
 
 
+ALTER TABLE public.hobby OWNER TO resume;
+
 --
--- Name: language_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: language_seq; Type: SEQUENCE; Schema: public; Owner: resume
 --
 
 CREATE SEQUENCE public.language_seq
@@ -133,8 +149,10 @@ CREATE SEQUENCE public.language_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.language_seq OWNER TO resume;
+
 --
--- Name: language; Type: TABLE; Schema: public; Owner: -
+-- Name: language; Type: TABLE; Schema: public; Owner: resume
 --
 
 CREATE TABLE public.language (
@@ -146,8 +164,10 @@ CREATE TABLE public.language (
 );
 
 
+ALTER TABLE public.language OWNER TO resume;
+
 --
--- Name: persistent_logins; Type: TABLE; Schema: public; Owner: -
+-- Name: persistent_logins; Type: TABLE; Schema: public; Owner: resume
 --
 
 CREATE TABLE public.persistent_logins (
@@ -158,8 +178,10 @@ CREATE TABLE public.persistent_logins (
 );
 
 
+ALTER TABLE public.persistent_logins OWNER TO resume;
+
 --
--- Name: practic_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: practic_seq; Type: SEQUENCE; Schema: public; Owner: resume
 --
 
 CREATE SEQUENCE public.practic_seq
@@ -170,8 +192,10 @@ CREATE SEQUENCE public.practic_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.practic_seq OWNER TO resume;
+
 --
--- Name: practic; Type: TABLE; Schema: public; Owner: -
+-- Name: practic; Type: TABLE; Schema: public; Owner: resume
 --
 
 CREATE TABLE public.practic (
@@ -187,8 +211,10 @@ CREATE TABLE public.practic (
 );
 
 
+ALTER TABLE public.practic OWNER TO resume;
+
 --
--- Name: profile_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: profile_seq; Type: SEQUENCE; Schema: public; Owner: resume
 --
 
 CREATE SEQUENCE public.profile_seq
@@ -199,8 +225,10 @@ CREATE SEQUENCE public.profile_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.profile_seq OWNER TO resume;
+
 --
--- Name: profile; Type: TABLE; Schema: public; Owner: -
+-- Name: profile; Type: TABLE; Schema: public; Owner: resume
 --
 
 CREATE TABLE public.profile (
@@ -228,8 +256,10 @@ CREATE TABLE public.profile (
 );
 
 
+ALTER TABLE public.profile OWNER TO resume;
+
 --
--- Name: profile_restore; Type: TABLE; Schema: public; Owner: -
+-- Name: profile_restore; Type: TABLE; Schema: public; Owner: resume
 --
 
 CREATE TABLE public.profile_restore (
@@ -238,8 +268,10 @@ CREATE TABLE public.profile_restore (
 );
 
 
+ALTER TABLE public.profile_restore OWNER TO resume;
+
 --
--- Name: skill_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: skill_seq; Type: SEQUENCE; Schema: public; Owner: resume
 --
 
 CREATE SEQUENCE public.skill_seq
@@ -250,8 +282,10 @@ CREATE SEQUENCE public.skill_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.skill_seq OWNER TO resume;
+
 --
--- Name: skill; Type: TABLE; Schema: public; Owner: -
+-- Name: skill; Type: TABLE; Schema: public; Owner: resume
 --
 
 CREATE TABLE public.skill (
@@ -262,8 +296,10 @@ CREATE TABLE public.skill (
 );
 
 
+ALTER TABLE public.skill OWNER TO resume;
+
 --
--- Name: skill_category_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: skill_category_seq; Type: SEQUENCE; Schema: public; Owner: resume
 --
 
 CREATE SEQUENCE public.skill_category_seq
@@ -274,8 +310,10 @@ CREATE SEQUENCE public.skill_category_seq
     CACHE 1;
 
 
+ALTER SEQUENCE public.skill_category_seq OWNER TO resume;
+
 --
--- Name: skill_category; Type: TABLE; Schema: public; Owner: -
+-- Name: skill_category; Type: TABLE; Schema: public; Owner: resume
 --
 
 CREATE TABLE public.skill_category (
@@ -284,8 +322,10 @@ CREATE TABLE public.skill_category (
 );
 
 
+ALTER TABLE public.skill_category OWNER TO resume;
+
 --
--- Data for Name: certificate; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: certificate; Type: TABLE DATA; Schema: public; Owner: resume
 --
 
 COPY public.certificate (id, id_profile, name, large_url, small_url, issuer) FROM stdin;
@@ -293,7 +333,7 @@ COPY public.certificate (id, id_profile, name, large_url, small_url, issuer) FRO
 
 
 --
--- Data for Name: course; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: course; Type: TABLE DATA; Schema: public; Owner: resume
 --
 
 COPY public.course (id, id_profile, name, school, finish_date) FROM stdin;
@@ -301,7 +341,7 @@ COPY public.course (id, id_profile, name, school, finish_date) FROM stdin;
 
 
 --
--- Data for Name: education; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: education; Type: TABLE DATA; Schema: public; Owner: resume
 --
 
 COPY public.education (id, id_profile, summary, begin_year, finish_year, university, faculty) FROM stdin;
@@ -309,7 +349,7 @@ COPY public.education (id, id_profile, summary, begin_year, finish_year, univers
 
 
 --
--- Data for Name: hobby; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: hobby; Type: TABLE DATA; Schema: public; Owner: resume
 --
 
 COPY public.hobby (id, id_profile, name) FROM stdin;
@@ -317,7 +357,7 @@ COPY public.hobby (id, id_profile, name) FROM stdin;
 
 
 --
--- Data for Name: language; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: language; Type: TABLE DATA; Schema: public; Owner: resume
 --
 
 COPY public.language (id, id_profile, name, level, type) FROM stdin;
@@ -325,7 +365,7 @@ COPY public.language (id, id_profile, name, level, type) FROM stdin;
 
 
 --
--- Data for Name: persistent_logins; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: persistent_logins; Type: TABLE DATA; Schema: public; Owner: resume
 --
 
 COPY public.persistent_logins (username, series, token, last_used) FROM stdin;
@@ -333,7 +373,7 @@ COPY public.persistent_logins (username, series, token, last_used) FROM stdin;
 
 
 --
--- Data for Name: practic; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: practic; Type: TABLE DATA; Schema: public; Owner: resume
 --
 
 COPY public.practic (id, id_profile, job_position, company, begin_date, finish_date, responsibilities, demo, src) FROM stdin;
@@ -341,17 +381,18 @@ COPY public.practic (id, id_profile, job_position, company, begin_date, finish_d
 
 
 --
--- Data for Name: profile; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: profile; Type: TABLE DATA; Schema: public; Owner: resume
 --
 
 COPY public.profile (id, uid, first_name, last_name, birth_day, phone, email, country, city, objective, summary, large_photo, small_photo, info, password, completed, created, facebook, linkedin, github, stackoverflow) FROM stdin;
-2	john-doe	John	Doe	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	test123	t	2025-08-15 12:20:33	\N	\N	\N	\N
 3	jane-smith	Jane	Smith	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	test123	t	2025-08-15 12:20:33	\N	\N	\N	\N
+2	john	John	Doe	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	$2a$10$EAdRQKejWH/7HQMR78v6eumzRyyKVOGMhCvlFiJ2Z1R2ZWwJu6HOK	t	2025-08-15 12:20:33	\N	\N	\N	\N
+4	olekraua	Олександр	Кравченко	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	$2a$10$6/3fqLtqU3..IPIsdRupwucvOgeBw2z/iv5Wv4rDoimXfnxxIlCuW	t	2025-12-06 19:07:05	\N	\N	\N	\N
 \.
 
 
 --
--- Data for Name: profile_restore; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: profile_restore; Type: TABLE DATA; Schema: public; Owner: resume
 --
 
 COPY public.profile_restore (id, token) FROM stdin;
@@ -359,7 +400,7 @@ COPY public.profile_restore (id, token) FROM stdin;
 
 
 --
--- Data for Name: skill; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: skill; Type: TABLE DATA; Schema: public; Owner: resume
 --
 
 COPY public.skill (id, id_profile, category, value) FROM stdin;
@@ -367,7 +408,7 @@ COPY public.skill (id, id_profile, category, value) FROM stdin;
 
 
 --
--- Data for Name: skill_category; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: skill_category; Type: TABLE DATA; Schema: public; Owner: resume
 --
 
 COPY public.skill_category (id, category) FROM stdin;
@@ -375,70 +416,70 @@ COPY public.skill_category (id, category) FROM stdin;
 
 
 --
--- Name: certificate_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: certificate_seq; Type: SEQUENCE SET; Schema: public; Owner: resume
 --
 
 SELECT pg_catalog.setval('public.certificate_seq', 1, false);
 
 
 --
--- Name: course_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: course_seq; Type: SEQUENCE SET; Schema: public; Owner: resume
 --
 
 SELECT pg_catalog.setval('public.course_seq', 1, false);
 
 
 --
--- Name: education_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: education_seq; Type: SEQUENCE SET; Schema: public; Owner: resume
 --
 
 SELECT pg_catalog.setval('public.education_seq', 1, false);
 
 
 --
--- Name: hobby_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: hobby_seq; Type: SEQUENCE SET; Schema: public; Owner: resume
 --
 
 SELECT pg_catalog.setval('public.hobby_seq', 1, false);
 
 
 --
--- Name: language_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: language_seq; Type: SEQUENCE SET; Schema: public; Owner: resume
 --
 
 SELECT pg_catalog.setval('public.language_seq', 1, false);
 
 
 --
--- Name: practic_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: practic_seq; Type: SEQUENCE SET; Schema: public; Owner: resume
 --
 
 SELECT pg_catalog.setval('public.practic_seq', 1, false);
 
 
 --
--- Name: profile_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: profile_seq; Type: SEQUENCE SET; Schema: public; Owner: resume
 --
 
-SELECT pg_catalog.setval('public.profile_seq', 3, true);
+SELECT pg_catalog.setval('public.profile_seq', 4, true);
 
 
 --
--- Name: skill_category_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: skill_category_seq; Type: SEQUENCE SET; Schema: public; Owner: resume
 --
 
 SELECT pg_catalog.setval('public.skill_category_seq', 1, false);
 
 
 --
--- Name: skill_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: skill_seq; Type: SEQUENCE SET; Schema: public; Owner: resume
 --
 
 SELECT pg_catalog.setval('public.skill_seq', 1, false);
 
 
 --
--- Name: certificate certificate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: certificate certificate_pkey; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.certificate
@@ -446,7 +487,7 @@ ALTER TABLE ONLY public.certificate
 
 
 --
--- Name: course course_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: course course_pkey; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.course
@@ -454,7 +495,7 @@ ALTER TABLE ONLY public.course
 
 
 --
--- Name: education education_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: education education_pkey; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.education
@@ -462,7 +503,7 @@ ALTER TABLE ONLY public.education
 
 
 --
--- Name: hobby hobby_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: hobby hobby_pkey; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.hobby
@@ -470,7 +511,7 @@ ALTER TABLE ONLY public.hobby
 
 
 --
--- Name: language language_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: language language_pkey; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.language
@@ -478,7 +519,7 @@ ALTER TABLE ONLY public.language
 
 
 --
--- Name: persistent_logins persistent_logins_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: persistent_logins persistent_logins_pkey; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.persistent_logins
@@ -486,7 +527,7 @@ ALTER TABLE ONLY public.persistent_logins
 
 
 --
--- Name: practic practic_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: practic practic_pkey; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.practic
@@ -494,7 +535,7 @@ ALTER TABLE ONLY public.practic
 
 
 --
--- Name: profile profile_email_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: profile profile_email_key; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.profile
@@ -502,7 +543,7 @@ ALTER TABLE ONLY public.profile
 
 
 --
--- Name: profile profile_phone_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: profile profile_phone_key; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.profile
@@ -510,7 +551,7 @@ ALTER TABLE ONLY public.profile
 
 
 --
--- Name: profile profile_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: profile profile_pkey; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.profile
@@ -518,7 +559,7 @@ ALTER TABLE ONLY public.profile
 
 
 --
--- Name: profile_restore profile_restore_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: profile_restore profile_restore_pkey; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.profile_restore
@@ -526,7 +567,7 @@ ALTER TABLE ONLY public.profile_restore
 
 
 --
--- Name: profile_restore profile_restore_uid_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: profile_restore profile_restore_uid_key; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.profile_restore
@@ -534,7 +575,7 @@ ALTER TABLE ONLY public.profile_restore
 
 
 --
--- Name: profile profile_uid_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: profile profile_uid_key; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.profile
@@ -542,7 +583,7 @@ ALTER TABLE ONLY public.profile
 
 
 --
--- Name: skill_category skill_category_category_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: skill_category skill_category_category_key; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.skill_category
@@ -550,7 +591,7 @@ ALTER TABLE ONLY public.skill_category
 
 
 --
--- Name: skill_category skill_category_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: skill_category skill_category_pkey; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.skill_category
@@ -558,7 +599,7 @@ ALTER TABLE ONLY public.skill_category
 
 
 --
--- Name: skill skill_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: skill skill_pkey; Type: CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.skill
@@ -566,77 +607,77 @@ ALTER TABLE ONLY public.skill
 
 
 --
--- Name: certificate_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: certificate_idx; Type: INDEX; Schema: public; Owner: resume
 --
 
 CREATE INDEX certificate_idx ON public.certificate USING btree (id_profile);
 
 
 --
--- Name: course_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: course_idx; Type: INDEX; Schema: public; Owner: resume
 --
 
 CREATE INDEX course_idx ON public.course USING btree (finish_date);
 
 
 --
--- Name: course_idx1; Type: INDEX; Schema: public; Owner: -
+-- Name: course_idx1; Type: INDEX; Schema: public; Owner: resume
 --
 
 CREATE INDEX course_idx1 ON public.course USING btree (id_profile);
 
 
 --
--- Name: education_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: education_idx; Type: INDEX; Schema: public; Owner: resume
 --
 
 CREATE INDEX education_idx ON public.education USING btree (id_profile);
 
 
 --
--- Name: education_idx1; Type: INDEX; Schema: public; Owner: -
+-- Name: education_idx1; Type: INDEX; Schema: public; Owner: resume
 --
 
 CREATE INDEX education_idx1 ON public.education USING btree (finish_year);
 
 
 --
--- Name: hobby_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: hobby_idx; Type: INDEX; Schema: public; Owner: resume
 --
 
 CREATE INDEX hobby_idx ON public.hobby USING btree (id_profile);
 
 
 --
--- Name: language_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: language_idx; Type: INDEX; Schema: public; Owner: resume
 --
 
 CREATE INDEX language_idx ON public.language USING btree (id_profile);
 
 
 --
--- Name: practic_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: practic_idx; Type: INDEX; Schema: public; Owner: resume
 --
 
 CREATE INDEX practic_idx ON public.practic USING btree (id_profile);
 
 
 --
--- Name: practic_idx1; Type: INDEX; Schema: public; Owner: -
+-- Name: practic_idx1; Type: INDEX; Schema: public; Owner: resume
 --
 
 CREATE INDEX practic_idx1 ON public.practic USING btree (finish_date);
 
 
 --
--- Name: skill_idx; Type: INDEX; Schema: public; Owner: -
+-- Name: skill_idx; Type: INDEX; Schema: public; Owner: resume
 --
 
 CREATE INDEX skill_idx ON public.skill USING btree (id_profile);
 
 
 --
--- Name: certificate certificate_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: certificate certificate_fk; Type: FK CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.certificate
@@ -644,7 +685,7 @@ ALTER TABLE ONLY public.certificate
 
 
 --
--- Name: course course_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: course course_fk; Type: FK CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.course
@@ -652,7 +693,7 @@ ALTER TABLE ONLY public.course
 
 
 --
--- Name: education education_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: education education_fk; Type: FK CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.education
@@ -660,7 +701,7 @@ ALTER TABLE ONLY public.education
 
 
 --
--- Name: hobby hobby_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: hobby hobby_fk; Type: FK CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.hobby
@@ -668,7 +709,7 @@ ALTER TABLE ONLY public.hobby
 
 
 --
--- Name: language language_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: language language_fk; Type: FK CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.language
@@ -676,7 +717,7 @@ ALTER TABLE ONLY public.language
 
 
 --
--- Name: persistent_logins persistent_logins_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: persistent_logins persistent_logins_fk; Type: FK CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.persistent_logins
@@ -684,7 +725,7 @@ ALTER TABLE ONLY public.persistent_logins
 
 
 --
--- Name: practic practic_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: practic practic_fk; Type: FK CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.practic
@@ -692,7 +733,7 @@ ALTER TABLE ONLY public.practic
 
 
 --
--- Name: profile_restore profile_restore_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: profile_restore profile_restore_fk; Type: FK CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.profile_restore
@@ -700,7 +741,7 @@ ALTER TABLE ONLY public.profile_restore
 
 
 --
--- Name: skill skill_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: skill skill_fk; Type: FK CONSTRAINT; Schema: public; Owner: resume
 --
 
 ALTER TABLE ONLY public.skill
@@ -708,7 +749,7 @@ ALTER TABLE ONLY public.skill
 
 
 --
--- Name: SCHEMA public; Type: ACL; Schema: -; Owner: -
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: pg_database_owner
 --
 
 REVOKE USAGE ON SCHEMA public FROM PUBLIC;

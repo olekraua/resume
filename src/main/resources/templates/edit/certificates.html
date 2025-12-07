@@ -28,12 +28,16 @@
           <button type="button" class="close" th:onclick="|$('#ui-item-${iter.index}').remove();|">
             <span aria-hidden="true">&times;</span>
           </button>
-          <input type="hidden" th:field="*{items[__${iter.index}__].smallUrl}"/>
-          <input type="hidden" th:field="*{items[__${iter.index}__].largeUrl}"/>
-          <div class="form-group">
-            <label>Name</label>
-            <input class="form-control" type="text" th:field="*{items[__${iter.index}__].name}" required="required"/>
-          </div>
+      <input type="hidden" th:field="*{items[__${iter.index}__].smallUrl}"/>
+      <input type="hidden" th:field="*{items[__${iter.index}__].largeUrl}"/>
+      <div class="form-group">
+        <label>Name</label>
+        <input class="form-control" type="text" th:field="*{items[__${iter.index}__].name}" required="required"/>
+      </div>
+      <div class="form-group">
+        <label>Issuer</label>
+        <input class="form-control" type="text" th:field="*{items[__${iter.index}__].issuer}" required="required"/>
+      </div>
         </div>
       </div>
     </div>
@@ -71,6 +75,10 @@
         <label>Name</label>
         <input class="form-control" type="text" name="items[{{blockIndex}}].name" value="{{name}}" required="required"/>
       </div>
+      <div class="form-group">
+        <label>Issuer</label>
+        <input class="form-control" type="text" name="items[{{blockIndex}}].issuer" value="{{issuer}}" required="required"/>
+      </div>
     </div>
   </div>
 </script>
@@ -102,6 +110,10 @@
         <div class="form-group">
           <label>Название</label>
           <input id="certificateName" class="form-control" type="text" placeholder="Название сертификата">
+        </div>
+        <div class="form-group">
+          <label>Выдано</label>
+          <input id="certificateIssuer" class="form-control" type="text" placeholder="Компания/организация">
         </div>
         <div class="form-group">
           <label>Файл</label>

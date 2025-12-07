@@ -4,7 +4,7 @@
 <body class="resume">
 <div th:replace="fragments/layout :: header"></div>
 <div class="layout-content container">
-  <h2>Edit Languages</h2>
+  <h2>Иностранные языки</h2>
   <div th:replace="edit/_nav :: nav"></div>
 
   <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
@@ -13,39 +13,100 @@
     </ul>
   </div>
 
-  <form th:action="@{/edit/languages}" method="post" th:object="${form}" class="form-horizontal">
+  <form th:action="@{/edit/languages}" method="post" th:object="${form}">
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-    <div th:each="item,iter : *{items}" class="panel panel-default">
-      <div class="panel-heading">Language <span th:text="${iter.index + 1}"></span></div>
-      <div class="panel-body">
-        <div class="form-group">
-          <label class="col-sm-3 control-label">Name</label>
-          <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].name}"/></div>
+    <div id="ui-block-container">
+      <div th:each="item,iter : *{items}" class="panel panel-default ui-item language-item" th:id="|ui-item-${iter.index}|">
+        <div class="panel-heading">Язык <span th:text="${iter.index + 1}"></span>
+          <button type="button" class="close pull-right" th:onclick="|$('#ui-item-${iter.index}').remove();|"><span aria-hidden="true">&times;</span></button>
         </div>
-        <div class="form-group">
-          <label class="col-sm-3 control-label">Level</label>
-          <div class="col-sm-9">
-            <select class="form-control" th:field="*{items[__${iter.index}__].level}">
-              <option th:each="lvl : ${T(net.devstudy.resume.model.LanguageLevel).values()}"
-                      th:value="${lvl}" th:text="${lvl}">LEVEL</option>
-            </select>
+        <div class="panel-body">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Название</label>
+            <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].name}"/></div>
           </div>
-        </div>
-        <div class="form-group">
-          <label class="col-sm-3 control-label">Type</label>
-          <div class="col-sm-9">
-            <select class="form-control" th:field="*{items[__${iter.index}__].type}">
-              <option th:each="tp : ${T(net.devstudy.resume.model.LanguageType).values()}"
-                      th:value="${tp}" th:text="${tp}">TYPE</option>
-            </select>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Уровень</label>
+            <div class="col-sm-9">
+              <select class="form-control" th:field="*{items[__${iter.index}__].level}">
+                <option th:each="lvl : ${languageLevels}" th:value="${lvl}" th:text="${lvl}">LEVEL</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">Тип</label>
+            <div class="col-sm-9">
+              <select class="form-control" th:field="*{items[__${iter.index}__].type}">
+                <option th:each="tp : ${languageTypes}" th:value="${tp}" th:text="${tp}">TYPE</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <button type="submit" class="btn btn-primary">Save</button>
+    <div class="row">
+      <div class="col-xs-12">
+        <a href="javascript:resume.ui.addBlock();">+ Добавить язык</a>
+      </div>
+    </div>
+    <hr/>
+    <div class="row">
+      <div class="col-xs-12 text-center">
+        <input type="submit" class="btn btn-primary" value="Сохранить">
+      </div>
+    </div>
   </form>
 </div>
 <div th:replace="fragments/layout :: footer"></div>
 <th:block th:replace="fragments/layout :: scripts"></th:block>
+<script id="ui-block-template" type="text/x-handlebars-template">
+  <div class="panel panel-default ui-item language-item" id="ui-item-{{blockIndex}}">
+    <div class="panel-heading">Язык {{inc blockIndex}}
+      <button type="button" class="close pull-right" onclick="$('#ui-item-{{blockIndex}}').remove();"><span aria-hidden="true">&times;</span></button>
+    </div>
+    <div class="panel-body">
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Название</label>
+        <div class="col-sm-9"><input class="form-control" type="text" name="items[{{blockIndex}}].name"/></div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Уровень</label>
+        <div class="col-sm-9">
+          <select class="form-control" name="items[{{blockIndex}}].level">
+            {{#each levels}}
+            <option value="{{this}}">{{this}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="col-sm-3 control-label">Тип</label>
+        <div class="col-sm-9">
+          <select class="form-control" name="items[{{blockIndex}}].type">
+            {{#each types}}
+            <option value="{{this}}">{{this}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</script>
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  Handlebars.registerHelper('inc', function(value) { return parseInt(value) + 1; });
+  window.languageLevels = /*[[${languageLevels}]]*/ [];
+  window.languageTypes = /*[[${languageTypes}]]*/ [];
+  resume.ui.getTemplate = function() {
+    if (resume.ui.template == null) {
+      var source = $("#ui-block-template").html();
+      resume.ui.template = Handlebars.compile(source);
+    }
+    return resume.ui.template;
+  };
+  Handlebars.registerHelper('levels', function() { return window.languageLevels; });
+  Handlebars.registerHelper('types', function() { return window.languageTypes; });
+  /*]]>*/
+</script>
 </body>
 </html>

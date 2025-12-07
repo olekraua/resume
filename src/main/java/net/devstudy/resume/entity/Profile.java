@@ -49,13 +49,15 @@ public class Profile extends AbstractEntity<Long> {
     @Column(name = "birth_day")
     private Date birthDay;
 
-    @Column private String city;
-    @Column private String country;
+    @Column(length = 100)
+    private String city;
+    @Column(length = 60)
+    private String country;
 
-    @Column(name = "first_name", nullable = false, length = 50)
+    @Column(name = "first_name", nullable = false, length = 64)
     private String firstName;
 
-    @Column(name = "last_name", nullable = false, length = 50)
+    @Column(name = "last_name", nullable = false, length = 64)
     private String lastName;
 
     @Column(length = 2147483647)
@@ -68,11 +70,11 @@ public class Profile extends AbstractEntity<Long> {
     @Column(name = "small_photo", length = 255)
     private String smallPhoto;
 
-    @Column(length = 20)
+    @Column(length = 20, unique = true)
     @JsonIgnore
     private String phone;
 
-    @Column(length = 100)
+    @Column(length = 100, unique = true)
     @JsonIgnore
     private String email;
 
@@ -81,10 +83,10 @@ public class Profile extends AbstractEntity<Long> {
     @Column(length = 2147483647)
     private String summary;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 64, unique = true)
     private String uid;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 255)
     @JsonIgnore
     private String password;
 

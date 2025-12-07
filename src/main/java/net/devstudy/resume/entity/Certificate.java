@@ -44,6 +44,11 @@ public class Certificate extends AbstractEntity<Long> implements ProfileEntity {
     @Column(nullable = false, length = 50)
     private String name;
 
+    @Size(min = 1, max = 50)
+    @Pattern(regexp = "^[\\p{L}0-9 .,'-]+$", message = "Issuer contains invalid characters")
+    @Column(nullable = false, length = 50)
+    private String issuer;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_profile", nullable = false)
     private Profile profile;
@@ -84,6 +89,14 @@ public class Certificate extends AbstractEntity<Long> implements ProfileEntity {
         this.name = name;
     }
 
+    public String getIssuer() {
+        return issuer;
+    }
+
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
+    }
+
     public Profile getProfile() {
         return profile;
     }
@@ -96,7 +109,7 @@ public class Certificate extends AbstractEntity<Long> implements ProfileEntity {
     public int hashCode() {
         // Beibehaltung der ursprünglichen Semantik (id, largeUrl, name, smallUrl +
         // super)
-        return Objects.hash(super.hashCode(), id, largeUrl, name, smallUrl);
+        return Objects.hash(super.hashCode(), id, largeUrl, name, smallUrl, issuer);
     }
 
     @Override
@@ -110,6 +123,7 @@ public class Certificate extends AbstractEntity<Long> implements ProfileEntity {
         return Objects.equals(id, other.id)
                 && Objects.equals(largeUrl, other.largeUrl)
                 && Objects.equals(name, other.name)
-                && Objects.equals(smallUrl, other.smallUrl);
+                && Objects.equals(smallUrl, other.smallUrl)
+                && Objects.equals(issuer, other.issuer);
     }
 }

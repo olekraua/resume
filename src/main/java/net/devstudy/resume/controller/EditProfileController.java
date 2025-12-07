@@ -17,8 +17,9 @@ import net.devstudy.resume.model.LanguageLevel;
 import net.devstudy.resume.model.LanguageType;
 import net.devstudy.resume.model.UploadCertificateResult;
 import net.devstudy.resume.service.ProfileService;
-import net.devstudy.resume.service.StaticDataService;
 import net.devstudy.resume.service.CertificateStorageService;
+import net.devstudy.resume.service.PhotoStorageService;
+import net.devstudy.resume.service.StaticDataService;
 import net.devstudy.resume.util.SecurityUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -50,6 +51,7 @@ public class EditProfileController {
     private final ProfileService profileService;
     private final StaticDataService staticDataService;
     private final CertificateStorageService certificateStorageService;
+    private final PhotoStorageService photoStorageService;
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping
@@ -90,6 +92,11 @@ public class EditProfileController {
     @GetMapping("/hobbies")
     public String editHobbies(Model model) {
         return prepareHobbies(model);
+    }
+
+    @GetMapping("/photo")
+    public String editPhoto(Model model) {
+        return preparePhoto(model);
     }
 
     @GetMapping("/contacts")
@@ -193,6 +200,16 @@ public class EditProfileController {
     @ResponseBody
     public UploadCertificateResult uploadCertificate(@RequestParam("certificateFile") MultipartFile certificateFile) {
         return certificateStorageService.store(certificateFile);
+    }
+
+    @PostMapping("/photo")
+    public String uploadPhoto(@RequestParam("profilePhoto") MultipartFile profilePhoto) {
+        Long profileId = SecurityUtil.getCurrentId();
+        if (profileId == null)
+            return "redirect:/login";
+        String[] urls = photoStorageService.store(profilePhoto);
+        profileService.updatePhoto(profileId, urls[0], urls[1]);
+        return "redirect:/edit/photo?success";
     }
 
     @PostMapping("/certificates")
@@ -307,6 +324,10 @@ public class EditProfileController {
 
     private String prepareCertificates(Model model) {
         return prepareProfileModel(model, "edit/certificates", new net.devstudy.resume.form.CertificateForm());
+    }
+
+    private String preparePhoto(Model model) {
+        return prepareProfileModel(model, "edit/photo", null);
     }
 
     private String prepareHobbies(Model model) {

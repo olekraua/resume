@@ -241,6 +241,15 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
+    @Override
+    @Transactional
+    public void updatePhoto(Long profileId, String largeUrl, String smallUrl) {
+        Profile profile = getProfileOrThrow(profileId);
+        profile.setLargePhoto(largeUrl);
+        profile.setSmallPhoto(smallUrl);
+        profileRepository.save(profile);
+    }
+
     private Profile getProfileOrThrow(Long profileId) {
         return profileRepository.findById(profileId)
                 .orElseThrow(() -> new EntityNotFoundException("Profile not found: " + profileId));

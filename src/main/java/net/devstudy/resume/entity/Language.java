@@ -31,14 +31,14 @@ public class Language extends AbstractEntity<Long> implements ProfileEntity {
     @Column(unique = true, nullable = false)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 18)
     @Convert(converter = LanguageLevel.PersistJPAConverter.class)
     private LanguageLevel level;
 
     @Column(nullable = false, length = 30)
     private String name;
 
-    @Column
+    @Column(nullable = false, length = 7)
     @Convert(converter = LanguageType.PersistJPAConverter.class)
     private LanguageType type;
 
@@ -109,4 +109,3 @@ public class Language extends AbstractEntity<Long> implements ProfileEntity {
         return Objects.equals(this.id, other.id);
     }
 }
-
