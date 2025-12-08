@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import java.text.Normalizer;
 
 @Service
 @RequiredArgsConstructor
@@ -99,11 +100,12 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional
     public Profile register(String uid, String firstName, String lastName, String rawPassword) {
-        if (profileRepository.findByUid(uid).isPresent()) {
-            throw new IllegalArgumentException("Uid already exists: " + uid);
+        String normalizedUid = normalizeUid(uid);
+        if (profileRepository.findByUid(normalizedUid).isPresent()) {
+            throw new IllegalArgumentException("Uid already exists: " + normalizedUid);
         }
         Profile profile = new Profile();
-        profile.setUid(uid);
+        profile.setUid(normalizedUid);
         profile.setFirstName(firstName);
         profile.setLastName(lastName);
         profile.setPassword(passwordEncoder.encode(rawPassword));
@@ -133,6 +135,26 @@ public class ProfileServiceImpl implements ProfileService {
         return true;
     }
 
+    private String normalizeUid(String uid) {
+        if (uid == null) {
+            throw new IllegalArgumentException("Uid is required");
+        }
+        String normalized = Normalizer.normalize(uid.trim(), Normalizer.Form.NFD);
+        // прибираємо діакритику
+        normalized = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+        normalized = normalized.toLowerCase();
+        // пробіли -> дефіси
+        normalized = normalized.replaceAll("\\s+", "-");
+        // лишаємо тільки дозволені символи
+        normalized = normalized.replaceAll("[^a-z0-9_-]", "");
+        // прибираємо зайві дефіси/андерскори з країв
+        normalized = normalized.replaceAll("^-+|[-_]+$", "");
+        if (normalized.isBlank() || normalized.length() < 3 || normalized.length() > 50) {
+            throw new IllegalArgumentException("Uid must be 3-50 chars (a-z, 0-9, '-', '_')");
+        }
+        return normalized;
+    }
+
     @Override
     public Optional<Profile> findById(Long id) {
         return profileRepository.findById(id);
@@ -142,10 +164,11 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     public void updateUid(Long profileId, String newUid) {
         Profile profile = getProfileOrThrow(profileId);
-        if (profileRepository.findByUid(newUid).isPresent()) {
-            throw new IllegalArgumentException("Uid already exists: " + newUid);
+        String normalizedUid = normalizeUid(newUid);
+        if (profileRepository.findByUid(normalizedUid).isPresent()) {
+            throw new IllegalArgumentException("Uid already exists: " + normalizedUid);
         }
-        profile.setUid(newUid);
+        profile.setUid(normalizedUid);
         profileRepository.save(profile);
     }
 

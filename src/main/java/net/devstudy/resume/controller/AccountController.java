@@ -93,6 +93,7 @@ public class AccountController {
         } catch (IllegalArgumentException ex) {
             model.addAttribute("errorMessage", ex.getMessage());
             model.addAttribute("currentUid", profile.getUid());
+            model.addAttribute("uidError", ex.getMessage());
             return "auth/change-login";
         }
         return "redirect:/login?loginChanged";

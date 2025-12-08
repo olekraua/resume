@@ -84,6 +84,18 @@ public class EditProfileController {
         if (profile == null) {
             return "redirect:/login";
         }
+        MultipartFile photo = form.getProfilePhoto();
+        if (photo != null && !photo.isEmpty()) {
+            try {
+                String[] urls = photoStorageService.store(photo);
+                profileService.updatePhoto(profileId, urls[0], urls[1]);
+                // оновлюємо модель, щоб одразу показати завантажене фото
+                profile.setLargePhoto(urls[0]);
+                profile.setSmallPhoto(urls[1]);
+            } catch (Exception ex) {
+                bindingResult.rejectValue("profilePhoto", "photo.invalid", ex.getMessage());
+            }
+        }
         if (bindingResult.hasErrors()) {
             model.addAttribute("profile", profile);
             return "edit/profile";
@@ -102,12 +114,6 @@ public class EditProfileController {
         contactsForm.setEmail(form.getEmail());
         contactsForm.setPhone(form.getPhone());
         profileService.updateContacts(profileId, contactsForm);
-        // photo
-        MultipartFile photo = form.getProfilePhoto();
-        if (photo != null && !photo.isEmpty()) {
-            String[] urls = photoStorageService.store(photo);
-            profileService.updatePhoto(profileId, urls[0], urls[1]);
-        }
         return "redirect:/" + uid + "/edit/profile?success";
     }
 
