@@ -7,6 +7,8 @@
   <h2>Хобі</h2>
   <div th:replace="~{edit/_nav :: nav}"></div>
 
+  <div th:if="${hobbyError}" class="alert alert-danger" th:text="${hobbyError}"></div>
+
   <div id="hobbyContainer" class="row" th:attr="data-csrf-value=${_csrf.token},data-max-hobbies=5">
     <div class="col-xs-12">
       <div id="errorAlert" class="alert alert-danger" style="display:none;">

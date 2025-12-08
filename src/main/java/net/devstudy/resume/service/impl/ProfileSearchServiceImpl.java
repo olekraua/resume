@@ -66,7 +66,7 @@ public class ProfileSearchServiceImpl implements ProfileSearchService {
     @Transactional(readOnly = true)
     public void reindexAll() {
         profileSearchRepository.deleteAll();
-        List<Profile> profiles = profileRepository.findAll();
+        List<Profile> profiles = profileRepository.findAllByCompletedTrue(Pageable.unpaged()).getContent();
         indexProfiles(profiles);
     }
 

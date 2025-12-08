@@ -85,19 +85,15 @@ public class AccountController {
         Profile profile = profileOpt.get();
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("profile", profile);
-            model.addAttribute("ownProfile", true);
             model.addAttribute("currentUid", profile.getUid());
-            return "profile";
+            return "auth/change-login";
         }
         try {
             profileService.updateUid(currentId, form.getNewUid());
         } catch (IllegalArgumentException ex) {
             model.addAttribute("errorMessage", ex.getMessage());
-            model.addAttribute("profile", profile);
-            model.addAttribute("ownProfile", true);
             model.addAttribute("currentUid", profile.getUid());
-            return "profile";
+            return "auth/change-login";
         }
         return "redirect:/login?loginChanged";
     }

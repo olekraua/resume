@@ -127,7 +127,7 @@ public class Profile extends AbstractEntity<Long> {
     private List<Course> courses;
 
     @Embedded
-    private Contacts contacts;
+    private Contacts contacts = new Contacts();
 
     @Override
     public Long getId() { return this.id; }

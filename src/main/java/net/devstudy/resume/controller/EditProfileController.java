@@ -39,6 +39,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.beans.PropertyEditorSupport;
@@ -205,7 +206,7 @@ public class EditProfileController {
             return prepareLanguages(uid, model);
         }
         profileService.updateLanguages(profileId, form.getItems());
-        return "redirect:/" + uid + "/edit/hobbies?success";
+        return "redirect:/" + uid + "/edit/languages?success";
     }
 
     @PostMapping("/certificates/upload")
@@ -239,18 +240,27 @@ public class EditProfileController {
     }
 
     @PostMapping("/hobbies")
-    public String saveHobbies(@PathVariable String uid, @Valid @ModelAttribute("form") HobbyForm form,
+    public String saveHobbies(@PathVariable String uid, @ModelAttribute("form") HobbyForm form,
             @RequestParam(value = "hobbies", required = false) String hobbiesParam,
-            BindingResult bindingResult, Model model) {
+            Model model) {
         Long profileId = SecurityUtil.getCurrentId();
         if (profileId == null)
             return "redirect:/login";
         List<Long> ids = form.getHobbyIds();
-        if ((ids == null || ids.isEmpty()) && hobbiesParam != null) {
-            ids = java.util.Arrays.stream(hobbiesParam.split(","))
-                    .filter(s -> !s.isBlank())
-                    .map(Long::valueOf)
-                    .toList();
+        if ((ids == null || ids.isEmpty()) && StringUtils.hasText(hobbiesParam)) {
+            try {
+                ids = java.util.Arrays.stream(hobbiesParam.split(","))
+                        .filter(s -> !s.isBlank())
+                        .map(Long::valueOf)
+                        .toList();
+            } catch (NumberFormatException ex) {
+                model.addAttribute("hobbyError", "Невірний формат ідентифікатора хобі");
+                return prepareHobbies(uid, model);
+            }
+        }
+        if (ids == null || ids.isEmpty()) {
+            model.addAttribute("hobbyError", "Оберіть хоча б одне хобі");
+            return prepareHobbies(uid, model);
         }
         profileService.updateHobbies(profileId, ids);
         return "redirect:/" + uid + "/edit/hobbies?success";
@@ -414,6 +424,9 @@ public class EditProfileController {
             return hobbyForm;
         }
         if (emptyForm instanceof ContactsForm contactsForm) {
+            if (profile.getContacts() == null) {
+                profile.setContacts(new net.devstudy.resume.entity.Contacts());
+            }
             contactsForm.setPhone(profile.getPhone());
             contactsForm.setEmail(profile.getEmail());
             contactsForm.setFacebook(profile.getContacts().getFacebook());

@@ -37,21 +37,25 @@ public class PublicDataController {
     @GetMapping("/welcome")
     public String listAll(Model model, @RequestParam(value = "page", defaultValue = "0") int pageNumber,
             @RequestParam(value = "query", required = false) String query) {
-        Page<Profile> page = profileService.findAll(
-                PageRequest.of(pageNumber, MAX_PROFILES_PER_PAGE, Sort.by("id")));
+        String q = query == null ? "" : query.trim();
+        Page<Profile> page = q.isEmpty()
+                ? profileService.findAll(PageRequest.of(pageNumber, MAX_PROFILES_PER_PAGE, Sort.by("id")))
+                : profileService.search(q, PageRequest.of(pageNumber, MAX_PROFILES_PER_PAGE, Sort.by("id")));
         model.addAttribute("profiles", page.getContent());
         model.addAttribute("page", page);
-        model.addAttribute("query", query == null ? "" : query);
+        model.addAttribute("query", q);
         return "welcome";
     }
 
     @GetMapping("/fragment/more")
     public String loadMoreProfiles(@RequestParam("page") int pageNumber,
             @RequestParam(value = "query", required = false) String query, Model model) {
-        Page<Profile> page = profileService.findAll(
-                PageRequest.of(pageNumber, MAX_PROFILES_PER_PAGE, Sort.by("id")));
+        String q = query == null ? "" : query.trim();
+        Page<Profile> page = q.isEmpty()
+                ? profileService.findAll(PageRequest.of(pageNumber, MAX_PROFILES_PER_PAGE, Sort.by("id")))
+                : profileService.search(q, PageRequest.of(pageNumber, MAX_PROFILES_PER_PAGE, Sort.by("id")));
         model.addAttribute("profiles", page.getContent());
-        model.addAttribute("query", query == null ? "" : query);
+        model.addAttribute("query", q);
         return "profiles :: items";
     }
 
@@ -78,7 +82,7 @@ public class PublicDataController {
             if (currentProfile == null || !currentProfile.getId().equals(profile.getId())) {
                 return "error/profile-not-found";
             }
-            return "redirect:/edit";
+            return "redirect:/" + uid + "/edit";
         }
 
         model.addAttribute("profile", profile);

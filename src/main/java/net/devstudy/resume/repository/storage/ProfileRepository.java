@@ -30,10 +30,12 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     @Query("""
             select p from Profile p
-            where lower(p.firstName) like lower(concat('%', :query, '%'))
+            where p.completed = true and (
+               lower(p.firstName) like lower(concat('%', :query, '%'))
                or lower(p.lastName) like lower(concat('%', :query, '%'))
                or lower(p.objective) like lower(concat('%', :query, '%'))
                or lower(p.summary) like lower(concat('%', :query, '%'))
+            )
             """)
     Page<Profile> search(@Param("query") String query, Pageable pageable);
 }

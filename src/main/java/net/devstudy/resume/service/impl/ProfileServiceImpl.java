@@ -10,6 +10,7 @@ import net.devstudy.resume.entity.Language;
 import net.devstudy.resume.entity.Practic;
 import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.entity.Skill;
+import net.devstudy.resume.entity.Contacts;
 import net.devstudy.resume.form.ContactsForm;
 import net.devstudy.resume.form.InfoForm;
 import net.devstudy.resume.repository.storage.CertificateRepository;
@@ -68,13 +69,13 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Page<Profile> findAll(Pageable pageable) {
-        return profileRepository.findAll(pageable);
+        return profileRepository.findAllByCompletedTrue(pageable);
     }
 
     @Override
     public Iterable<Profile> findAllForIndexing() {
-        // тимчасово: просто повертаємо все з БД
-        return profileRepository.findAll();
+        // тимчасово: індексуємо лише завершені профілі
+        return profileRepository.findAllByCompletedTrue(Pageable.unpaged()).getContent();
     }
 
     @Override
@@ -106,8 +107,30 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setFirstName(firstName);
         profile.setLastName(lastName);
         profile.setPassword(passwordEncoder.encode(rawPassword));
-        profile.setCompleted(true);
+        profile.setCompleted(false);
+        if (profile.getContacts() == null) {
+            profile.setContacts(new Contacts());
+        }
         return profileRepository.save(profile);
+    }
+
+    private boolean isProfileCompleted(Profile profile) {
+        return profile.getBirthDay() != null
+                && nonBlank(profile.getFirstName(), profile.getLastName(), profile.getUid(), profile.getEmail(),
+                        profile.getPhone(), profile.getCountry(), profile.getCity(), profile.getObjective(),
+                        profile.getSummary(), profile.getSmallPhoto());
+    }
+
+    private boolean nonBlank(String... values) {
+        if (values == null) {
+            return false;
+        }
+        for (String value : values) {
+            if (value == null || value.isBlank()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -202,7 +225,8 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = getProfileOrThrow(profileId);
         hobbyRepository.deleteByProfileId(profileId);
         if (hobbyIds != null && !hobbyIds.isEmpty()) {
-            // беремо існуючі хобі за id, щоб зберегти назву; створюємо нові записи для профілю
+            // беремо існуючі хобі за id, щоб зберегти назву; створюємо нові записи для
+            // профілю
             Iterable<Hobby> found = hobbyRepository.findAllById(hobbyIds);
             java.util.List<Hobby> toSave = new java.util.ArrayList<>();
             for (Hobby hobby : found) {
@@ -213,6 +237,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
             hobbyRepository.saveAll(toSave);
         }
+        profile.setCompleted(isProfileCompleted(profile));
     }
 
     @Override
@@ -221,10 +246,14 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = getProfileOrThrow(profileId);
         profile.setPhone(form.getPhone());
         profile.setEmail(form.getEmail());
+        if (profile.getContacts() == null) {
+            profile.setContacts(new Contacts());
+        }
         profile.getContacts().setFacebook(form.getFacebook());
         profile.getContacts().setLinkedin(form.getLinkedin());
         profile.getContacts().setGithub(form.getGithub());
         profile.getContacts().setStackoverflow(form.getStackoverflow());
+        profile.setCompleted(isProfileCompleted(profile));
         profileRepository.save(profile);
     }
 
@@ -238,6 +267,8 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setObjective(form.getObjective());
         profile.setSummary(form.getSummary());
         profile.setInfo(form.getInfo());
+        // оновлюємо completion-статус, якщо всі ключові поля заповнені
+        profile.setCompleted(isProfileCompleted(profile));
         profileRepository.save(profile);
     }
 
@@ -253,6 +284,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
             certificateRepository.saveAll(items);
         }
+        profile.setCompleted(isProfileCompleted(profile));
     }
 
     @Override
@@ -261,6 +293,7 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = getProfileOrThrow(profileId);
         profile.setLargePhoto(largeUrl);
         profile.setSmallPhoto(smallUrl);
+        profile.setCompleted(isProfileCompleted(profile));
         profileRepository.save(profile);
     }
 
@@ -270,13 +303,28 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     private void initializeCollections(Profile profile) {
-        // force lazy collections to load via separate queries to avoid MultipleBagFetchException
-        if (profile.getLanguages() != null) { profile.getLanguages().size(); }
-        if (profile.getHobbies() != null) { profile.getHobbies().size(); }
-        if (profile.getSkills() != null) { profile.getSkills().size(); }
-        if (profile.getPractics() != null) { profile.getPractics().size(); }
-        if (profile.getCertificates() != null) { profile.getCertificates().size(); }
-        if (profile.getCourses() != null) { profile.getCourses().size(); }
-        if (profile.getEducations() != null) { profile.getEducations().size(); }
+        // force lazy collections to load via separate queries to avoid
+        // MultipleBagFetchException
+        if (profile.getLanguages() != null) {
+            profile.getLanguages().size();
+        }
+        if (profile.getHobbies() != null) {
+            profile.getHobbies().size();
+        }
+        if (profile.getSkills() != null) {
+            profile.getSkills().size();
+        }
+        if (profile.getPractics() != null) {
+            profile.getPractics().size();
+        }
+        if (profile.getCertificates() != null) {
+            profile.getCertificates().size();
+        }
+        if (profile.getCourses() != null) {
+            profile.getCourses().size();
+        }
+        if (profile.getEducations() != null) {
+            profile.getEducations().size();
+        }
     }
 }

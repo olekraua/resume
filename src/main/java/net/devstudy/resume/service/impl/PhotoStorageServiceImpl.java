@@ -3,7 +3,7 @@ package net.devstudy.resume.service.impl;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -34,9 +34,10 @@ public class PhotoStorageServiceImpl implements PhotoStorageService {
             Path largeTarget = dir.resolve(fileName);
             Path smallTarget = dir.resolve(smallName);
 
-            Files.copy(file.getInputStream(), largeTarget, StandardCopyOption.REPLACE_EXISTING);
+            byte[] data = file.getBytes();
+            Files.write(largeTarget, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             // simple small copy (без ресайзу; можна додати ресайз пізніше)
-            Files.copy(file.getInputStream(), smallTarget, StandardCopyOption.REPLACE_EXISTING);
+            Files.write(smallTarget, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 
             String baseUrl = "/uploads/photos/";
             return new String[] { baseUrl + fileName, baseUrl + smallName };
