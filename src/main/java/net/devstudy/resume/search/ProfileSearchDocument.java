@@ -32,7 +32,8 @@ public class ProfileSearchDocument {
     public ProfileSearchDocument() {
     }
 
-    public ProfileSearchDocument(Long id, String uid, String fullName, String objective, String summary, String skills) {
+    public ProfileSearchDocument(Long id, String uid, String fullName, String objective, String summary,
+            String skills) {
         this.id = id;
         this.uid = uid;
         this.fullName = fullName;

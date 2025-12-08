@@ -1,8 +1,8 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/layout :: head('Пошук профілів')"></head>
+<head th:replace="~{fragments/layout :: head('Пошук профілів')}"></head>
 <body class="resume">
-<div th:replace="fragments/layout :: header"></div>
+<div th:replace="~{fragments/layout :: header}"></div>
 <div class="layout-content">
   <div class="panel panel-default">
     <div class="panel-body">
@@ -14,12 +14,12 @@
     <div class="col-xs-12">
       <div th:if="${#lists.isEmpty(profiles)}" class="alert alert-info">Нічого не знайдено.</div>
       <div th:if="${!#lists.isEmpty(profiles)}">
-        <div th:replace="profiles :: items(${profiles})"></div>
+        <div th:replace="~{profiles :: items(${profiles})}"></div>
       </div>
     </div>
   </div>
 </div>
-<div th:replace="fragments/layout :: footer"></div>
-<th:block th:replace="fragments/layout :: scripts"></th:block>
+<div th:replace="~{fragments/layout :: footer}"></div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>
 </html>

@@ -10,17 +10,17 @@ import net.devstudy.resume.service.ProfileSearchService;
 
 @Configuration
 public class ElasticsearchIndexConfig {
-    private static final Logger log = LoggerFactory.getLogger(ElasticsearchIndexConfig.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchIndexConfig.class);
 
     @Bean
     CommandLineRunner indexProfiles(ProfileSearchService profileSearchService) {
         return args -> {
             try {
-                log.info("Reindexing profiles into Elasticsearch...");
+                LOGGER.info("Reindexing profiles into Elasticsearch...");
                 profileSearchService.reindexAll();
-                log.info("Reindexing done");
+                LOGGER.info("Reindexing done");
             } catch (Exception e) {
-                log.warn("Elasticsearch reindex failed: {}", e.getMessage());
+                LOGGER.warn("Elasticsearch reindex failed: {}", e.getMessage());
             }
         };
     }
