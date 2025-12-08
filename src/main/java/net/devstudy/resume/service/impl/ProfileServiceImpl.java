@@ -60,6 +60,13 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    public Optional<Profile> findByIdWithAll(Long id) {
+        Optional<Profile> opt = profileRepository.findById(id);
+        opt.ifPresent(this::initializeCollections);
+        return opt;
+    }
+
+    @Override
     public Page<Profile> findAll(Pageable pageable) {
         return profileRepository.findAll(pageable);
     }

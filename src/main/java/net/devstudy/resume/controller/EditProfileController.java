@@ -361,7 +361,7 @@ public class EditProfileController {
         if (current == null) {
             return "redirect:/login";
         }
-        Profile profile = profileService.findById(current.getId()).orElse(null);
+        Profile profile = profileService.findByIdWithAll(current.getId()).orElse(null);
         if (profile == null) {
             return "redirect:/login";
         }

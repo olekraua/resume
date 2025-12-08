@@ -21,6 +21,8 @@ public interface ProfileService {
 
     Optional<Profile> findWithAllByUid(String uid);
 
+    Optional<Profile> findByIdWithAll(Long id);
+
     Page<Profile> findAll(Pageable pageable);
 
     Iterable<Profile> findAllForIndexing();

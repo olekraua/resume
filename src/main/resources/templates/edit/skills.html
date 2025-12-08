@@ -1,16 +1,18 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/layout :: head('Edit Skills')"></head>
+<head th:replace="~{fragments/layout :: head('Edit Skills')}"></head>
 <body class="resume">
-<div th:replace="fragments/layout :: header"></div>
+<div th:replace="~{fragments/layout :: header}"></div>
 <div class="layout-content container">
   <h2>Технические навыки</h2>
   <div th:replace="edit/_nav :: nav"></div>
 
-  <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
-    <ul>
-      <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
-    </ul>
+  <div th:object="${form}">
+    <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+      <ul>
+        <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
+      </ul>
+    </div>
   </div>
 
   <form th:action="@{/edit/skills}" method="post" th:object="${form}">
@@ -46,8 +48,8 @@
     </div>
   </form>
 </div>
-<div th:replace="fragments/layout :: footer"></div>
-<th:block th:replace="fragments/layout :: scripts"></th:block>
+<div th:replace="~{fragments/layout :: footer}"></div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 
 <script id="ui-block-template" type="text/x-handlebars-template">
   <div class="row ui-item skill-item" id="ui-item-{{blockIndex}}">
