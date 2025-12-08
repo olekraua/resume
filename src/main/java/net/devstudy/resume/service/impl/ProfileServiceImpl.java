@@ -21,6 +21,7 @@ import net.devstudy.resume.repository.storage.PracticRepository;
 import net.devstudy.resume.repository.storage.ProfileRepository;
 import net.devstudy.resume.repository.storage.SkillRepository;
 import net.devstudy.resume.service.ProfileService;
+import net.devstudy.resume.service.ProfileSearchService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,6 +45,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final HobbyRepository hobbyRepository;
     private final CertificateRepository certificateRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ProfileSearchService profileSearchService;
 
     @Override
     public Optional<Profile> findByUid(String uid) {
@@ -70,7 +72,12 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Page<Profile> search(String query, Pageable pageable) {
-        return profileRepository.search(query, pageable);
+        try {
+            return profileSearchService.search(query, pageable);
+        } catch (Exception ex) {
+            // fallback на JPA, якщо ES недоступний
+            return profileRepository.search(query, pageable);
+        }
     }
 
     @Override
