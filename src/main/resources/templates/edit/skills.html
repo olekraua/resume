@@ -2,10 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/layout :: head('Edit Skills')}"></head>
 <body class="resume">
-<div th:replace="~{fragments/layout :: header}"></div>
-<div class="layout-content container">
-  <h2>Технические навыки</h2>
-  <div th:replace="edit/_nav :: nav"></div>
+  <div th:replace="~{fragments/layout :: header}"></div>
+  <div class="layout-content container">
+    <h2>Технические навыки</h2>
+    <div th:replace="~{edit/_nav :: nav}"></div>
 
   <div th:object="${form}">
     <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
@@ -21,8 +21,24 @@
     <div id="ui-block-container">
       <div th:each="item,iter : *{items}" class="row ui-item skill-item" th:id="|ui-item-${iter.index}|">
         <div class="col-xs-5 col-sm-4 col-md-2 form-group">
-          <select class="form-control" th:field="*{items[__${iter.index}__].category}">
+          <select class="form-control" th:field="*{items[__${iter.index}__].category}" required="required">
+            <option value="" disabled="disabled" selected="selected">Выберите категорию</option>
             <option th:each="cat : ${skillCategories}" th:value="${cat.category}" th:text="${cat.category}">Category</option>
+            <th:block th:if="${skillCategories == null or #lists.isEmpty(skillCategories)}">
+              <option value="Languages">Languages</option>
+              <option value="DBMS">DBMS</option>
+              <option value="Web">Web</option>
+              <option value="Java">Java</option>
+              <option value="IDE">IDE</option>
+              <option value="CVS">CVS</option>
+              <option value="Web Servers">Web Servers</option>
+              <option value="Build system">Build system</option>
+              <option value="Cloud">Cloud</option>
+              <option value="Frameworks">Frameworks</option>
+              <option value="Tools">Tools</option>
+              <option value="Testing">Testing</option>
+              <option value="Other">Other</option>
+            </th:block>
           </select>
         </div>
         <div class="col-xs-7 col-sm-8 col-md-10 value-container">
@@ -54,7 +70,7 @@
 <script id="ui-block-template" type="text/x-handlebars-template">
   <div class="row ui-item skill-item" id="ui-item-{{blockIndex}}">
     <div class="col-xs-5 col-sm-4 col-md-2 form-group">
-      <select name="items[{{blockIndex}}].category" class="form-control">
+      <select name="items[{{blockIndex}}].category" class="form-control" required="required">
         {{#each categories}}
         <option value="{{this}}">{{this}}</option>
         {{/each}}
@@ -73,6 +89,10 @@
   // прокидуємо категорії у Handlebars як глобал
   window.skillCategories = /*[[${skillCategories.![category]}]]*/ [];
   $(document).ready(function() {
+    if (!window.skillCategories || window.skillCategories.length === 0) {
+      window.skillCategories = ["Languages", "DBMS", "Web", "Java", "IDE", "CVS",
+        "Web Servers", "Build system", "Cloud", "Frameworks", "Tools", "Testing", "Other"];
+    }
     // замінимо шаблон компіляції, щоб резюме.ui.addBlock бачило categories
     resume.ui.getTemplate = function() {
       if (resume.ui.template == null) {

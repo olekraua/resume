@@ -7,8 +7,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Sort;
 
 import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.entity.Hobby;
@@ -53,7 +55,25 @@ public class StaticDataServiceImpl implements StaticDataService {
 
     @Override
     public List<SkillCategory> findSkillCategories() {
-        return skillCategoryRepository.findAll();
+        List<SkillCategory> categories = skillCategoryRepository.findAll(Sort.by("category"));
+        if (categories.isEmpty()) {
+            // seed стандартні категорії (як у legacy), зберігаємо в БД, щоб фронт завжди мав опції
+            String[] defaults = new String[] {
+                    "Languages", "DBMS", "Web", "Java", "IDE", "CVS",
+                    "Web Servers", "Build system", "Cloud", "Frameworks",
+                    "Tools", "Testing", "Other"
+            };
+            List<SkillCategory> seeded = java.util.Arrays.stream(defaults)
+                    .map(name -> {
+                        SkillCategory sc = new SkillCategory();
+                        sc.setCategory(name);
+                        return sc;
+                    })
+                    .collect(Collectors.toList());
+            skillCategoryRepository.saveAll(seeded);
+            categories = seeded;
+        }
+        return categories;
     }
 
     @Override

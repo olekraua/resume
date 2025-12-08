@@ -1,22 +1,22 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-<head th:replace="fragments/layout :: head(|${profile.firstName} ${profile.lastName}|)"></head>
+<head th:replace="~{fragments/layout :: head(|${profile.firstName} ${profile.lastName}|)}"></head>
 
 <body class="resume">
-    <div th:replace="fragments/layout :: header"></div>
+    <div th:replace="~{fragments/layout :: header}"></div>
     <div class="layout-content container" th:id="'profile-' + ${profile.id}">
         <div class="row profile">
             <div class="col-xs-12 col-sm-6 col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-body">
-                        <a th:if="${ownProfile}" th:href="@{/edit}">
+                        <a th:if="${ownProfile}" th:href="@{|/${profile.uid}/edit|}">
                             <img alt="photo" th:src="${profile.largePhoto != null ? profile.largePhoto : '/img/profile-placeholder.png'}" class="img-responsive photo">
                         </a>
                         <img th:if="${!ownProfile}" alt="photo" th:src="${profile.largePhoto != null ? profile.largePhoto : '/img/profile-placeholder.png'}" class="img-responsive photo">
                         <h1 class="text-center">
                             <span th:if="${ownProfile}">
-                                <a th:href="@{/edit}" style="color:black;" th:text="${profile.fullName}">Full Name</a>
+                                <a th:href="@{|/${profile.uid}/edit|}" style="color:black;" th:text="${profile.fullName}">Full Name</a>
                             </span>
                             <span th:if="${!ownProfile}" th:text="${profile.fullName}">Full Name</span>
                         </h1>
@@ -42,7 +42,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-language"></i> Foreign languages
-                            <a th:if="${ownProfile}" href="/edit/languages" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="@{|/${profile.uid}/edit/languages|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -59,7 +59,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-heart"></i> Хобі
-                            <a th:if="${ownProfile}" href="/edit/hobbies" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="@{|/${profile.uid}/edit/hobbies|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -78,7 +78,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-info-circle"></i> Additional info
-                            <a th:if="${ownProfile}" href="/edit/info" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="@{|/${profile.uid}/edit/info|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body text-justify" th:text="${profile.info}">Info</div>
@@ -90,7 +90,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-bullseye"></i> Objective
-                            <a th:if="${ownProfile}" href="/edit#inputObjective" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="@{|/${profile.uid}/edit#inputObjective|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -106,7 +106,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-code"></i> Technical Skills
-                            <a th:if="${ownProfile}" href="/edit/skills" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="@{|/${profile.uid}/edit/skills|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -298,8 +298,8 @@
         </div>
     </div>
 
-    <div th:replace="fragments/layout :: footer"></div>
-    <th:block th:replace="fragments/layout :: scripts"></th:block>
+<div th:replace="~{fragments/layout :: footer}"></div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 
     <div id="certificateViewer" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">

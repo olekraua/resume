@@ -3,6 +3,7 @@ package net.devstudy.resume.controller;
 import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.entity.Hobby;
+import net.devstudy.resume.entity.SkillCategory;
 import net.devstudy.resume.form.ChangePasswordForm;
 import net.devstudy.resume.form.ContactsForm;
 import net.devstudy.resume.form.CourseForm;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -44,7 +46,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Controller
-@RequestMapping("/edit")
+@RequestMapping("/{uid}/edit")
 @RequiredArgsConstructor
 public class EditProfileController {
 
@@ -54,64 +56,69 @@ public class EditProfileController {
     private final PhotoStorageService photoStorageService;
     private final PasswordEncoder passwordEncoder;
 
+    @ModelAttribute("skillCategories")
+    public java.util.List<SkillCategory> skillCategories() {
+        return staticDataService.findSkillCategories();
+    }
+
     @GetMapping
-    public String editRoot() {
-        return "redirect:/edit/skills";
+    public String editRoot(@PathVariable String uid) {
+        return "redirect:/" + uid + "/edit/skills";
     }
 
     @GetMapping("/skills")
-    public String editSkills(Model model) {
-        return prepareSkills(model);
+    public String editSkills(@PathVariable String uid, Model model) {
+        return prepareSkills(uid, model);
     }
 
     @GetMapping("/practics")
-    public String editPractics(Model model) {
-        return preparePractics(model);
+    public String editPractics(@PathVariable String uid, Model model) {
+        return preparePractics(uid, model);
     }
 
     @GetMapping("/education")
-    public String editEducation(Model model) {
-        return prepareEducation(model);
+    public String editEducation(@PathVariable String uid, Model model) {
+        return prepareEducation(uid, model);
     }
 
     @GetMapping("/courses")
-    public String editCourses(Model model) {
-        return prepareCourses(model);
+    public String editCourses(@PathVariable String uid, Model model) {
+        return prepareCourses(uid, model);
     }
 
     @GetMapping("/languages")
-    public String editLanguages(Model model) {
-        return prepareLanguages(model);
+    public String editLanguages(@PathVariable String uid, Model model) {
+        return prepareLanguages(uid, model);
     }
 
     @GetMapping("/certificates")
-    public String editCertificates(Model model) {
-        return prepareCertificates(model);
+    public String editCertificates(@PathVariable String uid, Model model) {
+        return prepareCertificates(uid, model);
     }
 
     @GetMapping("/hobbies")
-    public String editHobbies(Model model) {
-        return prepareHobbies(model);
+    public String editHobbies(@PathVariable String uid, Model model) {
+        return prepareHobbies(uid, model);
     }
 
     @GetMapping("/photo")
-    public String editPhoto(Model model) {
-        return preparePhoto(model);
+    public String editPhoto(@PathVariable String uid, Model model) {
+        return preparePhoto(uid, model);
     }
 
     @GetMapping("/contacts")
-    public String editContacts(Model model) {
-        return prepareContacts(model);
+    public String editContacts(@PathVariable String uid, Model model) {
+        return prepareContacts(uid, model);
     }
 
     @GetMapping("/info")
-    public String editInfo(Model model) {
-        return prepareInfo(model);
+    public String editInfo(@PathVariable String uid, Model model) {
+        return prepareInfo(uid, model);
     }
 
     @GetMapping("/password")
-    public String editPassword(Model model) {
-        return preparePassword(model);
+    public String editPassword(@PathVariable String uid, Model model) {
+        return preparePassword(uid, model);
     }
 
     @InitBinder
@@ -133,67 +140,72 @@ public class EditProfileController {
     }
 
     @PostMapping("/skills")
-    public String saveSkills(@Valid @ModelAttribute("form") SkillForm form, BindingResult bindingResult, Model model) {
+    public String saveSkills(@PathVariable String uid, @Valid @ModelAttribute("form") SkillForm form,
+            BindingResult bindingResult, Model model) {
         Long profileId = SecurityUtil.getCurrentId();
         if (profileId == null)
             return "redirect:/login";
         if (bindingResult.hasErrors()) {
-            return prepareSkills(model);
+            return prepareSkills(uid, model);
         }
         profileService.updateSkills(profileId, form.getItems());
-        return "redirect:/edit/skills?success";
+        return "redirect:/" + uid + "/edit/skills?success";
     }
 
     @PostMapping("/practics")
-    public String savePractics(@Valid @ModelAttribute("form") PracticForm form, BindingResult bindingResult,
+    public String savePractics(@PathVariable String uid, @Valid @ModelAttribute("form") PracticForm form,
+            BindingResult bindingResult,
             Model model) {
         Long profileId = SecurityUtil.getCurrentId();
         if (profileId == null)
             return "redirect:/login";
         if (bindingResult.hasErrors()) {
-            return preparePractics(model);
+            return preparePractics(uid, model);
         }
         profileService.updatePractics(profileId, form.getItems());
-        return "redirect:/edit/practics?success";
+        return "redirect:/" + uid + "/edit/practics?success";
     }
 
     @PostMapping("/education")
-    public String saveEducation(@Valid @ModelAttribute("form") EducationForm form, BindingResult bindingResult,
+    public String saveEducation(@PathVariable String uid, @Valid @ModelAttribute("form") EducationForm form,
+            BindingResult bindingResult,
             Model model) {
         Long profileId = SecurityUtil.getCurrentId();
         if (profileId == null)
             return "redirect:/login";
         if (bindingResult.hasErrors()) {
-            return prepareEducation(model);
+            return prepareEducation(uid, model);
         }
         profileService.updateEducations(profileId, form.getItems());
-        return "redirect:/edit/education?success";
+        return "redirect:/" + uid + "/edit/education?success";
     }
 
     @PostMapping("/courses")
-    public String saveCourses(@Valid @ModelAttribute("form") CourseForm form, BindingResult bindingResult,
+    public String saveCourses(@PathVariable String uid, @Valid @ModelAttribute("form") CourseForm form,
+            BindingResult bindingResult,
             Model model) {
         Long profileId = SecurityUtil.getCurrentId();
         if (profileId == null)
             return "redirect:/login";
         if (bindingResult.hasErrors()) {
-            return prepareCourses(model);
+            return prepareCourses(uid, model);
         }
         profileService.updateCourses(profileId, form.getItems());
-        return "redirect:/edit/courses?success";
+        return "redirect:/" + uid + "/edit/courses?success";
     }
 
     @PostMapping("/languages")
-    public String saveLanguages(@Valid @ModelAttribute("form") LanguageForm form, BindingResult bindingResult,
+    public String saveLanguages(@PathVariable String uid, @Valid @ModelAttribute("form") LanguageForm form,
+            BindingResult bindingResult,
             Model model) {
         Long profileId = SecurityUtil.getCurrentId();
         if (profileId == null)
             return "redirect:/login";
         if (bindingResult.hasErrors()) {
-            return prepareLanguages(model);
+            return prepareLanguages(uid, model);
         }
         profileService.updateLanguages(profileId, form.getItems());
-        return "redirect:/edit/hobbies?success";
+        return "redirect:/" + uid + "/edit/hobbies?success";
     }
 
     @PostMapping("/certificates/upload")
@@ -203,30 +215,31 @@ public class EditProfileController {
     }
 
     @PostMapping("/photo")
-    public String uploadPhoto(@RequestParam("profilePhoto") MultipartFile profilePhoto) {
+    public String uploadPhoto(@PathVariable String uid, @RequestParam("profilePhoto") MultipartFile profilePhoto) {
         Long profileId = SecurityUtil.getCurrentId();
         if (profileId == null)
             return "redirect:/login";
         String[] urls = photoStorageService.store(profilePhoto);
         profileService.updatePhoto(profileId, urls[0], urls[1]);
-        return "redirect:/edit/photo?success";
+        return "redirect:/" + uid + "/edit/photo?success";
     }
 
     @PostMapping("/certificates")
-    public String saveCertificates(@Valid @ModelAttribute("form") net.devstudy.resume.form.CertificateForm form,
+    public String saveCertificates(@PathVariable String uid,
+            @Valid @ModelAttribute("form") net.devstudy.resume.form.CertificateForm form,
             BindingResult bindingResult, Model model) {
         Long profileId = SecurityUtil.getCurrentId();
         if (profileId == null)
             return "redirect:/login";
         if (bindingResult.hasErrors()) {
-            return prepareCertificates(model);
+            return prepareCertificates(uid, model);
         }
         profileService.updateCertificates(profileId, form.getItems());
-        return "redirect:/edit/certificates?success";
+        return "redirect:/" + uid + "/edit/certificates?success";
     }
 
     @PostMapping("/hobbies")
-    public String saveHobbies(@Valid @ModelAttribute("form") HobbyForm form,
+    public String saveHobbies(@PathVariable String uid, @Valid @ModelAttribute("form") HobbyForm form,
             @RequestParam(value = "hobbies", required = false) String hobbiesParam,
             BindingResult bindingResult, Model model) {
         Long profileId = SecurityUtil.getCurrentId();
@@ -240,42 +253,45 @@ public class EditProfileController {
                     .toList();
         }
         profileService.updateHobbies(profileId, ids);
-        return "redirect:/edit/hobbies?success";
+        return "redirect:/" + uid + "/edit/hobbies?success";
     }
 
     @PostMapping("/contacts")
-    public String saveContacts(@Valid @ModelAttribute("form") ContactsForm form, BindingResult bindingResult,
+    public String saveContacts(@PathVariable String uid, @Valid @ModelAttribute("form") ContactsForm form,
+            BindingResult bindingResult,
             Model model) {
         Long profileId = SecurityUtil.getCurrentId();
         if (profileId == null)
             return "redirect:/login";
         if (bindingResult.hasErrors()) {
-            return prepareContacts(model);
+            return prepareContacts(uid, model);
         }
         profileService.updateContacts(profileId, form);
-        return "redirect:/edit/contacts?success";
+        return "redirect:/" + uid + "/edit/contacts?success";
     }
 
     @PostMapping("/info")
-    public String saveInfo(@Valid @ModelAttribute("form") InfoForm form, BindingResult bindingResult, Model model) {
+    public String saveInfo(@PathVariable String uid, @Valid @ModelAttribute("form") InfoForm form,
+            BindingResult bindingResult, Model model) {
         Long profileId = SecurityUtil.getCurrentId();
         if (profileId == null)
             return "redirect:/login";
         if (bindingResult.hasErrors()) {
-            return prepareInfo(model);
+            return prepareInfo(uid, model);
         }
         profileService.updateInfo(profileId, form);
-        return "redirect:/edit/info?success";
+        return "redirect:/" + uid + "/edit/info?success";
     }
 
     @PostMapping("/password")
-    public String savePassword(@Valid @ModelAttribute("form") ChangePasswordForm form, BindingResult bindingResult,
+    public String savePassword(@PathVariable String uid, @Valid @ModelAttribute("form") ChangePasswordForm form,
+            BindingResult bindingResult,
             Model model) {
         Long profileId = SecurityUtil.getCurrentId();
         if (profileId == null)
             return "redirect:/login";
         if (bindingResult.hasErrors()) {
-            return preparePassword(model);
+            return preparePassword(uid, model);
         }
         Profile profile = profileService.findById(profileId).orElse(null);
         if (profile == null) {
@@ -283,54 +299,54 @@ public class EditProfileController {
         }
         if (!passwordEncoder.matches(form.getCurrentPassword(), profile.getPassword())) {
             bindingResult.rejectValue("currentPassword", "password.mismatch", "Невірний поточний пароль");
-            return preparePassword(model);
+            return preparePassword(uid, model);
         }
         if (!form.getNewPassword().equals(form.getConfirmPassword())) {
             bindingResult.rejectValue("confirmPassword", "password.confirm", "Паролі не співпадають");
-            return preparePassword(model);
+            return preparePassword(uid, model);
         }
         profileService.updatePassword(profileId, form.getNewPassword());
-        return "redirect:/edit/password?success";
+        return "redirect:/" + uid + "/edit/password?success";
     }
 
-    private String prepareSkills(Model model) {
+    private String prepareSkills(String uid, Model model) {
         model.addAttribute("skillCategories", staticDataService.findSkillCategories());
-        return prepareProfileModel(model, "edit/skills", new SkillForm());
+        return prepareProfileModel(uid, model, "edit/skills", new SkillForm());
     }
 
-    private String preparePractics(Model model) {
+    private String preparePractics(String uid, Model model) {
         model.addAttribute("years", staticDataService.findPracticsYears());
         model.addAttribute("months", staticDataService.findMonthMap());
-        return prepareProfileModel(model, "edit/practics", new PracticForm());
+        return prepareProfileModel(uid, model, "edit/practics", new PracticForm());
     }
 
-    private String prepareEducation(Model model) {
+    private String prepareEducation(String uid, Model model) {
         model.addAttribute("years", staticDataService.findEducationYears());
         model.addAttribute("months", staticDataService.findMonthMap());
-        return prepareProfileModel(model, "edit/education", new EducationForm());
+        return prepareProfileModel(uid, model, "edit/education", new EducationForm());
     }
 
-    private String prepareCourses(Model model) {
+    private String prepareCourses(String uid, Model model) {
         model.addAttribute("years", staticDataService.findCoursesYears());
         model.addAttribute("months", staticDataService.findMonthMap());
-        return prepareProfileModel(model, "edit/courses", new CourseForm());
+        return prepareProfileModel(uid, model, "edit/courses", new CourseForm());
     }
 
-    private String prepareLanguages(Model model) {
+    private String prepareLanguages(String uid, Model model) {
         model.addAttribute("languageTypes", staticDataService.findAllLanguageTypes());
         model.addAttribute("languageLevels", staticDataService.findAllLanguageLevels());
-        return prepareProfileModel(model, "edit/languages", new LanguageForm());
+        return prepareProfileModel(uid, model, "edit/languages", new LanguageForm());
     }
 
-    private String prepareCertificates(Model model) {
-        return prepareProfileModel(model, "edit/certificates", new net.devstudy.resume.form.CertificateForm());
+    private String prepareCertificates(String uid, Model model) {
+        return prepareProfileModel(uid, model, "edit/certificates", new net.devstudy.resume.form.CertificateForm());
     }
 
-    private String preparePhoto(Model model) {
-        return prepareProfileModel(model, "edit/photo", null);
+    private String preparePhoto(String uid, Model model) {
+        return prepareProfileModel(uid, model, "edit/photo", null);
     }
 
-    private String prepareHobbies(Model model) {
+    private String prepareHobbies(String uid, Model model) {
         Long profileId = SecurityUtil.getCurrentId();
         HobbyForm form = new HobbyForm();
         if (profileId != null) {
@@ -341,24 +357,24 @@ public class EditProfileController {
             });
         }
         model.addAttribute("hobbies", staticDataService.findAllHobbiesWithSelected(form.getHobbyIds()));
-        return prepareProfileModel(model, "edit/hobbies", form);
+        return prepareProfileModel(uid, model, "edit/hobbies", form);
     }
 
-    private String prepareContacts(Model model) {
-        return prepareProfileModel(model, "edit/contacts", new ContactsForm());
+    private String prepareContacts(String uid, Model model) {
+        return prepareProfileModel(uid, model, "edit/contacts", new ContactsForm());
     }
 
-    private String prepareInfo(Model model) {
-        return prepareProfileModel(model, "edit/info", new InfoForm());
+    private String prepareInfo(String uid, Model model) {
+        return prepareProfileModel(uid, model, "edit/info", new InfoForm());
     }
 
-    private String preparePassword(Model model) {
-        return prepareProfileModel(model, "edit/password", new ChangePasswordForm());
+    private String preparePassword(String uid, Model model) {
+        return prepareProfileModel(uid, model, "edit/password", new ChangePasswordForm());
     }
 
-    private String prepareProfileModel(Model model, String viewName, Object form) {
+    private String prepareProfileModel(String uid, Model model, String viewName, Object form) {
         CurrentProfile current = SecurityUtil.getCurrentProfile();
-        if (current == null) {
+        if (current == null || !current.getUsername().equals(uid)) {
             return "redirect:/login";
         }
         Profile profile = profileService.findByIdWithAll(current.getId()).orElse(null);
