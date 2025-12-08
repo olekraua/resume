@@ -24,6 +24,7 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">Название</label>
             <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].name}"/></div>
+            <div class="col-sm-offset-3 col-sm-9 help-block"><small>Наприклад: English, Deutsch, Français.</small></div>
           </div>
           <div class="form-group">
             <label class="col-sm-3 control-label">Уровень</label>
@@ -32,6 +33,7 @@
                 <option th:each="lvl : ${languageLevels}" th:value="${lvl}" th:text="${lvl}">LEVEL</option>
               </select>
             </div>
+            <div class="col-sm-offset-3 col-sm-9 help-block"><small>Оберіть рівень володіння мовою.</small></div>
           </div>
           <div class="form-group">
             <label class="col-sm-3 control-label">Тип</label>
@@ -40,6 +42,7 @@
                 <option th:each="tp : ${languageTypes}" th:value="${tp}" th:text="${tp}">TYPE</option>
               </select>
             </div>
+            <div class="col-sm-offset-3 col-sm-9 help-block"><small>Тип: розмовна/письмова тощо.</small></div>
           </div>
         </div>
       </div>

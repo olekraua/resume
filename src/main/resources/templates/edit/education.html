@@ -24,14 +24,17 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">Университет</label>
             <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].university}"/></div>
+            <div class="col-sm-offset-3 col-sm-9 help-block"><small>Повна назва університету/коледжу.</small></div>
           </div>
           <div class="form-group">
             <label class="col-sm-3 control-label">Факультет</label>
             <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].faculty}"/></div>
+            <div class="col-sm-offset-3 col-sm-9 help-block"><small>Факультет/спеціальність.</small></div>
           </div>
           <div class="form-group">
             <label class="col-sm-3 control-label">Описание</label>
             <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].summary}"/></div>
+            <div class="col-sm-offset-3 col-sm-9 help-block"><small>Ключові курси, диплом, середній бал.</small></div>
           </div>
           <div class="form-group">
             <label class="col-sm-3 control-label">Начало</label>

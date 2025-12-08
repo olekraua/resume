@@ -24,15 +24,18 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">Название</label>
             <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].name}"/></div>
+            <div class="col-sm-offset-3 col-sm-9 help-block"><small>Повна назва курсу/програми.</small></div>
           </div>
           <div class="form-group">
             <label class="col-sm-3 control-label">Школа</label>
             <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].school}"/></div>
+            <div class="col-sm-offset-3 col-sm-9 help-block"><small>Провайдер: університет, онлайн-платформа тощо.</small></div>
           </div>
           <div class="form-group">
             <label class="col-sm-3 control-label">Завершен</label>
             <div class="col-sm-1"><input type="checkbox" th:field="*{items[__${iter.index}__].finish}"/></div>
             <div class="col-sm-4"><input class="form-control" type="date" th:field="*{items[__${iter.index}__].finishDate}"/></div>
+            <div class="col-sm-offset-3 col-sm-9 help-block"><small>Дата завершення або очікувана дата.</small></div>
           </div>
         </div>
       </div>

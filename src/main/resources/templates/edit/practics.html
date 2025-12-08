@@ -38,14 +38,17 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">Demo URL</label>
             <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].demo}"/></div>
+            <div class="col-sm-offset-3 col-sm-9 help-block"><small>Посилання на прод/демо вашого проєкту.</small></div>
           </div>
           <div class="form-group">
             <label class="col-sm-3 control-label">Source URL</label>
             <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].src}"/></div>
+            <div class="col-sm-offset-3 col-sm-9 help-block"><small>GitHub/Bitbucket репозиторій (якщо публічний).</small></div>
           </div>
           <div class="form-group">
             <label class="col-sm-3 control-label">Обязанности</label>
             <div class="col-sm-9"><textarea class="form-control" rows="3" th:field="*{items[__${iter.index}__].responsibilities}"></textarea></div>
+            <div class="col-sm-offset-3 col-sm-9 help-block"><small>3–5 пунктів: задачі та досягнення на цій позиції.</small></div>
           </div>
         </div>
       </div>

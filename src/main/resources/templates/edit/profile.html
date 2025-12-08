@@ -1,0 +1,151 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Edit Profile')}"></head>
+<body class="resume">
+<div th:replace="~{fragments/layout :: header}"></div>
+<div class="layout-content container">
+  <div th:replace="~{edit/_nav :: nav}"></div>
+
+  <div class="panel panel-default edit-profile">
+    <div class="panel-body">
+      <h2 class="text-center" th:text="${profile.fullName}">Full Name</h2>
+
+      <form th:action="@{|/${profile.uid}/edit/profile|}" method="post" th:object="${form}" class="form-horizontal data-form" enctype="multipart/form-data">
+        <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+          <ul>
+            <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
+          </ul>
+        </div>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+
+        <div class="form-group">
+          <label for="profilePhoto" class="col-sm-2 control-label">Фото*</label>
+          <div class="col-sm-5">
+            <img id="currentPhoto" th:src="${profile.largePhoto != null ? profile.largePhoto : '/img/profile-placeholder.png'}" class="edit-photo img-responsive" alt="photo"/><br/>
+            <input type="file" th:field="*{profilePhoto}" id="profilePhoto"/>
+            <div th:if="${#fields.hasErrors('profilePhoto')}" class="help-block" th:errors="*{profilePhoto}">Invalid</div>
+          </div>
+          <div class="col-sm-5 help-block">
+            <blockquote>
+              1. Фотографія повинна бути охайною, як для резюме.<br/>
+              2. Мінімальний розмір 400x400, формат jpg.<br/>
+              3. Фото на паспорт не обов’язкове, але вигляд — акуратний.<br/>
+              4. Приклад можна переглянути в демо-резюме.
+            </blockquote>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputBirthDay" class="col-sm-2 control-label">Дата народження*</label>
+          <div class="col-sm-5">
+            <input class="form-control datepicker" type="text" th:field="*{birthDay}" id="inputBirthDay" placeholder="1990-12-31"/>
+            <div th:if="${#fields.hasErrors('birthDay')}" class="help-block" th:errors="*{birthDay}">Invalid</div>
+          </div>
+          <div class="col-sm-5 help-block">
+            <blockquote>Формат дати: yyyy-mm-dd</blockquote>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputCountry" class="col-sm-2 control-label">Країна*</label>
+          <div class="col-sm-5">
+            <input class="form-control" type="text" th:field="*{country}" id="inputCountry" placeholder="Ukraine"/>
+            <div th:if="${#fields.hasErrors('country')}" class="help-block" th:errors="*{country}">Invalid</div>
+          </div>
+          <div class="col-sm-5 help-block"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputCity" class="col-sm-2 control-label">Місто*</label>
+          <div class="col-sm-5">
+            <input class="form-control" type="text" th:field="*{city}" id="inputCity" placeholder="Kyiv"/>
+            <div th:if="${#fields.hasErrors('city')}" class="help-block" th:errors="*{city}">Invalid</div>
+          </div>
+          <div class="col-sm-5 help-block"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputEmail" class="col-sm-2 control-label">Email*</label>
+          <div class="col-sm-5">
+            <input class="form-control" type="email" th:field="*{email}" id="inputEmail" placeholder="example@gmail.com"/>
+            <div th:if="${#fields.hasErrors('email')}" class="help-block" th:errors="*{email}">Invalid</div>
+          </div>
+          <div class="col-sm-5 help-block">
+            <blockquote>
+              1. Бажано ім’я+прізвище латиницею (@gmail.com).<br/>
+              2. Уникайте креативних адрес типу TheBestDeveloper@...<br/>
+              3. Не використовуйте корпоративну пошту поточного роботодавця.
+            </blockquote>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputPhone" class="col-sm-2 control-label">Телефон*</label>
+          <div class="col-sm-5">
+            <input class="form-control" type="text" th:field="*{phone}" id="inputPhone" placeholder="+380501234567"/>
+            <div th:if="${#fields.hasErrors('phone')}" class="help-block" th:errors="*{phone}">Invalid</div>
+          </div>
+          <div class="col-sm-5 help-block">
+            <blockquote>
+              1. Формат E.164: код країни + номер без пробілів.<br/>
+              2. Вкажіть номер, на який реально відповідаєте.
+            </blockquote>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputObjective" class="col-sm-2 control-label">Жадана посада*</label>
+          <div class="col-sm-5">
+            <input class="form-control" type="text" th:field="*{objective}" id="inputObjective" placeholder="Junior Java Developer position"/>
+            <div th:if="${#fields.hasErrors('objective')}" class="help-block" th:errors="*{objective}">Invalid</div>
+          </div>
+          <div class="col-sm-5 help-block">
+            <blockquote>Коротко й чітко: бажана посада (1 рядок).</blockquote>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputSummary" class="col-sm-2 control-label">Ваша кваліфікація*</label>
+          <div class="col-sm-5">
+            <textarea class="form-control" rows="7" th:field="*{summary}" id="inputSummary" placeholder="Досвід, курси, проєкти"></textarea>
+            <div th:if="${#fields.hasErrors('summary')}" class="help-block" th:errors="*{summary}">Invalid</div>
+          </div>
+          <div class="col-sm-5 help-block">
+            <blockquote>
+              1. Лише релевантний досвід/проєкти під обрану роль.<br/>
+              2. Додайте курси з демо/посиланнями, якщо є.<br/>
+              3. Стислі тези 3–5 пунктів.
+            </blockquote>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="inputInfo" class="col-sm-2 control-label">Додаткова інформація</label>
+          <div class="col-sm-5">
+            <textarea class="form-control" rows="5" th:field="*{info}" id="inputInfo" placeholder="Додаткові відомості"></textarea>
+            <div th:if="${#fields.hasErrors('info')}" class="help-block" th:errors="*{info}">Invalid</div>
+          </div>
+          <div class="col-sm-5 help-block"></div>
+        </div>
+
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-primary">Зберегти</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div th:replace="fragments/layout :: footer"></div>
+<th:block th:replace="fragments/layout :: scripts"></th:block>
+<script th:inline="javascript">
+/*<![CDATA[*/
+  $(document).ready(function(){
+    resume.createPhotoUploader();
+    resume.createDatePicker();
+  });
+/*]]>*/
+</script>
+</body>
+</html>

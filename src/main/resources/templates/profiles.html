@@ -6,7 +6,7 @@
       <div class="media panel-body">
         <div class="media-left media-top">
           <a th:href="@{/{uid}(uid=${profile.uid})}">
-            <img class="photo" th:alt="${profile.fullName}"
+            <img class="photo img-thumbnail" th:alt="${profile.fullName}"
                  th:src="${profile.smallPhoto != null} ? ${profile.smallPhoto} : '/img/profile-placeholder.png'">
           </a>
           <a class="btn btn-primary visible-xs-block" style="margin-top: 15px;"

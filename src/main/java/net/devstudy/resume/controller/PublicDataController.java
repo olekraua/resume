@@ -78,11 +78,8 @@ public class PublicDataController {
             model.addAttribute("currentUid", profile.getUid());
         }
 
-        if (!profile.isCompleted()) {
-            if (currentProfile == null || !currentProfile.getId().equals(profile.getId())) {
-                return "error/profile-not-found";
-            }
-            return "redirect:/" + uid + "/edit";
+        if (!profile.isCompleted() && !ownProfile) {
+            return "error/profile-not-found";
         }
 
         model.addAttribute("profile", profile);

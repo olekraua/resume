@@ -1,32 +1,35 @@
 <div th:fragment="nav" th:with="uri=${#httpServletRequest != null ? #httpServletRequest.requestURI : ''},
                                base=${profile != null ? '/' + profile.uid + '/edit' : '/edit'}">
   <ul class="nav nav-tabs" style="margin-bottom: 15px;">
-    <li th:classappend="${uri.endsWith('/skills')}? 'active'">
-      <a th:href="${base + '/skills'}">Skills</a>
-    </li>
-    <li th:classappend="${uri.endsWith('/practics')}? 'active'">
-      <a th:href="${base + '/practics'}">Practics</a>
-    </li>
-    <li th:classappend="${uri.endsWith('/education')}? 'active'">
-      <a th:href="${base + '/education'}">Education</a>
-    </li>
-    <li th:classappend="${uri.endsWith('/courses')}? 'active'">
-      <a th:href="${base + '/courses'}">Courses</a>
-    </li>
-    <li th:classappend="${uri.endsWith('/languages')}? 'active'">
-      <a th:href="${base + '/languages'}">Languages</a>
-    </li>
-    <li th:classappend="${uri.endsWith('/hobbies')}? 'active'">
-      <a th:href="${base + '/hobbies'}">Hobbies</a>
-    </li>
-    <li th:classappend="${uri.endsWith('/photo')}? 'active'">
-      <a th:href="${base + '/photo'}">Photo</a>
+    <li th:classappend="${uri.endsWith('/profile')}? 'active'">
+      <a th:href="${base + '/profile'}">Основное</a>
     </li>
     <li th:classappend="${uri.endsWith('/contacts')}? 'active'">
-      <a th:href="${base + '/contacts'}">Contacts</a>
+      <a th:href="${base + '/contacts'}">Контакты</a>
+    </li>
+    <li th:classappend="${uri.endsWith('/skills')}? 'active'">
+      <a th:href="${base + '/skills'}">Технические навыки</a>
+    </li>
+    <li th:classappend="${uri.endsWith('/practics')}? 'active'">
+      <a th:href="${base + '/practics'}">Практический опыт</a>
+    </li>
+    <li th:classappend="${uri.endsWith('/certificates')}? 'active'">
+      <a th:href="${base + '/certificates'}">Сертификаты</a>
+    </li>
+    <li th:classappend="${uri.endsWith('/education')}? 'active'">
+      <a th:href="${base + '/education'}">Образование</a>
+    </li>
+    <li th:classappend="${uri.endsWith('/courses')}? 'active'">
+      <a th:href="${base + '/courses'}">Курсы</a>
+    </li>
+    <li th:classappend="${uri.endsWith('/languages')}? 'active'">
+      <a th:href="${base + '/languages'}">Языки</a>
+    </li>
+    <li th:classappend="${uri.endsWith('/hobbies')}? 'active'">
+      <a th:href="${base + '/hobbies'}">Хобби</a>
     </li>
     <li th:classappend="${uri.endsWith('/info')}? 'active'">
-      <a th:href="${base + '/info'}">Info</a>
+      <a th:href="${base + '/info'}">Дополнительно</a>
     </li>
     <li th:classappend="${uri.endsWith('/password')}? 'active'">
       <a th:href="${base + '/password'}">Password</a>

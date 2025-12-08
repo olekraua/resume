@@ -11,6 +11,7 @@ import net.devstudy.resume.form.EducationForm;
 import net.devstudy.resume.form.HobbyForm;
 import net.devstudy.resume.form.InfoForm;
 import net.devstudy.resume.form.LanguageForm;
+import net.devstudy.resume.form.ProfileMainForm;
 import net.devstudy.resume.form.PracticForm;
 import net.devstudy.resume.form.SkillForm;
 import net.devstudy.resume.model.CurrentProfile;
@@ -64,7 +65,50 @@ public class EditProfileController {
 
     @GetMapping
     public String editRoot(@PathVariable String uid) {
-        return "redirect:/" + uid + "/edit/skills";
+        return "redirect:/" + uid + "/edit/profile";
+    }
+
+    @GetMapping("/profile")
+    public String editProfile(@PathVariable String uid, Model model) {
+        return prepareProfileMain(uid, model);
+    }
+
+    @PostMapping("/profile")
+    public String saveProfile(@PathVariable String uid, @Valid @ModelAttribute("form") ProfileMainForm form,
+            BindingResult bindingResult, Model model) {
+        Long profileId = SecurityUtil.getCurrentId();
+        if (profileId == null) {
+            return "redirect:/login";
+        }
+        Profile profile = resolveProfile(uid);
+        if (profile == null) {
+            return "redirect:/login";
+        }
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("profile", profile);
+            return "edit/profile";
+        }
+        // info
+        InfoForm infoForm = new InfoForm();
+        infoForm.setBirthDay(form.getBirthDay());
+        infoForm.setCountry(form.getCountry());
+        infoForm.setCity(form.getCity());
+        infoForm.setObjective(form.getObjective());
+        infoForm.setSummary(form.getSummary());
+        infoForm.setInfo(form.getInfo());
+        profileService.updateInfo(profileId, infoForm);
+        // contacts
+        ContactsForm contactsForm = new ContactsForm();
+        contactsForm.setEmail(form.getEmail());
+        contactsForm.setPhone(form.getPhone());
+        profileService.updateContacts(profileId, contactsForm);
+        // photo
+        MultipartFile photo = form.getProfilePhoto();
+        if (photo != null && !photo.isEmpty()) {
+            String[] urls = photoStorageService.store(photo);
+            profileService.updatePhoto(profileId, urls[0], urls[1]);
+        }
+        return "redirect:/" + uid + "/edit/profile?success";
     }
 
     @GetMapping("/skills")
@@ -287,7 +331,13 @@ public class EditProfileController {
         if (profileId == null)
             return "redirect:/login";
         if (bindingResult.hasErrors()) {
-            return prepareInfo(uid, model);
+            Profile profile = resolveProfile(uid);
+            if (profile == null) {
+                return "redirect:/login";
+            }
+            model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
+            return "edit/info";
         }
         profileService.updateInfo(profileId, form);
         return "redirect:/" + uid + "/edit/info?success";
@@ -382,6 +432,29 @@ public class EditProfileController {
         return prepareProfileModel(uid, model, "edit/password", new ChangePasswordForm());
     }
 
+    private String prepareProfileMain(String uid, Model model) {
+        CurrentProfile current = SecurityUtil.getCurrentProfile();
+        if (current == null || !current.getUsername().equals(uid)) {
+            return "redirect:/login";
+        }
+        Profile profile = profileService.findByIdWithAll(current.getId()).orElse(null);
+        if (profile == null) {
+            return "redirect:/login";
+        }
+        ProfileMainForm form = new ProfileMainForm();
+        form.setBirthDay(profile.getBirthDay());
+        form.setCountry(profile.getCountry());
+        form.setCity(profile.getCity());
+        form.setEmail(profile.getEmail());
+        form.setPhone(profile.getPhone());
+        form.setObjective(profile.getObjective());
+        form.setSummary(profile.getSummary());
+        form.setInfo(profile.getInfo());
+        model.addAttribute("profile", profile);
+        model.addAttribute("form", form);
+        return "edit/profile";
+    }
+
     private String prepareProfileModel(String uid, Model model, String viewName, Object form) {
         CurrentProfile current = SecurityUtil.getCurrentProfile();
         if (current == null || !current.getUsername().equals(uid)) {
@@ -394,6 +467,14 @@ public class EditProfileController {
         model.addAttribute("profile", profile);
         model.addAttribute("form", formFromProfile(form, profile));
         return viewName;
+    }
+
+    private Profile resolveProfile(String uid) {
+        CurrentProfile current = SecurityUtil.getCurrentProfile();
+        if (current == null || !current.getUsername().equals(uid)) {
+            return null;
+        }
+        return profileService.findByIdWithAll(current.getId()).orElse(null);
     }
 
     private Object formFromProfile(Object emptyForm, Profile profile) {
