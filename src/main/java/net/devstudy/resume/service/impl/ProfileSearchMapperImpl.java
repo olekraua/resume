@@ -14,10 +14,11 @@ public class ProfileSearchMapperImpl implements ProfileSearchMapper {
 
     @Override
     public ProfileSearchDocument toDocument(Profile profile) {
-        String fullName = (profile.getFirstName() == null ? "" : profile.getFirstName()) + " "
-                + (profile.getLastName() == null ? "" : profile.getLastName());
+        String first = safe(profile.getFirstName());
+        String last = safe(profile.getLastName());
+        String fullName = (first + " " + last).trim();
         String skills = extractSkills(profile.getSkills());
-        return new ProfileSearchDocument(profile.getId(), profile.getUid(), fullName.trim(),
+        return new ProfileSearchDocument(profile.getId(), profile.getUid(), first, last, fullName,
                 safe(profile.getObjective()), safe(profile.getSummary()), skills);
     }
 

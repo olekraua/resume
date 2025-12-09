@@ -218,3 +218,49 @@ var resume = {
 		}
 	}
 };
+
+// --- Search suggestions in navbar ---
+$(function() {
+	var $input = $('#nav-search-input');
+	var $list = $('#nav-search-suggest');
+	if ($input.length === 0 || $list.length === 0) {
+		return;
+	}
+	var timer = null;
+
+	function hide() {
+		$list.hide().empty();
+	}
+
+	$input.on('input', function() {
+		var q = $(this).val().trim();
+		if (q.length < 2) {
+			hide();
+			return;
+		}
+		clearTimeout(timer);
+		timer = setTimeout(function() {
+			$.getJSON('/api/suggest', { q: q, limit: 5 })
+				.done(function(items) {
+					$list.empty();
+					if (!items || items.length === 0) {
+						$list.append('<li class="empty">Нічого не знайдено</li>');
+					} else {
+						$.each(items, function(_, it) {
+							var text = it.fullName || it.uid;
+							var link = $('<a/>', { href: '/' + it.uid, text: text });
+							$list.append($('<li/>').append(link));
+						});
+					}
+					$list.show();
+				})
+				.fail(hide);
+		}, 200);
+	});
+
+	$input.on('blur', function() {
+		setTimeout(hide, 200);
+	});
+
+	$('#nav-search-form').on('submit', hide);
+});

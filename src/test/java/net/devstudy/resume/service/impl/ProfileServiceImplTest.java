@@ -26,14 +26,18 @@ class ProfileServiceImplTest {
 
     @Test
     void normalizeUid_basicSlugify() {
-        assertEquals("john-doe", serviceTestAccessor().apply(" John Doe "));
+        assertEquals("john_doe", serviceTestAccessor().apply(" John_Doe "));
         assertEquals("oleksandr_kravchenko", serviceTestAccessor().apply("Oleksandr_Kravchenko"));
     }
 
     @Test
-    void normalizeUid_diacriticsRemoved() {
-        assertEquals("cafe", serviceTestAccessor().apply("café"));
-        assertEquals("jalapeno", serviceTestAccessor().apply("jalapeño"));
+    void normalizeUid_spacesNotAllowed() {
+        assertThrows(IllegalArgumentException.class, () -> serviceTestAccessor().apply("John Doe"));
+    }
+
+    @Test
+    void normalizeUid_diacriticsNotAllowed() {
+        assertThrows(IllegalArgumentException.class, () -> serviceTestAccessor().apply("café"));
     }
 
     @Test

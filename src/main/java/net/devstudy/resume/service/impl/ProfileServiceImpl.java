@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import java.text.Normalizer;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -70,13 +70,12 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Page<Profile> findAll(Pageable pageable) {
-        return profileRepository.findAllByCompletedTrue(pageable);
+        return profileRepository.findAll(pageable);
     }
 
     @Override
     public Iterable<Profile> findAllForIndexing() {
-        // тимчасово: індексуємо лише завершені профілі
-        return profileRepository.findAllByCompletedTrue(Pageable.unpaged()).getContent();
+        return profileRepository.findAll(Pageable.unpaged()).getContent();
     }
 
     @Override
@@ -139,17 +138,12 @@ public class ProfileServiceImpl implements ProfileService {
         if (uid == null) {
             throw new IllegalArgumentException("Uid is required");
         }
-        String normalized = Normalizer.normalize(uid.trim(), Normalizer.Form.NFD);
-        // прибираємо діакритику
-        normalized = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
-        normalized = normalized.toLowerCase();
-        // пробіли -> дефіси
-        normalized = normalized.replaceAll("\\s+", "-");
-        // лишаємо тільки дозволені символи
-        normalized = normalized.replaceAll("[^a-z0-9_-]", "");
-        // прибираємо зайві дефіси/андерскори з країв
-        normalized = normalized.replaceAll("^-+|[-_]+$", "");
-        if (normalized.isBlank() || normalized.length() < 3 || normalized.length() > 50) {
+        String candidate = uid.trim();
+        if (!candidate.matches("^[A-Za-z0-9_-]+$")) {
+            throw new IllegalArgumentException("Uid must contain only latin letters, digits, '-' or '_'");
+        }
+        String normalized = candidate.toLowerCase(Locale.ENGLISH);
+        if (normalized.length() < 3 || normalized.length() > 50) {
             throw new IllegalArgumentException("Uid must be 3-50 chars (a-z, 0-9, '-', '_')");
         }
         return normalized;

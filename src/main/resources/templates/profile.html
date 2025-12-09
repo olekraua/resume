@@ -19,6 +19,7 @@
                                 <a th:href="@{|/${profile.uid}/edit|}" style="color:black;" th:text="${profile.fullName}">Full Name</a>
                             </span>
                             <span th:if="${!ownProfile}" th:text="${profile.fullName}">Full Name</span>
+                            <span th:if="${!profile.completed}" class="label label-warning" style="margin-left:8px;">Незавершений</span>
                         </h1>
                         <h6 class="text-center">
                             <strong th:text="${profile.city}"></strong><span th:if="${profile.city != null and profile.country != null}">, </span><strong th:text="${profile.country}"></strong>

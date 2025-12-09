@@ -546,3 +546,22 @@ body {
 	height: 60px;
 	background-color: #f5f5f5;
 }
+
+/* Suggest dropdown */
+.suggest-list {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	max-height: 220px;
+	overflow-y: auto;
+	z-index: 1001;
+}
+.suggest-list > li > a {
+	padding: 8px 12px;
+	white-space: normal;
+}
+.suggest-list .empty {
+	padding: 8px 12px;
+	color: #777;
+}

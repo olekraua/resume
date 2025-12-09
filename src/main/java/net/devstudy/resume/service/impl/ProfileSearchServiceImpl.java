@@ -13,6 +13,7 @@ import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.repository.search.ProfileSearchRepository;
@@ -33,12 +34,17 @@ public class ProfileSearchServiceImpl implements ProfileSearchService {
 
     @Override
     public Page<Profile> search(String query, Pageable pageable) {
+        String q = query == null ? "" : query.trim();
+        if (q.length() < 2) {
+            // занадто короткий запит: повертаємо всі профілі без фільтра
+            return profileRepository.findAll(pageable);
+        }
         // multi_match по основних текстових полях
         NativeQuery esQuery = NativeQuery.builder()
-                .withQuery(q -> q.multiMatch(mm -> mm
-                        .query(query)
-                        .fields("fullName^2", "summary", "objective", "skills")
-                        .fuzziness("AUTO")))
+                .withQuery(b -> b.multiMatch(mm -> mm
+                        .query(q)
+                        .fields("fullName^3", "firstName^3", "lastName^3", "summary", "objective", "skills")
+                        .type(TextQueryType.PhrasePrefix)))
                 .withPageable(pageable)
                 .build();
 
@@ -68,7 +74,7 @@ public class ProfileSearchServiceImpl implements ProfileSearchService {
     @Transactional(readOnly = true)
     public void reindexAll() {
         profileSearchRepository.deleteAll();
-        List<Profile> profiles = profileRepository.findAllByCompletedTrue(Pageable.unpaged()).getContent();
+        List<Profile> profiles = profileRepository.findAll(Pageable.unpaged()).getContent();
         indexProfiles(profiles);
     }
 

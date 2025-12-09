@@ -43,9 +43,10 @@
             </form>
           </li>
         </ul>
-        <form class="navbar-form navbar-right" role="search" th:action="@{/search}" method="get">
-          <div class="form-group">
-            <input type="text" class="form-control" placeholder="Search" name="q">
+        <form class="navbar-form navbar-right" role="search" th:action="@{/search}" method="get" id="nav-search-form">
+          <div class="form-group" style="position: relative;">
+            <input type="text" class="form-control" placeholder="Search" name="q" id="nav-search-input" autocomplete="off">
+            <ul class="suggest-list dropdown-menu" id="nav-search-suggest" style="display:none;"></ul>
           </div>
           <button type="submit" class="btn btn-primary">Найти</button>
         </form>

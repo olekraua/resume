@@ -30,7 +30,7 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     @Query("""
             select p from Profile p
-            where p.completed = true and (
+            where (
                lower(p.firstName) like lower(concat('%', :query, '%'))
                or lower(p.lastName) like lower(concat('%', :query, '%'))
                or lower(p.objective) like lower(concat('%', :query, '%'))

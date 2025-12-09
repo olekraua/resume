@@ -17,10 +17,12 @@ public class RegistrationForm {
 
     @NotBlank
     @Size(max = 50)
+    @Pattern(regexp = "^[\\p{L}][\\p{L}\\p{M}\\s\\-']{1,49}$", message = "Тільки літери, пробіл, апостроф або дефіс")
     private String firstName;
 
     @NotBlank
     @Size(max = 50)
+    @Pattern(regexp = "^[\\p{L}][\\p{L}\\p{M}\\s\\-']{1,49}$", message = "Тільки літери, пробіл, апостроф або дефіс")
     private String lastName;
 
     @NotBlank
