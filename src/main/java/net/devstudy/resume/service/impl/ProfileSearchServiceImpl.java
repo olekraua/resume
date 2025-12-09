@@ -3,6 +3,7 @@ package net.devstudy.resume.service.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import net.devstudy.resume.service.ProfileSearchMapper;
 import net.devstudy.resume.service.ProfileSearchService;
 
 @Service
+@ConditionalOnProperty(name = "app.search.elasticsearch.enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class ProfileSearchServiceImpl implements ProfileSearchService {
 
