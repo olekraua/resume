@@ -15,7 +15,13 @@
   <style>
     body.resume { background-color: #eae8e7; }
     .layout-content { min-height: calc(100vh - 140px); padding: 16px; }
-    .layout-footer { border-top: 1px solid #ddd; padding: 12px; text-align: center; background: #fafafa; }
+    /* Footer border/tone */
+    .layout-footer {
+      border-top: 1px solid #cfd4d8;
+      padding: 12px;
+      text-align: center;
+      background: #fafafa;
+    }
   </style>
 </head>
 <body class="resume">
@@ -33,7 +39,6 @@
       </div>
       <div class="collapse navbar-collapse" id="main-nav">
         <ul class="nav navbar-nav navbar-right">
-          <li><a th:href="@{/welcome}">Головна</a></li>
           <li sec:authorize="!isAuthenticated()"><a th:href="@{/login}">Увійти</a></li>
           <li sec:authorize="!isAuthenticated()"><a th:href="@{/register}">Реєстрація</a></li>
           <li sec:authorize="isAuthenticated()">
@@ -43,7 +48,7 @@
             </form>
           </li>
         </ul>
-        <form class="navbar-form navbar-right" role="search" th:action="@{/search}" method="get" id="nav-search-form">
+        <form class="navbar-form navbar-center" role="search" th:action="@{/search}" method="get" id="nav-search-form">
           <div class="form-group" style="position: relative;">
             <input type="text" class="form-control" placeholder="Search" name="q" id="nav-search-input" autocomplete="off">
             <ul class="suggest-list dropdown-menu" id="nav-search-suggest" style="display:none;"></ul>

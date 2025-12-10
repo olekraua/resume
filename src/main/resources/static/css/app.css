@@ -534,8 +534,8 @@ html {
 }
 
 body {
-	/* Margin bottom by footer height */
-	margin-bottom: 60px;
+	/* Padding bottom by footer height */
+	padding-bottom: 60px; 
 }
 
 .footer {
@@ -565,3 +565,27 @@ body {
 	padding: 8px 12px;
 	color: #777;
 }
+
+/* Center search form in navbar */
+.navbar-center {
+	float: none !important;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
+#nav-search-input {
+	width: 540px;
+	max-width: 100%;
+}
+.layout-footer {
+  position: fixed;   /* або sticky, якщо хочеш, щоб при скролі піднімався */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #cfd4d8;
+  padding: 12px;
+  text-align: center;
+  background: #fafafa;
+}
+
