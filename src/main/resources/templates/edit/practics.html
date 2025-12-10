@@ -7,7 +7,7 @@
   <h2>Опыт работы</h2>
   <div th:replace="~{edit/_nav :: nav}"></div>
 
-  <form th:action="@{/edit/practics}" method="post" th:object="${form}">
+  <form th:action="@{|/${profile.uid}/edit/practics|}" method="post" th:object="${form}">
     <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
       <ul>
         <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
@@ -62,6 +62,7 @@
     <div class="row">
       <div class="col-xs-12 text-center">
         <input type="submit" class="btn btn-primary" value="Сохранить">
+        <a th:href="@{|/${profile.uid}/edit/certificates|}" class="btn btn-default" style="margin-left:8px;">Далі</a>
       </div>
     </div>
   </form>
