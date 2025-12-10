@@ -7,13 +7,12 @@
   <h2>Certificates</h2>
   <div th:replace="~{edit/_nav :: nav}"></div>
 
-  <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
-    <ul>
-      <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
-    </ul>
-  </div>
-
-  <form th:action="@{/edit/certificates}" method="post" th:object="${form}">
+  <form th:action="@{|/${profile.uid}/edit/certificates|}" method="post" th:object="${form}">
+    <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+      <ul>
+        <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
+      </ul>
+    </div>
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
     <div id="ui-block-container">
       <div th:each="cert,iter : *{items}" class="row ui-item certificate-item" th:id="|ui-item-${iter.index}|">

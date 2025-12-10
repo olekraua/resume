@@ -4,68 +4,82 @@
 <body class="resume">
 <div th:replace="~{fragments/layout :: header}"></div>
 <div class="layout-content container">
-  <h2>Опыт работы</h2>
   <div th:replace="~{edit/_nav :: nav}"></div>
 
-  <form th:action="@{|/${profile.uid}/edit/practics|}" method="post" th:object="${form}">
-    <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
-      <ul>
-        <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
-      </ul>
-    </div>
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-    <div id="ui-block-container">
-      <div th:each="item,iter : *{items}" class="panel panel-default ui-item practic-item" th:id="|ui-item-${iter.index}|">
-        <div class="panel-heading">Позиция <span th:text="${iter.index + 1}"></span>
-          <button type="button" class="close pull-right" th:onclick="|$('#ui-item-${iter.index}').remove();|"><span aria-hidden="true">&times;</span></button>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <h4 class="data-header">Практический опыт</h4>
+      <h6 class="text-center help-block">(Упорядоченный по убыванию)</h6>
+      <hr />
+
+      <form th:action="@{|/${profile.uid}/edit/practics|}" method="post" th:object="${form}">
+        <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+          <ul>
+            <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
+          </ul>
         </div>
-        <div class="panel-body">
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Должность</label>
-            <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].position}"/></div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Компания</label>
-            <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].company}"/></div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Начало</label>
-            <div class="col-sm-4"><input class="form-control" type="date" th:field="*{items[__${iter.index}__].beginDate}"/></div>
-            <label class="col-sm-1 control-label">Окончание</label>
-            <div class="col-sm-1"><input type="checkbox" th:field="*{items[__${iter.index}__].finish}"/></div>
-            <div class="col-sm-3"><input class="form-control" type="date" th:field="*{items[__${iter.index}__].finishDate}"/></div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Demo URL</label>
-            <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].demo}"/></div>
-            <div class="col-sm-offset-3 col-sm-9 help-block"><small>Посилання на прод/демо вашого проєкту.</small></div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Source URL</label>
-            <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].src}"/></div>
-            <div class="col-sm-offset-3 col-sm-9 help-block"><small>GitHub/Bitbucket репозиторій (якщо публічний).</small></div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Обязанности</label>
-            <div class="col-sm-9"><textarea class="form-control" rows="3" th:field="*{items[__${iter.index}__].responsibilities}"></textarea></div>
-            <div class="col-sm-offset-3 col-sm-9 help-block"><small>3–5 пунктів: задачі та досягнення на цій позиції.</small></div>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <div id="ui-block-container">
+          <div th:each="item,iter : *{items}" class="panel panel-default ui-item practic-item" th:id="|ui-item-${iter.index}|">
+            <div class="panel-body">
+              <div class="row">
+                <div class="col-xs-12">
+                  <button type="button" class="close" th:onclick="|$('#ui-item-${iter.index}').remove();|">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-12 col-md-6 form-group">
+                  <label class="control-label">Должность</label>
+                  <input class="form-control" type="text" th:field="*{items[__${iter.index}__].position}" placeholder="Example: Java trainee">
+                </div>
+                <div class="col-xs-12 col-md-6 form-group">
+                  <label class="control-label">Компания или организация</label>
+                  <input class="form-control" type="text" th:field="*{items[__${iter.index}__].company}" placeholder="Example: DevStudy.net">
+                </div>
+                <div class="col-xs-12 col-md-6 form-group">
+                  <label class="control-label">Дата начала</label>
+                  <input class="form-control" type="date" th:field="*{items[__${iter.index}__].beginDate}">
+                </div>
+                <div class="col-xs-12 col-md-6 form-group">
+                  <label class="control-label">Дата завершения</label>
+                  <input class="form-control" type="date" th:field="*{items[__${iter.index}__].finishDate}">
+                  <div class="checkbox" style="margin-top:6px;">
+                    <label><input type="checkbox" th:field="*{items[__${iter.index}__].finish}"> Not finished yet</label>
+                  </div>
+                </div>
+                <div class="col-xs-12 col-md-12 form-group">
+                  <label class="control-label">Обязанности/Достижения</label>
+                  <textarea class="form-control" rows="2" th:field="*{items[__${iter.index}__].responsibilities}" placeholder="Коротко про ключові задачі та досягнення"></textarea>
+                </div>
+                <div class="col-xs-12 col-md-6 form-group">
+                  <label class="control-label">Ссылка на demo</label>
+                  <input class="form-control" type="text" th:field="*{items[__${iter.index}__].demo}" placeholder="Example: http://resume.devstudy.net">
+                </div>
+                <div class="col-xs-12 col-md-6 form-group">
+                  <label class="control-label">Исходный код</label>
+                  <input class="form-control" type="text" th:field="*{items[__${iter.index}__].src}" placeholder="Example: https://github.com/devstudy-net/resume">
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+        <div class="row">
+          <div class="col-xs-12">
+            <a href="javascript:resume.ui.addBlock();">+ Добавить</a>
+          </div>
+        </div>
+        <hr />
+        <div class="row">
+          <div class="col-xs-12 text-center">
+            <input type="submit" class="btn btn-primary" value="Сохранить">
+            <a th:href="@{|/${profile.uid}/edit/certificates|}" class="btn btn-default" style="margin-left:8px;">Далі</a>
+          </div>
+        </div>
+      </form>
     </div>
-    <div class="row">
-      <div class="col-xs-12">
-        <a href="javascript:resume.ui.addBlock();">+ Добавить опыт</a>
-      </div>
-    </div>
-    <hr/>
-    <div class="row">
-      <div class="col-xs-12 text-center">
-        <input type="submit" class="btn btn-primary" value="Сохранить">
-        <a th:href="@{|/${profile.uid}/edit/certificates|}" class="btn btn-default" style="margin-left:8px;">Далі</a>
-      </div>
-    </div>
-  </form>
+  </div>
 </div>
 <div th:replace="fragments/layout :: footer"></div>
 <th:block th:replace="fragments/layout :: scripts"></th:block>
