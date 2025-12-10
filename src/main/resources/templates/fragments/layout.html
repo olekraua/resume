@@ -63,7 +63,7 @@
             <ul class="dropdown-menu">
               <li><a th:href="@{/{u}(u=${CURRENT_PROFILE != null ? CURRENT_PROFILE.username : ''})}"><i class="fa fa-eye"></i> Мій профіль</a></li>
               <li><a th:href="@{/{u}/edit/profile(u=${CURRENT_PROFILE != null ? CURRENT_PROFILE.username : ''})}"><i class="fa fa-pencil"></i> Редагувати</a></li>
-              <li><a th:href="@{/{u}/edit/password(u=${CURRENT_PROFILE != null ? CURRENT_PROFILE.username : ''})}"><i class="fa fa-unlock-alt"></i> Пароль</a></li>
+              <li><a th:href="@{@{/account/password}(u=${CURRENT_PROFILE != null ? CURRENT_PROFILE.username : ''})}"><i class="fa fa-unlock-alt"></i> Пароль</a></li>
               <li role="separator" class="divider"></li>
               <li>
                 <form th:action="@{/logout}" method="post" class="nav-logout-form">
