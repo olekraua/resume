@@ -32,22 +32,22 @@ public class Practic extends AbstractFinishDateEntity<Long> implements ProfileEn
     @Column(unique = true, nullable = false)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = true, length = 100)
     private String company;
 
-    @Column(length = 255)
+    @Column(nullable = true, length = 255)
     private String demo;
 
-    @Column(length = 255)
+    @Column(nullable = true, length = 255)
     private String src;
 
-    @Column(name = "job_position", nullable = false, length = 100)
+    @Column(name = "job_position", nullable = true, length = 100)
     private String position;
 
-    @Column(nullable = false, length = 2147483647)
+    @Column(nullable = true, length = 2147483647)
     private String responsibilities;
 
-    @Column(name = "begin_date", nullable = false)
+    @Column(name = "begin_date", nullable = true)
     private LocalDate beginDate;
 
     @Transient
