@@ -12,7 +12,7 @@
       <h6 class="text-center help-block">(Упорядоченный по убыванию)</h6>
       <hr />
 
-      <form th:action="@{|/${profile.uid}/edit/practics|}" method="post" th:object="${form}">
+      <form id="practic-form" th:action="@{|/${profile.uid}/edit/practics|}" method="post" th:object="${form}">
         <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
           <ul>
             <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
@@ -125,6 +125,47 @@
     return parseInt(value) + 1;
   });
   /*]]>*/
+</script>
+<script>
+  (function() {
+    var form = document.getElementById('practic-form');
+    if (!form) return;
+
+    form.addEventListener('submit', function(e) {
+      var blocks = Array.prototype.slice.call(form.querySelectorAll('.practic-item'));
+      var hasError = false;
+
+      blocks.forEach(function(block) {
+        var getVal = function(selector) {
+          var el = block.querySelector(selector);
+          return el && el.value ? el.value.trim() : '';
+        };
+        var position = getVal('input[name*="position"]');
+        var company = getVal('input[name*="company"]');
+        var begin = getVal('input[name*="beginDate"]');
+        var responsibilities = getVal('textarea[name*="responsibilities"]');
+
+        var anyFilled = position || company || begin || responsibilities;
+        var allFilled = position && company && begin && responsibilities;
+
+        if (!anyFilled) {
+          block.remove(); // повністю порожні блоки не відправляємо
+          return;
+        }
+
+        block.classList.remove('has-error');
+        if (!allFilled) {
+          hasError = true;
+          block.classList.add('has-error');
+        }
+      });
+
+      if (hasError) {
+        e.preventDefault();
+        alert('Для кожної доданої практики заповніть посаду, компанію, дату початку та обов\'язки.');
+      }
+    });
+  })();
 </script>
 </body>
 </html>

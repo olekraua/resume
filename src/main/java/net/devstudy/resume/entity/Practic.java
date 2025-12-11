@@ -16,6 +16,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author devstudy
@@ -32,7 +34,8 @@ public class Practic extends AbstractFinishDateEntity<Long> implements ProfileEn
     @Column(unique = true, nullable = false)
     private Long id;
 
-    @Column(nullable = true, length = 100)
+    @Column(nullable = false, length = 100)
+    @NotBlank
     private String company;
 
     @Column(nullable = true, length = 255)
@@ -41,13 +44,16 @@ public class Practic extends AbstractFinishDateEntity<Long> implements ProfileEn
     @Column(nullable = true, length = 255)
     private String src;
 
-    @Column(name = "job_position", nullable = true, length = 100)
+    @Column(name = "job_position", nullable = false, length = 100)
+    @NotBlank
     private String position;
 
-    @Column(nullable = true, length = 2147483647)
+    @Column(nullable = false, length = 2147483647)
+    @NotBlank
     private String responsibilities;
 
-    @Column(name = "begin_date", nullable = true)
+    @Column(name = "begin_date", nullable = false)
+    @NotNull
     private LocalDate beginDate;
 
     @Transient

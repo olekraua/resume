@@ -3,7 +3,6 @@ package net.devstudy.resume.form;
 import java.util.List;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 import net.devstudy.resume.entity.Certificate;
@@ -12,6 +11,5 @@ import net.devstudy.resume.entity.Certificate;
 @Setter
 public class CertificateForm {
     @Valid
-    @NotEmpty
     private List<Certificate> items;
 }
