@@ -1,10 +1,41 @@
 package net.devstudy.resume.controller;
 
+import java.beans.PropertyEditorSupport;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
-import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.entity.Hobby;
-import net.devstudy.resume.entity.SkillCategory;
 import net.devstudy.resume.entity.Practic;
+import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.entity.SkillCategory;
 import net.devstudy.resume.form.ChangePasswordForm;
 import net.devstudy.resume.form.ContactsForm;
 import net.devstudy.resume.form.CourseForm;
@@ -12,54 +43,23 @@ import net.devstudy.resume.form.EducationForm;
 import net.devstudy.resume.form.HobbyForm;
 import net.devstudy.resume.form.InfoForm;
 import net.devstudy.resume.form.LanguageForm;
-import net.devstudy.resume.form.ProfileMainForm;
 import net.devstudy.resume.form.PracticForm;
+import net.devstudy.resume.form.ProfileMainForm;
 import net.devstudy.resume.form.SkillForm;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.model.LanguageLevel;
 import net.devstudy.resume.model.LanguageType;
 import net.devstudy.resume.model.UploadCertificateResult;
-import net.devstudy.resume.service.ProfileService;
 import net.devstudy.resume.service.CertificateStorageService;
 import net.devstudy.resume.service.PhotoStorageService;
+import net.devstudy.resume.service.ProfileService;
 import net.devstudy.resume.service.StaticDataService;
 import net.devstudy.resume.util.SecurityUtil;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.beans.propertyeditors.StringTrimmerEditor;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
-import jakarta.validation.Valid;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validator;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.StringUtils;
-import org.springframework.validation.FieldError;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
-import java.beans.PropertyEditorSupport;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @Controller
 @RequestMapping("/{uid}/edit")
 @RequiredArgsConstructor
 public class EditProfileController {
-
 
     private final StaticDataService staticDataService;
     private final CertificateStorageService certificateStorageService;
@@ -317,7 +317,8 @@ public class EditProfileController {
 
     @PostMapping("/certificates/upload")
     @ResponseBody
-    public UploadCertificateResult uploadCertificate(@PathVariable String uid, @RequestParam("certificateFile") MultipartFile certificateFile) {
+    public UploadCertificateResult uploadCertificate(@PathVariable String uid,
+            @RequestParam("certificateFile") MultipartFile certificateFile) {
         if (resolveProfile(uid) == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Неавторизований запит");
         }
@@ -387,7 +388,8 @@ public class EditProfileController {
                 form.setHobbyIds(ids);
                 model.addAttribute("profile", profile);
                 model.addAttribute("form", form);
-                model.addAttribute("hobbies", staticDataService.findAllHobbiesWithSelected(ids == null ? List.of() : ids));
+                model.addAttribute("hobbies",
+                        staticDataService.findAllHobbiesWithSelected(ids == null ? List.of() : ids));
                 return "edit/hobbies";
             }
         }
