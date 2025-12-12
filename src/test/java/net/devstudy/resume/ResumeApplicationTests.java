@@ -1,12 +1,10 @@
- package net.devstudy.resume;
+package net.devstudy.resume;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
-@ActiveProfiles("test")
-class ResumeApplicationTests {
+import net.devstudy.resume.testcontainers.PostgresIntegrationTest;
+
+class ResumeApplicationTests extends PostgresIntegrationTest {
 
 	@Test
 	void contextLoads() {

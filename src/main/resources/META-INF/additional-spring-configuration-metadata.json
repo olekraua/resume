@@ -69,6 +69,13 @@
       "name": "social.facebook.client-secret",
       "type": "java.lang.String",
       "description": "Facebook application client secret."
+    },
+
+    {
+      "name": "app.search.elasticsearch.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Enable Elasticsearch integration."
     }
   ]
 }
