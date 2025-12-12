@@ -21,7 +21,7 @@ public class SecurityConfig {
                                         .requestMatchers("/", "/welcome", "/fragment/more", "/search",
                                                         "/error/**", "/css/**", "/favicon/**",
                                                         "/fonts/**", "/img/**",
-                                                        "/js/**", "/media/**", "/favicon.ico",
+                                                        "/js/**", "/media/**", "/uploads/**", "/favicon.ico",
                                                         "/login", "/register")
                                         .permitAll()
                                         // профільні сторінки (GET /{uid}) публічні, але редагування/акаунт захищені
