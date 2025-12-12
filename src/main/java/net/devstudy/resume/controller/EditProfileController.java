@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.entity.Hobby;
 import net.devstudy.resume.entity.SkillCategory;
+import net.devstudy.resume.entity.Practic;
 import net.devstudy.resume.form.ChangePasswordForm;
 import net.devstudy.resume.form.ContactsForm;
 import net.devstudy.resume.form.CourseForm;
@@ -23,8 +24,7 @@ import net.devstudy.resume.service.CertificateStorageService;
 import net.devstudy.resume.service.PhotoStorageService;
 import net.devstudy.resume.service.StaticDataService;
 import net.devstudy.resume.util.SecurityUtil;
-import net.devstudy.resume.dto.PracticDto;
-import net.devstudy.resume.mapper.PracticMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -40,6 +40,7 @@ import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import jakarta.validation.Valid;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -59,13 +60,13 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class EditProfileController {
 
-    private final ProfileService profileService;
+
     private final StaticDataService staticDataService;
     private final CertificateStorageService certificateStorageService;
     private final PhotoStorageService photoStorageService;
     private final PasswordEncoder passwordEncoder;
     private final Validator validator;
-    private final PracticMapper practicMapper;
+    private final ProfileService profileService;
 
     @ModelAttribute("skillCategories")
     public java.util.List<SkillCategory> skillCategories() {
@@ -85,13 +86,15 @@ public class EditProfileController {
     @PostMapping("/profile")
     public String saveProfile(@PathVariable String uid, @Valid @ModelAttribute("form") ProfileMainForm form,
             BindingResult bindingResult, Model model) {
-        Long profileId = SecurityUtil.getCurrentId();
-        if (profileId == null) {
-            return "redirect:/login";
-        }
         Profile profile = resolveProfile(uid);
         if (profile == null) {
             return "redirect:/login";
+        }
+        Long profileId = profile.getId();
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
+            return "edit/profile";
         }
         MultipartFile photo = form.getProfilePhoto();
         if (photo != null && !photo.isEmpty()) {
@@ -107,6 +110,7 @@ public class EditProfileController {
         }
         if (bindingResult.hasErrors()) {
             model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
             return "edit/profile";
         }
         // info
@@ -202,11 +206,14 @@ public class EditProfileController {
     @PostMapping("/skills")
     public String saveSkills(@PathVariable String uid, @Valid @ModelAttribute("form") SkillForm form,
             BindingResult bindingResult, Model model) {
-        Long profileId = SecurityUtil.getCurrentId();
-        if (profileId == null)
+        Profile profile = resolveProfile(uid);
+        if (profile == null)
             return "redirect:/login";
+        Long profileId = profile.getId();
         if (bindingResult.hasErrors()) {
-            return prepareSkills(uid, model);
+            model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
+            return "edit/skills";
         }
         profileService.updateSkills(profileId, form.getItems());
         return "redirect:/" + uid + "/edit/skills?success";
@@ -216,15 +223,16 @@ public class EditProfileController {
     public String savePractics(@PathVariable String uid, @ModelAttribute("form") PracticForm form,
             BindingResult bindingResult,
             Model model) {
-        Long profileId = SecurityUtil.getCurrentId();
-        if (profileId == null)
+        Profile profile = resolveProfile(uid);
+        if (profile == null)
             return "redirect:/login";
-        List<PracticDto> items = form.getItems();
+        Long profileId = profile.getId();
+        List<Practic> items = form.getItems();
         if (items == null) {
             items = new ArrayList<>();
         }
-        List<PracticDto> filtered = new ArrayList<>();
-        for (PracticDto item : items) {
+        List<Practic> filtered = new ArrayList<>();
+        for (Practic item : items) {
             if (!isPracticEmpty(item)) {
                 filtered.add(item);
             }
@@ -235,21 +243,18 @@ public class EditProfileController {
         }
         if (!filtered.isEmpty()) {
             for (int i = 0; i < filtered.size(); i++) {
-                Set<ConstraintViolation<PracticDto>> violations = validator
+                Set<ConstraintViolation<Practic>> violations = validator
                         .validate(filtered.get(i));
-                for (ConstraintViolation<PracticDto> violation : violations) {
+                for (ConstraintViolation<Practic> violation : violations) {
                     String fieldPath = "items[" + i + "]." + violation.getPropertyPath();
                     bindingResult.addError(new FieldError("form", fieldPath, violation.getMessage()));
                 }
             }
         }
         if (bindingResult.hasErrors()) {
-            return preparePractics(uid, model);
+            return showPracticsForm(profile, model, form);
         }
-        List<net.devstudy.resume.entity.Practic> entities = filtered.stream()
-                .map(practicMapper::toEntity)
-                .toList();
-        profileService.updatePractics(profileId, entities);
+        profileService.updatePractics(profileId, filtered);
         return "redirect:/" + uid + "/edit/practics?success";
     }
 
@@ -257,11 +262,16 @@ public class EditProfileController {
     public String saveEducation(@PathVariable String uid, @Valid @ModelAttribute("form") EducationForm form,
             BindingResult bindingResult,
             Model model) {
-        Long profileId = SecurityUtil.getCurrentId();
-        if (profileId == null)
+        Profile profile = resolveProfile(uid);
+        if (profile == null)
             return "redirect:/login";
+        Long profileId = profile.getId();
         if (bindingResult.hasErrors()) {
-            return prepareEducation(uid, model);
+            model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
+            model.addAttribute("years", staticDataService.findEducationYears());
+            model.addAttribute("months", staticDataService.findMonthMap());
+            return "edit/education";
         }
         profileService.updateEducations(profileId, form.getItems());
         return "redirect:/" + uid + "/edit/education?success";
@@ -271,11 +281,16 @@ public class EditProfileController {
     public String saveCourses(@PathVariable String uid, @Valid @ModelAttribute("form") CourseForm form,
             BindingResult bindingResult,
             Model model) {
-        Long profileId = SecurityUtil.getCurrentId();
-        if (profileId == null)
+        Profile profile = resolveProfile(uid);
+        if (profile == null)
             return "redirect:/login";
+        Long profileId = profile.getId();
         if (bindingResult.hasErrors()) {
-            return prepareCourses(uid, model);
+            model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
+            model.addAttribute("years", staticDataService.findCoursesYears());
+            model.addAttribute("months", staticDataService.findMonthMap());
+            return "edit/courses";
         }
         profileService.updateCourses(profileId, form.getItems());
         return "redirect:/" + uid + "/edit/courses?success";
@@ -285,11 +300,16 @@ public class EditProfileController {
     public String saveLanguages(@PathVariable String uid, @Valid @ModelAttribute("form") LanguageForm form,
             BindingResult bindingResult,
             Model model) {
-        Long profileId = SecurityUtil.getCurrentId();
-        if (profileId == null)
+        Profile profile = resolveProfile(uid);
+        if (profile == null)
             return "redirect:/login";
+        Long profileId = profile.getId();
         if (bindingResult.hasErrors()) {
-            return prepareLanguages(uid, model);
+            model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
+            model.addAttribute("languageTypes", staticDataService.findAllLanguageTypes());
+            model.addAttribute("languageLevels", staticDataService.findAllLanguageLevels());
+            return "edit/languages";
         }
         profileService.updateLanguages(profileId, form.getItems());
         return "redirect:/" + uid + "/edit/languages?success";
@@ -297,29 +317,51 @@ public class EditProfileController {
 
     @PostMapping("/certificates/upload")
     @ResponseBody
-    public UploadCertificateResult uploadCertificate(@RequestParam("certificateFile") MultipartFile certificateFile) {
-        return certificateStorageService.store(certificateFile);
+    public UploadCertificateResult uploadCertificate(@PathVariable String uid, @RequestParam("certificateFile") MultipartFile certificateFile) {
+        if (resolveProfile(uid) == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Неавторизований запит");
+        }
+        if (certificateFile == null || certificateFile.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Порожній файл сертифікату");
+        }
+        try {
+            return certificateStorageService.store(certificateFile);
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Не вдалося зберегти сертифікат", ex);
+        }
     }
 
     @PostMapping("/photo")
     public String uploadPhoto(@PathVariable String uid, @RequestParam("profilePhoto") MultipartFile profilePhoto) {
-        Long profileId = SecurityUtil.getCurrentId();
-        if (profileId == null)
+        Profile profile = resolveProfile(uid);
+        if (profile == null)
             return "redirect:/login";
-        String[] urls = photoStorageService.store(profilePhoto);
-        profileService.updatePhoto(profileId, urls[0], urls[1]);
-        return "redirect:/" + uid + "/edit/photo?success";
+        if (profilePhoto == null || profilePhoto.isEmpty()) {
+            return "redirect:/" + uid + "/edit/photo?error";
+        }
+        try {
+            String[] urls = photoStorageService.store(profilePhoto);
+            profileService.updatePhoto(profile.getId(), urls[0], urls[1]);
+            return "redirect:/" + uid + "/edit/photo?success";
+        } catch (Exception ex) {
+            return "redirect:/" + uid + "/edit/photo?error";
+        }
     }
 
     @PostMapping("/certificates")
     public String saveCertificates(@PathVariable String uid,
             @Valid @ModelAttribute("form") net.devstudy.resume.form.CertificateForm form,
             BindingResult bindingResult, Model model) {
-        Long profileId = SecurityUtil.getCurrentId();
-        if (profileId == null)
+        Profile profile = resolveProfile(uid);
+        if (profile == null)
             return "redirect:/login";
+        Long profileId = profile.getId();
         if (bindingResult.hasErrors()) {
-            return prepareCertificates(uid, model);
+            model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
+            return "edit/certificates";
         }
         profileService.updateCertificates(profileId, form.getItems());
         return "redirect:/" + uid + "/edit/certificates?success";
@@ -329,9 +371,10 @@ public class EditProfileController {
     public String saveHobbies(@PathVariable String uid, @ModelAttribute("form") HobbyForm form,
             @RequestParam(value = "hobbies", required = false) String hobbiesParam,
             Model model) {
-        Long profileId = SecurityUtil.getCurrentId();
-        if (profileId == null)
+        Profile profile = resolveProfile(uid);
+        if (profile == null)
             return "redirect:/login";
+        Long profileId = profile.getId();
         List<Long> ids = form.getHobbyIds();
         if ((ids == null || ids.isEmpty()) && StringUtils.hasText(hobbiesParam)) {
             try {
@@ -341,12 +384,20 @@ public class EditProfileController {
                         .toList();
             } catch (NumberFormatException ex) {
                 model.addAttribute("hobbyError", "Невірний формат ідентифікатора хобі");
-                return prepareHobbies(uid, model);
+                form.setHobbyIds(ids);
+                model.addAttribute("profile", profile);
+                model.addAttribute("form", form);
+                model.addAttribute("hobbies", staticDataService.findAllHobbiesWithSelected(ids == null ? List.of() : ids));
+                return "edit/hobbies";
             }
         }
         if (ids == null || ids.isEmpty()) {
             model.addAttribute("hobbyError", "Оберіть хоча б одне хобі");
-            return prepareHobbies(uid, model);
+            form.setHobbyIds(ids);
+            model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
+            model.addAttribute("hobbies", staticDataService.findAllHobbiesWithSelected(ids == null ? List.of() : ids));
+            return "edit/hobbies";
         }
         profileService.updateHobbies(profileId, ids);
         return "redirect:/" + uid + "/edit/hobbies?success";
@@ -356,11 +407,14 @@ public class EditProfileController {
     public String saveContacts(@PathVariable String uid, @Valid @ModelAttribute("form") ContactsForm form,
             BindingResult bindingResult,
             Model model) {
-        Long profileId = SecurityUtil.getCurrentId();
-        if (profileId == null)
+        Profile profile = resolveProfile(uid);
+        if (profile == null)
             return "redirect:/login";
+        Long profileId = profile.getId();
         if (bindingResult.hasErrors()) {
-            return prepareContacts(uid, model);
+            model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
+            return "edit/contacts";
         }
         profileService.updateContacts(profileId, form);
         return "redirect:/" + uid + "/edit/contacts?success";
@@ -369,14 +423,11 @@ public class EditProfileController {
     @PostMapping("/info")
     public String saveInfo(@PathVariable String uid, @Valid @ModelAttribute("form") InfoForm form,
             BindingResult bindingResult, Model model) {
-        Long profileId = SecurityUtil.getCurrentId();
-        if (profileId == null)
+        Profile profile = resolveProfile(uid);
+        if (profile == null)
             return "redirect:/login";
+        Long profileId = profile.getId();
         if (bindingResult.hasErrors()) {
-            Profile profile = resolveProfile(uid);
-            if (profile == null) {
-                return "redirect:/login";
-            }
             model.addAttribute("profile", profile);
             model.addAttribute("form", form);
             return "edit/info";
@@ -389,26 +440,36 @@ public class EditProfileController {
     public String savePassword(@PathVariable String uid, @Valid @ModelAttribute("form") ChangePasswordForm form,
             BindingResult bindingResult,
             Model model) {
-        Long profileId = SecurityUtil.getCurrentId();
-        if (profileId == null)
+        Profile profile = resolveProfile(uid);
+        if (profile == null)
             return "redirect:/login";
         if (bindingResult.hasErrors()) {
-            return preparePassword(uid, model);
-        }
-        Profile profile = profileService.findById(profileId).orElse(null);
-        if (profile == null) {
-            return "redirect:/login";
+            model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
+            return "edit/password";
         }
         if (!passwordEncoder.matches(form.getCurrentPassword(), profile.getPassword())) {
             bindingResult.rejectValue("currentPassword", "password.mismatch", "Невірний поточний пароль");
-            return preparePassword(uid, model);
+            model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
+            return "edit/password";
         }
         if (!form.getNewPassword().equals(form.getConfirmPassword())) {
             bindingResult.rejectValue("confirmPassword", "password.confirm", "Паролі не співпадають");
-            return preparePassword(uid, model);
+            model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
+            return "edit/password";
         }
-        profileService.updatePassword(profileId, form.getNewPassword());
+        profileService.updatePassword(profile.getId(), form.getNewPassword());
         return "redirect:/" + uid + "/edit/password?success";
+    }
+
+    private String showPracticsForm(Profile profile, Model model, PracticForm form) {
+        model.addAttribute("profile", profile);
+        model.addAttribute("form", form);
+        model.addAttribute("years", staticDataService.findPracticsYears());
+        model.addAttribute("months", staticDataService.findMonthMap());
+        return "edit/practics";
     }
 
     private String prepareSkills(String uid, Model model) {
@@ -474,7 +535,7 @@ public class EditProfileController {
         return prepareProfileModel(uid, model, "edit/password", new ChangePasswordForm());
     }
 
-    private boolean isPracticEmpty(PracticDto item) {
+    private boolean isPracticEmpty(Practic item) {
         if (item == null) {
             return true;
         }
@@ -536,11 +597,7 @@ public class EditProfileController {
             return skillForm;
         }
         if (emptyForm instanceof PracticForm practicForm) {
-            if (profile.getPractics() != null) {
-                practicForm.setItems(profile.getPractics().stream()
-                        .map(practicMapper::toDto)
-                        .toList());
-            }
+            practicForm.setItems(profile.getPractics());
             return practicForm;
         }
         if (emptyForm instanceof EducationForm educationForm) {
