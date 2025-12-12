@@ -23,6 +23,8 @@ import net.devstudy.resume.service.CertificateStorageService;
 import net.devstudy.resume.service.PhotoStorageService;
 import net.devstudy.resume.service.StaticDataService;
 import net.devstudy.resume.util.SecurityUtil;
+import net.devstudy.resume.dto.PracticDto;
+import net.devstudy.resume.mapper.PracticMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -63,6 +65,7 @@ public class EditProfileController {
     private final PhotoStorageService photoStorageService;
     private final PasswordEncoder passwordEncoder;
     private final Validator validator;
+    private final PracticMapper practicMapper;
 
     @ModelAttribute("skillCategories")
     public java.util.List<SkillCategory> skillCategories() {
@@ -216,12 +219,12 @@ public class EditProfileController {
         Long profileId = SecurityUtil.getCurrentId();
         if (profileId == null)
             return "redirect:/login";
-        List<net.devstudy.resume.entity.Practic> items = form.getItems();
+        List<PracticDto> items = form.getItems();
         if (items == null) {
             items = new ArrayList<>();
         }
-        List<net.devstudy.resume.entity.Practic> filtered = new ArrayList<>();
-        for (net.devstudy.resume.entity.Practic item : items) {
+        List<PracticDto> filtered = new ArrayList<>();
+        for (PracticDto item : items) {
             if (!isPracticEmpty(item)) {
                 filtered.add(item);
             }
@@ -232,9 +235,9 @@ public class EditProfileController {
         }
         if (!filtered.isEmpty()) {
             for (int i = 0; i < filtered.size(); i++) {
-                Set<ConstraintViolation<net.devstudy.resume.entity.Practic>> violations = validator
+                Set<ConstraintViolation<PracticDto>> violations = validator
                         .validate(filtered.get(i));
-                for (ConstraintViolation<net.devstudy.resume.entity.Practic> violation : violations) {
+                for (ConstraintViolation<PracticDto> violation : violations) {
                     String fieldPath = "items[" + i + "]." + violation.getPropertyPath();
                     bindingResult.addError(new FieldError("form", fieldPath, violation.getMessage()));
                 }
@@ -243,7 +246,10 @@ public class EditProfileController {
         if (bindingResult.hasErrors()) {
             return preparePractics(uid, model);
         }
-        profileService.updatePractics(profileId, filtered);
+        List<net.devstudy.resume.entity.Practic> entities = filtered.stream()
+                .map(practicMapper::toEntity)
+                .toList();
+        profileService.updatePractics(profileId, entities);
         return "redirect:/" + uid + "/edit/practics?success";
     }
 
@@ -468,7 +474,7 @@ public class EditProfileController {
         return prepareProfileModel(uid, model, "edit/password", new ChangePasswordForm());
     }
 
-    private boolean isPracticEmpty(net.devstudy.resume.entity.Practic item) {
+    private boolean isPracticEmpty(PracticDto item) {
         if (item == null) {
             return true;
         }
@@ -530,7 +536,11 @@ public class EditProfileController {
             return skillForm;
         }
         if (emptyForm instanceof PracticForm practicForm) {
-            practicForm.setItems(profile.getPractics());
+            if (profile.getPractics() != null) {
+                practicForm.setItems(profile.getPractics().stream()
+                        .map(practicMapper::toDto)
+                        .toList());
+            }
             return practicForm;
         }
         if (emptyForm instanceof EducationForm educationForm) {

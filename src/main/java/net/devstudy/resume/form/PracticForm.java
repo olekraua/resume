@@ -5,11 +5,11 @@ import java.util.List;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.Setter;
-import net.devstudy.resume.entity.Practic;
+import net.devstudy.resume.dto.PracticDto;
 
 @Getter
 @Setter
 public class PracticForm {
     @Valid
-    private List<Practic> items;
+    private List<PracticDto> items;
 }
