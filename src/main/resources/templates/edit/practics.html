@@ -81,8 +81,8 @@
     </div>
   </div>
 </div>
-<div th:replace="fragments/layout :: footer"></div>
-<th:block th:replace="fragments/layout :: scripts"></th:block>
+<div th:replace="~{fragments/layout :: footer}"></div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 <script id="ui-block-template" type="text/x-handlebars-template">
   <div class="panel panel-default ui-item practic-item" id="ui-item-{{blockIndex}}">
     <div class="panel-heading">Позиция {{inc blockIndex}}
@@ -134,6 +134,7 @@
     form.addEventListener('submit', function(e) {
       var blocks = Array.prototype.slice.call(form.querySelectorAll('.practic-item'));
       var hasError = false;
+      var keptBlocks = [];
 
       blocks.forEach(function(block) {
         var getVal = function(selector) {
@@ -153,12 +154,20 @@
           return;
         }
 
+        keptBlocks.push(block);
+
         block.classList.remove('has-error');
         if (!allFilled) {
           hasError = true;
           block.classList.add('has-error');
         }
       });
+
+      if (keptBlocks.length === 0) {
+        e.preventDefault();
+        alert('Додайте хоча б одну практику перед збереженням.');
+        return;
+      }
 
       if (hasError) {
         e.preventDefault();

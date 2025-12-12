@@ -4,6 +4,8 @@ import java.io.Serial;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -53,6 +55,7 @@ public class Practic extends AbstractFinishDateEntity<Long> implements ProfileEn
     private String responsibilities;
 
     @Column(name = "begin_date", nullable = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @NotNull
     private LocalDate beginDate;
 

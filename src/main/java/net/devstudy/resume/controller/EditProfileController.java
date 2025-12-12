@@ -39,10 +39,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.FieldError;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 import java.beans.PropertyEditorSupport;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -57,6 +62,7 @@ public class EditProfileController {
     private final CertificateStorageService certificateStorageService;
     private final PhotoStorageService photoStorageService;
     private final PasswordEncoder passwordEncoder;
+    private final Validator validator;
 
     @ModelAttribute("skillCategories")
     public java.util.List<SkillCategory> skillCategories() {
@@ -204,16 +210,40 @@ public class EditProfileController {
     }
 
     @PostMapping("/practics")
-    public String savePractics(@PathVariable String uid, @Valid @ModelAttribute("form") PracticForm form,
+    public String savePractics(@PathVariable String uid, @ModelAttribute("form") PracticForm form,
             BindingResult bindingResult,
             Model model) {
         Long profileId = SecurityUtil.getCurrentId();
         if (profileId == null)
             return "redirect:/login";
+        List<net.devstudy.resume.entity.Practic> items = form.getItems();
+        if (items == null) {
+            items = new ArrayList<>();
+        }
+        List<net.devstudy.resume.entity.Practic> filtered = new ArrayList<>();
+        for (net.devstudy.resume.entity.Practic item : items) {
+            if (!isPracticEmpty(item)) {
+                filtered.add(item);
+            }
+        }
+        form.setItems(filtered);
+        if (filtered.isEmpty()) {
+            bindingResult.reject("practics.empty", "Додайте хоча б одну практику");
+        }
+        if (!filtered.isEmpty()) {
+            for (int i = 0; i < filtered.size(); i++) {
+                Set<ConstraintViolation<net.devstudy.resume.entity.Practic>> violations = validator
+                        .validate(filtered.get(i));
+                for (ConstraintViolation<net.devstudy.resume.entity.Practic> violation : violations) {
+                    String fieldPath = "items[" + i + "]." + violation.getPropertyPath();
+                    bindingResult.addError(new FieldError("form", fieldPath, violation.getMessage()));
+                }
+            }
+        }
         if (bindingResult.hasErrors()) {
             return preparePractics(uid, model);
         }
-        profileService.updatePractics(profileId, form.getItems());
+        profileService.updatePractics(profileId, filtered);
         return "redirect:/" + uid + "/edit/practics?success";
     }
 
@@ -436,6 +466,17 @@ public class EditProfileController {
 
     private String preparePassword(String uid, Model model) {
         return prepareProfileModel(uid, model, "edit/password", new ChangePasswordForm());
+    }
+
+    private boolean isPracticEmpty(net.devstudy.resume.entity.Practic item) {
+        if (item == null) {
+            return true;
+        }
+        boolean hasPosition = StringUtils.hasText(item.getPosition());
+        boolean hasCompany = StringUtils.hasText(item.getCompany());
+        boolean hasResponsibilities = StringUtils.hasText(item.getResponsibilities());
+        boolean hasBeginDate = item.getBeginDate() != null;
+        return !(hasPosition || hasCompany || hasResponsibilities || hasBeginDate);
     }
 
     private String prepareProfileMain(String uid, Model model) {

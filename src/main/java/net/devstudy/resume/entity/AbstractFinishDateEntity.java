@@ -3,6 +3,8 @@ package net.devstudy.resume.entity;
 import java.io.Serial;
 import java.time.LocalDate;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
@@ -13,6 +15,7 @@ public abstract class AbstractFinishDateEntity<T> extends AbstractEntity<T> {
     private static final long serialVersionUID = -3388293457711051284L;
 
     @Column(name = "finish_date")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate finishDate;
 
     @Transient

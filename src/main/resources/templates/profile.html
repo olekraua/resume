@@ -128,7 +128,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-briefcase"></i> Practic Experience
-                            <a th:if="${ownProfile}" href="/edit/practics" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="@{|/${profile.uid}/edit/practics|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
