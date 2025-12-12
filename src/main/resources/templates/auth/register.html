@@ -1,8 +1,8 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:replace="fragments/layout :: head('Реєстрація')"></head>
+<head th:replace="~{fragments/layout :: head('Реєстрація')}"></head>
 <body class="resume">
-  <div th:replace="fragments/layout :: header"></div>
+  <div th:replace="~{fragments/layout :: header}"></div>
   <div class="layout-content">
     <div class="container" style="max-width: 520px;">
       <div class="panel panel-default">
@@ -52,7 +52,7 @@
       </div>
     </div>
   </div>
-  <div th:replace="fragments/layout :: footer"></div>
-  <th:block th:replace="fragments/layout :: scripts"></th:block>
+  <div th:replace="~{fragments/layout :: footer}"></div>
+  <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>
 </html>

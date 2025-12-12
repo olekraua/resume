@@ -1,8 +1,8 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/layout :: head('Edit Languages')"></head>
+<head th:replace="~{fragments/layout :: head('Edit Languages')}"></head>
 <body class="resume">
-<div th:replace="fragments/layout :: header"></div>
+<div th:replace="~{fragments/layout :: header}"></div>
 <div class="layout-content container">
   <h2>Иностранные языки</h2>
   <div th:replace="~{edit/_nav :: nav}"></div>
@@ -60,8 +60,8 @@
     </div>
   </form>
 </div>
-<div th:replace="fragments/layout :: footer"></div>
-<th:block th:replace="fragments/layout :: scripts"></th:block>
+<div th:replace="~{fragments/layout :: footer}"></div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 <script id="ui-block-template" type="text/x-handlebars-template">
   <div class="panel panel-default ui-item language-item" id="ui-item-{{blockIndex}}">
     <div class="panel-heading">Язык {{inc blockIndex}}

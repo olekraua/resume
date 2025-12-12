@@ -1,8 +1,8 @@
 <!doctype html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/layout :: head('Edit Contacts')"></head>
+<head th:replace="~{fragments/layout :: head('Edit Contacts')}"></head>
 <body class="resume">
-<div th:replace="fragments/layout :: header"></div>
+<div th:replace="~{fragments/layout :: header}"></div>
 <div class="layout-content container">
   <h2>Edit Contacts</h2>
   <div th:replace="~{edit/_nav :: nav}"></div>
@@ -54,7 +54,7 @@
     </div>
   </form>
 </div>
-<div th:replace="fragments/layout :: footer"></div>
-<th:block th:replace="fragments/layout :: scripts"></th:block>
+<div th:replace="~{fragments/layout :: footer}"></div>
+<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
 </body>
 </html>
