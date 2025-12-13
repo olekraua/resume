@@ -11,6 +11,7 @@ import net.devstudy.resume.entity.Practic;
 import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.entity.Skill;
 import net.devstudy.resume.entity.Contacts;
+import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.form.ContactsForm;
 import net.devstudy.resume.form.InfoForm;
 import net.devstudy.resume.repository.storage.CertificateRepository;
@@ -23,6 +24,7 @@ import net.devstudy.resume.repository.storage.ProfileRepository;
 import net.devstudy.resume.repository.storage.SkillRepository;
 import net.devstudy.resume.service.ProfileService;
 import net.devstudy.resume.service.ProfileSearchService;
+import net.devstudy.resume.util.SecurityUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -66,6 +68,20 @@ public class ProfileServiceImpl implements ProfileService {
         Optional<Profile> opt = profileRepository.findById(id);
         opt.ifPresent(this::initializeCollections);
         return opt;
+    }
+
+    @Override
+    public Optional<Profile> loadCurrentProfileWithHobbies(String uid) {
+        CurrentProfile current = SecurityUtil.getCurrentProfile();
+        if (current == null || !current.getUsername().equals(uid)) {
+            return Optional.empty();
+        }
+        return findByIdWithAll(current.getId()).map(profile -> {
+            if (profile.getHobbies() != null) {
+                profile.getHobbies().size();
+            }
+            return profile;
+        });
     }
 
     @Override

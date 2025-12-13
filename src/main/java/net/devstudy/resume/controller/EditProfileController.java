@@ -512,15 +512,12 @@ public class EditProfileController {
     }
 
     private String prepareHobbies(String uid, Model model) {
-        Long profileId = SecurityUtil.getCurrentId();
         HobbyForm form = new HobbyForm();
-        if (profileId != null) {
-            profileService.findByIdWithAll(profileId).ifPresent(profile -> {
-                if (profile.getHobbies() != null) {
-                    form.setHobbyIds(profile.getHobbies().stream().map(Hobby::getId).toList());
-                }
-            });
-        }
+        profileService.loadCurrentProfileWithHobbies(uid).ifPresent(profile -> {
+            if (profile.getHobbies() != null) {
+                form.setHobbyIds(profile.getHobbies().stream().map(Hobby::getId).toList());
+            }
+        });
         model.addAttribute("hobbies", staticDataService.findAllHobbiesWithSelected(form.getHobbyIds()));
         return prepareProfileModel(uid, model, "edit/hobbies", form);
     }
