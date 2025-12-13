@@ -1,0 +1,22 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Something went wrong</title>
+  <link rel="stylesheet" th:href="@{/static/css/common.css}" />
+</head>
+<body class="resume" style="padding: 32px; font-family: Arial, sans-serif;">
+  <div style="max-width: 640px; margin: 0 auto;">
+    <h1 style="margin-bottom: 12px;">Oops, something went wrong</h1>
+    <p th:text="${message}" style="color: #b71c1c; font-weight: 600;"></p>
+    <p style="color: #555;">If the problem persists, please contact support.</p>
+    <div style="margin-top: 16px; font-size: 14px; color: #888;">
+      <div><strong>Path:</strong> <span th:text="${path}"></span></div>
+      <div><strong>Method:</strong> <span th:text="${method}"></span></div>
+    </div>
+    <div style="margin-top: 24px;">
+      <a th:href="@{/}" style="text-decoration: none; color: #1976d2;">Back to home</a>
+    </div>
+  </div>
+</body>
+</html>

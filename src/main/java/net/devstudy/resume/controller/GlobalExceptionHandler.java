@@ -19,9 +19,23 @@ public class GlobalExceptionHandler {
         return buildNotFoundView(request, ex.getMessage());
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ModelAndView handleIllegalState(IllegalStateException ex, HttpServletRequest request) {
+        return buildServerErrorView(request, ex.getMessage());
+    }
+
     private ModelAndView buildNotFoundView(HttpServletRequest request, String message) {
         ModelAndView mav = new ModelAndView("error/page-not-found");
         mav.setStatus(HttpStatus.NOT_FOUND);
+        mav.addObject("path", request.getRequestURI());
+        mav.addObject("method", request.getMethod());
+        mav.addObject("message", message);
+        return mav;
+    }
+
+    private ModelAndView buildServerErrorView(HttpServletRequest request, String message) {
+        ModelAndView mav = new ModelAndView("error/server-error");
+        mav.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
         mav.addObject("path", request.getRequestURI());
         mav.addObject("method", request.getMethod());
         mav.addObject("message", message);
