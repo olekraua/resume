@@ -7,13 +7,13 @@
   <h2>Иностранные языки</h2>
   <div th:replace="~{edit/_nav :: nav}"></div>
 
-  <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
-    <ul>
-      <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
-    </ul>
-  </div>
-
   <form th:action="@{/edit/languages}" method="post" th:object="${form}">
+    <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+      <ul>
+        <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
+      </ul>
+    </div>
+
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
     <div id="ui-block-container">
       <div th:each="item,iter : *{items}" class="panel panel-default ui-item language-item" th:id="|ui-item-${iter.index}|">

@@ -2,6 +2,10 @@ package net.devstudy.resume.entity;
 
 import java.io.Serial;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Immutable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +16,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "skill_category")
+@Immutable
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 public class SkillCategory extends AbstractEntity<Long> {
     @Serial
     private static final long serialVersionUID = 1L;

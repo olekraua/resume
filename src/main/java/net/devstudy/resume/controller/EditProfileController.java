@@ -515,7 +515,7 @@ public class EditProfileController {
         Long profileId = SecurityUtil.getCurrentId();
         HobbyForm form = new HobbyForm();
         if (profileId != null) {
-            profileService.findById(profileId).ifPresent(profile -> {
+            profileService.findByIdWithAll(profileId).ifPresent(profile -> {
                 if (profile.getHobbies() != null) {
                     form.setHobbyIds(profile.getHobbies().stream().map(Hobby::getId).toList());
                 }
