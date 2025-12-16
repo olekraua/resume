@@ -33,6 +33,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.entity.Hobby;
+import net.devstudy.resume.entity.Education;
 import net.devstudy.resume.entity.Practic;
 import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.entity.SkillCategory;
@@ -50,11 +51,11 @@ import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.model.LanguageLevel;
 import net.devstudy.resume.model.LanguageType;
 import net.devstudy.resume.model.UploadCertificateResult;
+import net.devstudy.resume.security.CurrentProfileProvider;
 import net.devstudy.resume.service.CertificateStorageService;
 import net.devstudy.resume.service.PhotoStorageService;
 import net.devstudy.resume.service.ProfileService;
 import net.devstudy.resume.service.StaticDataService;
-import net.devstudy.resume.util.SecurityUtil;
 
 @Controller
 @RequestMapping("/{uid}/edit")
@@ -67,6 +68,7 @@ public class EditProfileController {
     private final PasswordEncoder passwordEncoder;
     private final Validator validator;
     private final ProfileService profileService;
+    private final CurrentProfileProvider currentProfileProvider;
 
     @ModelAttribute("skillCategories")
     public java.util.List<SkillCategory> skillCategories() {
@@ -259,21 +261,40 @@ public class EditProfileController {
     }
 
     @PostMapping("/education")
-    public String saveEducation(@PathVariable String uid, @Valid @ModelAttribute("form") EducationForm form,
+    public String saveEducation(@PathVariable String uid, @ModelAttribute("form") EducationForm form,
             BindingResult bindingResult,
             Model model) {
         Profile profile = resolveProfile(uid);
         if (profile == null)
             return "redirect:/login";
         Long profileId = profile.getId();
-        if (bindingResult.hasErrors()) {
-            model.addAttribute("profile", profile);
-            model.addAttribute("form", form);
-            model.addAttribute("years", staticDataService.findEducationYears());
-            model.addAttribute("months", staticDataService.findMonthMap());
-            return "edit/education";
+        List<Education> items = form.getItems();
+        if (items == null) {
+            items = new ArrayList<>();
         }
-        profileService.updateEducations(profileId, form.getItems());
+        List<Education> filtered = new ArrayList<>();
+        for (Education item : items) {
+            if (!isEducationEmpty(item)) {
+                filtered.add(item);
+            }
+        }
+        form.setItems(filtered);
+        if (filtered.isEmpty()) {
+            bindingResult.reject("education.empty", "Додайте хоча б одну освіту");
+        }
+        if (!filtered.isEmpty()) {
+            for (int i = 0; i < filtered.size(); i++) {
+                Set<ConstraintViolation<Education>> violations = validator.validate(filtered.get(i));
+                for (ConstraintViolation<Education> violation : violations) {
+                    String fieldPath = "items[" + i + "]." + violation.getPropertyPath();
+                    bindingResult.addError(new FieldError("form", fieldPath, violation.getMessage()));
+                }
+            }
+        }
+        if (bindingResult.hasErrors()) {
+            return showEducationForm(profile, model, form);
+        }
+        profileService.updateEducations(profileId, filtered);
         return "redirect:/" + uid + "/edit/education?success";
     }
 
@@ -474,6 +495,14 @@ public class EditProfileController {
         return "edit/practics";
     }
 
+    private String showEducationForm(Profile profile, Model model, EducationForm form) {
+        model.addAttribute("profile", profile);
+        model.addAttribute("form", form);
+        model.addAttribute("years", staticDataService.findEducationYears());
+        model.addAttribute("months", staticDataService.findMonthMap());
+        return "edit/education";
+    }
+
     private String prepareSkills(String uid, Model model) {
         model.addAttribute("skillCategories", staticDataService.findSkillCategories());
         return prepareProfileModel(uid, model, "edit/skills", new SkillForm());
@@ -545,8 +574,18 @@ public class EditProfileController {
         return !(hasPosition || hasCompany || hasResponsibilities || hasBeginDate);
     }
 
+    private boolean isEducationEmpty(Education item) {
+        if (item == null) {
+            return true;
+        }
+        boolean hasUniversity = StringUtils.hasText(item.getUniversity());
+        boolean hasFaculty = StringUtils.hasText(item.getFaculty());
+        boolean hasSummary = StringUtils.hasText(item.getSummary());
+        return !(hasUniversity || hasFaculty || hasSummary);
+    }
+
     private String prepareProfileMain(String uid, Model model) {
-        CurrentProfile current = SecurityUtil.getCurrentProfile();
+        CurrentProfile current = currentProfileProvider.getCurrentProfile();
         if (current == null || !current.getUsername().equals(uid)) {
             return "redirect:/login";
         }
@@ -569,7 +608,7 @@ public class EditProfileController {
     }
 
     private String prepareProfileModel(String uid, Model model, String viewName, Object form) {
-        CurrentProfile current = SecurityUtil.getCurrentProfile();
+        CurrentProfile current = currentProfileProvider.getCurrentProfile();
         if (current == null || !current.getUsername().equals(uid)) {
             return "redirect:/login";
         }
@@ -583,7 +622,7 @@ public class EditProfileController {
     }
 
     private Profile resolveProfile(String uid) {
-        CurrentProfile current = SecurityUtil.getCurrentProfile();
+        CurrentProfile current = currentProfileProvider.getCurrentProfile();
         if (current == null || !current.getUsername().equals(uid)) {
             return null;
         }

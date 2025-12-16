@@ -14,6 +14,7 @@ import net.devstudy.resume.entity.Contacts;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.form.ContactsForm;
 import net.devstudy.resume.form.InfoForm;
+import net.devstudy.resume.security.CurrentProfileProvider;
 import net.devstudy.resume.repository.storage.CertificateRepository;
 import net.devstudy.resume.repository.storage.CourseRepository;
 import net.devstudy.resume.repository.storage.EducationRepository;
@@ -24,7 +25,6 @@ import net.devstudy.resume.repository.storage.ProfileRepository;
 import net.devstudy.resume.repository.storage.SkillRepository;
 import net.devstudy.resume.service.ProfileService;
 import net.devstudy.resume.service.ProfileSearchService;
-import net.devstudy.resume.util.SecurityUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,6 +50,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final CertificateRepository certificateRepository;
     private final PasswordEncoder passwordEncoder;
     private final ProfileSearchService profileSearchService;
+    private final CurrentProfileProvider currentProfileProvider;
 
     @Override
     public Optional<Profile> findByUid(String uid) {
@@ -72,7 +73,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Optional<Profile> loadCurrentProfileWithHobbies(String uid) {
-        CurrentProfile current = SecurityUtil.getCurrentProfile();
+        CurrentProfile current = currentProfileProvider.getCurrentProfile();
         if (current == null || !current.getUsername().equals(uid)) {
             return Optional.empty();
         }

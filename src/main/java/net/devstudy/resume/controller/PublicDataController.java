@@ -3,8 +3,8 @@ package net.devstudy.resume.controller;
 import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.form.ChangeLoginForm;
 import net.devstudy.resume.model.CurrentProfile;
+import net.devstudy.resume.security.CurrentProfileProvider;
 import net.devstudy.resume.service.ProfileService;
-import net.devstudy.resume.util.SecurityUtil;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +26,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class PublicDataController {
     private final ProfileService profileService;
+    private final CurrentProfileProvider currentProfileProvider;
 
     
 
@@ -68,7 +69,7 @@ public class PublicDataController {
 
         Profile profile = profileOptional.get();
 
-        CurrentProfile currentProfile = SecurityUtil.getCurrentProfile();
+        CurrentProfile currentProfile = currentProfileProvider.getCurrentProfile();
         boolean ownProfile = currentProfile != null && currentProfile.getId().equals(profile.getId());
         model.addAttribute("ownProfile", ownProfile);
         if (ownProfile) {

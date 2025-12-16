@@ -8,12 +8,10 @@
         <h1>Oops! Page not found (404)</h1>
         <p>
             We could not find
-            <strong th:text="${path}">requested path</strong>
-            for method
-            <span th:text="${method}">GET</span>.
+            <strong th:text="${path != null ? path : 'requested path'}">requested path</strong>.
         </p>
-        <p th:if="${message}">
-            <small th:text="${message}">No handler was found</small>
+        <p th:if="${message != null or error != null}">
+            <small th:text="${message != null ? message : error}">Resource not found</small>
         </p>
         <p><a th:href="@{/}">Go back to the home page</a></p>
     </body>

@@ -12,6 +12,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * @author devstudy
@@ -28,15 +30,19 @@ public class Education extends AbstractEntity<Long> implements ProfileEntity {
     private Long id;
 
     @Column(nullable = false, length = 255)
+    @NotBlank
     private String faculty;
 
     @Column(nullable = false, length = 100)
+    @NotBlank
     private String summary;
 
     @Column(nullable = false, length = 2147483647)
+    @NotBlank
     private String university;
 
     @Column(name = "begin_year", nullable = false)
+    @NotNull
     private Integer beginYear;
 
     @Column(name = "finish_year")
@@ -132,4 +138,3 @@ public class Education extends AbstractEntity<Long> implements ProfileEntity {
                 && Objects.equals(finishYear, other.finishYear);
     }
 }
-

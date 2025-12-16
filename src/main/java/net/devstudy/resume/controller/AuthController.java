@@ -11,10 +11,10 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.validation.BindingResult;
 import org.springframework.ui.Model;
 
+import net.devstudy.resume.security.CurrentProfileProvider;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.form.RegistrationForm;
 import net.devstudy.resume.service.ProfileService;
-import net.devstudy.resume.util.SecurityUtil;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -23,9 +23,11 @@ import jakarta.servlet.http.HttpSession;
 public class AuthController {
 
     private final ProfileService profileService;
+    private final CurrentProfileProvider currentProfileProvider;
 
-    public AuthController(ProfileService profileService) {
+    public AuthController(ProfileService profileService, CurrentProfileProvider currentProfileProvider) {
         this.profileService = profileService;
+        this.currentProfileProvider = currentProfileProvider;
     }
 
     @GetMapping("/login")
@@ -35,7 +37,7 @@ public class AuthController {
 
     @GetMapping("/register")
     public String registerForm(Model model) {
-        if (SecurityUtil.getCurrentProfile() != null) {
+        if (currentProfileProvider.getCurrentProfile() != null) {
             return "redirect:/me";
         }
         model.addAttribute("registrationForm", new RegistrationForm());
@@ -47,7 +49,7 @@ public class AuthController {
             BindingResult bindingResult,
             Model model,
             HttpServletRequest request) {
-        if (SecurityUtil.getCurrentProfile() != null) {
+        if (currentProfileProvider.getCurrentProfile() != null) {
             return "redirect:/me";
         }
         if (bindingResult.hasErrors()) {
@@ -73,7 +75,7 @@ public class AuthController {
 
     @GetMapping("/me")
     public String me() {
-        CurrentProfile currentProfile = SecurityUtil.getCurrentProfile();
+        CurrentProfile currentProfile = currentProfileProvider.getCurrentProfile();
         if (currentProfile == null) {
             return "redirect:/login";
         }
