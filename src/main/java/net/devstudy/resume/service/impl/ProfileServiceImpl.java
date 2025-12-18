@@ -11,6 +11,7 @@ import net.devstudy.resume.entity.Practic;
 import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.entity.Skill;
 import net.devstudy.resume.entity.Contacts;
+import net.devstudy.resume.event.ProfileIndexingRequestedEvent;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.form.ContactsForm;
 import net.devstudy.resume.form.InfoForm;
@@ -25,6 +26,7 @@ import net.devstudy.resume.repository.storage.ProfileRepository;
 import net.devstudy.resume.repository.storage.SkillRepository;
 import net.devstudy.resume.service.ProfileService;
 import net.devstudy.resume.service.ProfileSearchService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -51,6 +53,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final PasswordEncoder passwordEncoder;
     private final ProfileSearchService profileSearchService;
     private final CurrentProfileProvider currentProfileProvider;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public Optional<Profile> findByUid(String uid) {
@@ -129,7 +132,9 @@ public class ProfileServiceImpl implements ProfileService {
         if (profile.getContacts() == null) {
             profile.setContacts(new Contacts());
         }
-        return profileRepository.save(profile);
+        Profile saved = profileRepository.save(profile);
+        requestIndexing(saved.getId());
+        return saved;
     }
 
     private boolean isProfileCompleted(Profile profile) {
@@ -181,6 +186,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
         profile.setUid(normalizedUid);
         profileRepository.save(profile);
+        requestIndexing(profileId);
     }
 
     @Override
@@ -195,6 +201,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
             skillRepository.saveAll(items);
         }
+        requestIndexing(profileId);
     }
 
     @Override
@@ -209,6 +216,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
             practicRepository.saveAll(items);
         }
+        requestIndexing(profileId);
     }
 
     @Override
@@ -223,6 +231,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
             educationRepository.saveAll(items);
         }
+        requestIndexing(profileId);
     }
 
     @Override
@@ -237,6 +246,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
             courseRepository.saveAll(items);
         }
+        requestIndexing(profileId);
     }
 
     @Override
@@ -251,6 +261,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
             languageRepository.saveAll(items);
         }
+        requestIndexing(profileId);
     }
 
     @Override
@@ -272,6 +283,7 @@ public class ProfileServiceImpl implements ProfileService {
             hobbyRepository.saveAll(toSave);
         }
         profile.setCompleted(isProfileCompleted(profile));
+        requestIndexing(profileId);
     }
 
     @Override
@@ -289,6 +301,7 @@ public class ProfileServiceImpl implements ProfileService {
         profile.getContacts().setStackoverflow(form.getStackoverflow());
         profile.setCompleted(isProfileCompleted(profile));
         profileRepository.save(profile);
+        requestIndexing(profileId);
     }
 
     @Override
@@ -304,6 +317,7 @@ public class ProfileServiceImpl implements ProfileService {
         // оновлюємо completion-статус, якщо всі ключові поля заповнені
         profile.setCompleted(isProfileCompleted(profile));
         profileRepository.save(profile);
+        requestIndexing(profileId);
     }
 
     @Override
@@ -319,6 +333,7 @@ public class ProfileServiceImpl implements ProfileService {
             certificateRepository.saveAll(items);
         }
         profile.setCompleted(isProfileCompleted(profile));
+        requestIndexing(profileId);
     }
 
     @Override
@@ -329,6 +344,14 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setSmallPhoto(smallUrl);
         profile.setCompleted(isProfileCompleted(profile));
         profileRepository.save(profile);
+        requestIndexing(profileId);
+    }
+
+    private void requestIndexing(Long profileId) {
+        if (profileId == null) {
+            return;
+        }
+        eventPublisher.publishEvent(new ProfileIndexingRequestedEvent(profileId));
     }
 
     private Profile getProfileOrThrow(Long profileId) {

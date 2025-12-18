@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import net.devstudy.resume.repository.storage.ProfileRepository;
@@ -22,8 +23,9 @@ class ProfileServiceImplTest {
         PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
         ProfileSearchService searchService = Mockito.mock(ProfileSearchService.class);
         CurrentProfileProvider currentProfileProvider = Mockito.mock(CurrentProfileProvider.class);
+        ApplicationEventPublisher eventPublisher = Mockito.mock(ApplicationEventPublisher.class);
         service = new ProfileServiceImpl(profileRepository, null, null, null, null, null, null, null, passwordEncoder,
-                searchService, currentProfileProvider);
+                searchService, currentProfileProvider, eventPublisher);
     }
 
     @Test
