@@ -1,5 +1,6 @@
 package net.devstudy.resume.testcontainers;
 
+import org.junit.jupiter.api.Tag;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.context.ActiveProfiles;
@@ -9,6 +10,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@Tag("integration")
 @Testcontainers
 public abstract class PostgresIntegrationTest {
 
@@ -19,8 +21,4 @@ public abstract class PostgresIntegrationTest {
             .withDatabaseName("resume")
             .withUsername("resume")
             .withPassword("resume");
-
-            static {
-    POSTGRES.getDockerImageName(); // маркер використання для аналізатора
-}
 }
