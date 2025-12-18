@@ -43,5 +43,19 @@ class ProfileSearchMapperImplTest {
         assertEquals("About me", doc.getInfo());
         assertEquals("Java, Spring", doc.getSkills());
     }
-}
 
+    @Test
+    void toDocumentTruncatesLongFields() {
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john_doe");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        profile.setInfo("a".repeat(ProfileSearchMapperImpl.MAX_INFO_LENGTH + 10));
+
+        ProfileSearchDocument doc = mapper.toDocument(profile);
+
+        assertEquals(ProfileSearchMapperImpl.MAX_INFO_LENGTH, doc.getInfo().length());
+        assertEquals("a".repeat(ProfileSearchMapperImpl.MAX_INFO_LENGTH), doc.getInfo());
+    }
+}
