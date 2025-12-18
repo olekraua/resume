@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
 
+import net.devstudy.resume.annotation.ProfileInfoField;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -78,7 +80,9 @@ public class Profile extends AbstractEntity<Long> {
     @JsonIgnore
     private String email;
 
-    @Column private String info;
+    @ProfileInfoField
+    @Column
+    private String info;
 
     @Column(length = 2147483647)
     private String summary;

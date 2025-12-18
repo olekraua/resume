@@ -33,13 +33,16 @@ public class ProfileSearchDocument {
     private String summary;
 
     @Field(type = FieldType.Text)
+    private String info;
+
+    @Field(type = FieldType.Text)
     private String skills;
 
     public ProfileSearchDocument() {
     }
 
     public ProfileSearchDocument(Long id, String uid, String firstName, String lastName, String fullName,
-            String objective, String summary, String skills) {
+            String objective, String summary, String info, String skills) {
         this.id = id;
         this.uid = uid;
         this.firstName = firstName;
@@ -47,6 +50,7 @@ public class ProfileSearchDocument {
         this.fullName = fullName;
         this.objective = objective;
         this.summary = summary;
+        this.info = info;
         this.skills = skills;
     }
 
@@ -76,6 +80,10 @@ public class ProfileSearchDocument {
 
     public String getSummary() {
         return summary;
+    }
+
+    public String getInfo() {
+        return info;
     }
 
     public String getSkills() {

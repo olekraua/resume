@@ -43,7 +43,7 @@ public class ProfileSearchServiceImpl implements ProfileSearchService {
         NativeQuery esQuery = NativeQuery.builder()
                 .withQuery(b -> b.multiMatch(mm -> mm
                         .query(q)
-                        .fields("fullName^3", "firstName^3", "lastName^3", "summary", "objective", "skills")
+                        .fields("fullName^3", "firstName^3", "lastName^3", "summary", "objective", "info", "skills")
                         .type(TextQueryType.PhrasePrefix)))
                 .withPageable(pageable)
                 .build();

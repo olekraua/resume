@@ -100,9 +100,12 @@ class ProfileSearchServiceImplTest {
         @SuppressWarnings("unchecked")
         SearchHit<ProfileSearchDocument> hit3 = Mockito.mock(SearchHit.class);
 
-        Mockito.when(hit1.getContent()).thenReturn(new ProfileSearchDocument(3L, null, null, null, null, null, null, null));
-        Mockito.when(hit2.getContent()).thenReturn(new ProfileSearchDocument(1L, null, null, null, null, null, null, null));
-        Mockito.when(hit3.getContent()).thenReturn(new ProfileSearchDocument(2L, null, null, null, null, null, null, null));
+        Mockito.when(hit1.getContent())
+                .thenReturn(new ProfileSearchDocument(3L, null, null, null, null, null, null, null, null));
+        Mockito.when(hit2.getContent())
+                .thenReturn(new ProfileSearchDocument(1L, null, null, null, null, null, null, null, null));
+        Mockito.when(hit3.getContent())
+                .thenReturn(new ProfileSearchDocument(2L, null, null, null, null, null, null, null, null));
         Mockito.when(hits.getSearchHits()).thenReturn(List.of(hit1, hit2, hit3));
 
         Mockito.when(elasticsearchOperations.search(any(Query.class), eq(ProfileSearchDocument.class))).thenReturn(hits);

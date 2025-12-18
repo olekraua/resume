@@ -19,7 +19,7 @@ public class ProfileSearchMapperImpl implements ProfileSearchMapper {
         String fullName = (first + " " + last).trim();
         String skills = extractSkills(profile.getSkills());
         return new ProfileSearchDocument(profile.getId(), profile.getUid(), first, last, fullName,
-                safe(profile.getObjective()), safe(profile.getSummary()), skills);
+                safe(profile.getObjective()), safe(profile.getSummary()), safe(profile.getInfo()), skills);
     }
 
     private String extractSkills(java.util.List<Skill> skills) {
