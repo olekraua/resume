@@ -34,9 +34,13 @@ public class PasswordsMatchValidator implements ConstraintValidator<PasswordsMat
         String password = ((String) passwordObj).trim();
         String confirm = ((String) confirmObj).trim();
 
-        if (password.isEmpty() || confirm.isEmpty()) {
-            return false;
+        boolean valid = !password.isEmpty() && password.equals(confirm);
+        if (!valid && context != null) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(context.getDefaultConstraintMessageTemplate())
+                    .addPropertyNode(confirmPasswordField)
+                    .addConstraintViolation();
         }
-        return password.equals(confirm);
+        return valid;
     }
 }
