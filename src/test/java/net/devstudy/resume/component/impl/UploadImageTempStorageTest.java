@@ -3,6 +3,7 @@ package net.devstudy.resume.component.impl;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -10,6 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -78,6 +84,38 @@ class UploadImageTempStorageTest {
         });
     }
 
+    @Test
+    void threadLocalIsIsolatedAcrossThreads() {
+        contextRunner.run(context -> {
+            Probe probe = context.getBean(Probe.class);
+            CountDownLatch entered = new CountDownLatch(2);
+            CountDownLatch release = new CountDownLatch(1);
+            ExecutorService executor = Executors.newFixedThreadPool(2);
+            try {
+                Future<UploadTempPath> first = executor.submit(
+                        () -> probe.captureTempPathInParallel(entered, release));
+                Future<UploadTempPath> second = executor.submit(
+                        () -> probe.captureTempPathInParallel(entered, release));
+
+                assertTrue(entered.await(5, TimeUnit.SECONDS));
+                release.countDown();
+
+                UploadTempPath firstPath = first.get(5, TimeUnit.SECONDS);
+                UploadTempPath secondPath = second.get(5, TimeUnit.SECONDS);
+
+                assertNotNull(firstPath);
+                assertNotNull(secondPath);
+                assertNotEquals(firstPath.getLargeImagePath(), secondPath.getLargeImagePath());
+                assertNotEquals(firstPath.getSmallImagePath(), secondPath.getSmallImagePath());
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            } finally {
+                release.countDown();
+                executor.shutdownNow();
+            }
+        });
+    }
+
     @Configuration
     @EnableAspectJAutoProxy(proxyTargetClass = true)
     static class TestConfig {
@@ -129,6 +167,18 @@ class UploadImageTempStorageTest {
 
         boolean existedInsideBeforeThrow() {
             return existedInsideBeforeThrow.get();
+        }
+
+        @EnableUploadImageTempStorage
+        UploadTempPath captureTempPathInParallel(CountDownLatch entered, CountDownLatch release) {
+            UploadTempPath tempPath = uploadImageTempStorage.getCurrentUploadTempPath();
+            entered.countDown();
+            try {
+                release.await(5, TimeUnit.SECONDS);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            return tempPath;
         }
     }
 
