@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import net.devstudy.resume.component.DataBuilder;
 import net.devstudy.resume.model.UploadCertificateResult;
 import net.devstudy.resume.service.CertificateStorageService;
 
@@ -20,6 +21,7 @@ public class CertificateStorageServiceImpl implements CertificateStorageService 
 
     @Value("${upload.certificates.dir:uploads/certificates}")
     private String certificatesDir;
+    private final DataBuilder dataBuilder;
 
     @Override
     public UploadCertificateResult store(MultipartFile file) {
@@ -36,7 +38,7 @@ public class CertificateStorageServiceImpl implements CertificateStorageService 
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
 
             String url = "/uploads/certificates/" + fileName;
-            String certName = stripExtension(file.getOriginalFilename());
+            String certName = dataBuilder.buildCertificateName(file.getOriginalFilename());
             return new UploadCertificateResult(certName, url, url);
         } catch (IOException e) {
             throw new RuntimeException("Can't store certificate file", e);
@@ -49,9 +51,4 @@ public class CertificateStorageServiceImpl implements CertificateStorageService 
         return (idx >= 0 && idx < name.length() - 1) ? name.substring(idx + 1) : "";
     }
 
-    private String stripExtension(String name) {
-        if (name == null) return "";
-        int idx = name.lastIndexOf('.');
-        return (idx > 0) ? name.substring(0, idx) : name;
-    }
 }

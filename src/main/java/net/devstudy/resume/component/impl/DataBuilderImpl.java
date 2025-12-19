@@ -14,6 +14,8 @@ public class DataBuilderImpl implements DataBuilder {
     private static final String UID_DELIMITER = "-";
     private static final String UID_ALLOWED_REGEX = "[^a-z0-9\\s_-]";
     private static final String UID_SEPARATORS_REGEX = "[\\s_-]+";
+    private static final String CERT_ALLOWED_REGEX = "[^a-z0-9\\s_.-]";
+    private static final String CERT_SEPARATORS_REGEX = "[\\s_.-]+";
     private static final SecureRandom RANDOM = new SecureRandom();
     private final TranslitConverter translitConverter;
 
@@ -48,14 +50,22 @@ public class DataBuilderImpl implements DataBuilder {
 
     @Override
     public String buildCertificateName(String fileName) {
-        if (fileName == null) {
+        String baseName = stripExtension(fileName);
+        if (baseName.isEmpty()) {
             return "";
         }
-        int point = fileName.lastIndexOf('.');
-        if (point != -1) {
-            fileName = fileName.substring(0, point);
+        String normalized = translitConverter.translit(baseName)
+                .trim()
+                .toLowerCase(Locale.ROOT);
+        if (normalized.isEmpty()) {
+            return "";
         }
-        return capitalizeName(fileName);
+        normalized = normalized.replaceAll(CERT_ALLOWED_REGEX, "");
+        if (normalized.isEmpty()) {
+            return "";
+        }
+        normalized = normalized.replaceAll(CERT_SEPARATORS_REGEX, " ").trim();
+        return capitalizeWords(normalized);
     }
 
     private String normalizeName(String name) {
@@ -92,15 +102,14 @@ public class DataBuilderImpl implements DataBuilder {
         return value.substring(start, end);
     }
 
-    private String capitalizeName(String name) {
-        String normalized = normalizeName(name);
-        if (normalized.isEmpty()) {
+    private String capitalizeWords(String value) {
+        if (value.isEmpty()) {
             return "";
         }
-        StringBuilder result = new StringBuilder(normalized.length());
+        StringBuilder result = new StringBuilder(value.length());
         boolean capitalizeNext = true;
-        for (int i = 0; i < normalized.length(); i++) {
-            char ch = normalized.charAt(i);
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
             if (Character.isWhitespace(ch)) {
                 capitalizeNext = true;
                 result.append(ch);
@@ -114,6 +123,17 @@ public class DataBuilderImpl implements DataBuilder {
             }
         }
         return result.toString();
+    }
+
+    private String stripExtension(String fileName) {
+        if (fileName == null) {
+            return "";
+        }
+        int point = fileName.lastIndexOf('.');
+        if (point != -1) {
+            return fileName.substring(0, point);
+        }
+        return fileName;
     }
 
     private String generateRandomString(String alphabet, int letterCount) {
