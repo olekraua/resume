@@ -22,7 +22,7 @@ public class SecurityConfig {
                                                         "/error/**", "/css/**", "/favicon/**",
                                                         "/fonts/**", "/img/**",
                                                         "/js/**", "/media/**", "/uploads/**", "/favicon.ico",
-                                                        "/login", "/register")
+                                                        "/login", "/register", "/register/**", "/restore/**")
                                         .permitAll()
                                         // профільні сторінки (GET /{uid}) публічні, але редагування/акаунт захищені
                                         .requestMatchers("/me", "/account/**", "/*/edit/**").authenticated()

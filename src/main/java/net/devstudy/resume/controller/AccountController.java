@@ -6,6 +6,8 @@ import net.devstudy.resume.form.ChangePasswordForm;
 import net.devstudy.resume.form.ChangeLoginForm;
 import net.devstudy.resume.security.CurrentProfileProvider;
 import net.devstudy.resume.service.ProfileService;
+import net.devstudy.resume.service.UidSuggestionService;
+import net.devstudy.resume.exception.UidAlreadyExistsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +27,7 @@ public class AccountController {
     private final ProfileService profileService;
     private final PasswordEncoder passwordEncoder;
     private final CurrentProfileProvider currentProfileProvider;
+    private final UidSuggestionService uidSuggestionService;
 
     @GetMapping("/password")
     public String passwordForm(Model model) {
@@ -91,6 +94,12 @@ public class AccountController {
         }
         try {
             profileService.updateUid(currentId, form.getNewUid());
+        } catch (UidAlreadyExistsException ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("uidSuggestions", uidSuggestionService.suggest(ex.getUid()));
+            model.addAttribute("currentUid", profile.getUid());
+            model.addAttribute("uidError", ex.getMessage());
+            return "auth/change-login";
         } catch (IllegalArgumentException ex) {
             model.addAttribute("errorMessage", ex.getMessage());
             model.addAttribute("currentUid", profile.getUid());

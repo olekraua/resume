@@ -54,7 +54,8 @@
   </form>
 </div>
 <div th:replace="~{fragments/layout :: footer}"></div>
-<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
+<th:block th:replace="~{fragments/layout :: scripts-edit}"></th:block>
 <script id="ui-block-template" type="text/x-handlebars-template">
   <div class="panel panel-default ui-item course-item" id="ui-item-{{blockIndex}}">
     <div class="panel-heading">Курс {{inc blockIndex}}

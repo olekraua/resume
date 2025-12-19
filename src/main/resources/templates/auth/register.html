@@ -15,6 +15,16 @@
               <label for="uid">Логін (uid)</label>
               <input id="uid" th:field="*{uid}" type="text" class="form-control" required>
               <div th:if="${#fields.hasErrors('uid')}" class="text-danger" th:errors="*{uid}">Помилка</div>
+              <div th:if="${uidSuggestions != null and !uidSuggestions.isEmpty()}" class="text-muted"
+                   style="margin-top: 6px;">
+                Можливі варіанти:
+                <ul style="margin: 4px 0 0 16px;">
+                  <li th:each="s : ${uidSuggestions}">
+                    <a href="#" class="uid-suggestion" th:attr="data-target='uid',data-value=${s}"
+                       th:text="${s}">uid-1</a>
+                  </li>
+                </ul>
+              </div>
             </div>
             <div class="form-group">
               <label for="firstName">Ім'я</label>
@@ -53,6 +63,7 @@
     </div>
   </div>
   <div th:replace="~{fragments/layout :: footer}"></div>
-  <th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+  <th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
+  <script th:src="@{/js/uid-suggestions.js}"></script>
 </body>
 </html>

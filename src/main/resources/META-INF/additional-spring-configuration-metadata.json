@@ -76,6 +76,18 @@
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "Enable Elasticsearch integration."
+    },
+    {
+      "name": "app.search.elasticsearch.privacy.index-info",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Index profile info text into Elasticsearch documents."
+    },
+    {
+      "name": "app.search.elasticsearch.privacy.redact-info",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Redact sensitive patterns from profile info before indexing."
     }
   ]
 }

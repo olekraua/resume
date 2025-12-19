@@ -65,7 +65,8 @@
   </form>
 </div>
 <div th:replace="~{fragments/layout :: footer}"></div>
-<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
+<th:block th:replace="~{fragments/layout :: scripts-edit}"></th:block>
 
 <script id="ui-block-template" type="text/x-handlebars-template">
   <div class="row ui-item skill-item" id="ui-item-{{blockIndex}}">

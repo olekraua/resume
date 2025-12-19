@@ -14,20 +14,30 @@ import org.springframework.ui.Model;
 import net.devstudy.resume.security.CurrentProfileProvider;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.form.RegistrationForm;
+import net.devstudy.resume.exception.UidAlreadyExistsException;
+import net.devstudy.resume.component.DataBuilder;
 import net.devstudy.resume.service.ProfileService;
+import net.devstudy.resume.service.UidSuggestionService;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class AuthController {
 
     private final ProfileService profileService;
     private final CurrentProfileProvider currentProfileProvider;
+    private final UidSuggestionService uidSuggestionService;
+    private final DataBuilder dataBuilder;
 
-    public AuthController(ProfileService profileService, CurrentProfileProvider currentProfileProvider) {
+    public AuthController(ProfileService profileService, CurrentProfileProvider currentProfileProvider,
+            UidSuggestionService uidSuggestionService, DataBuilder dataBuilder) {
         this.profileService = profileService;
         this.currentProfileProvider = currentProfileProvider;
+        this.uidSuggestionService = uidSuggestionService;
+        this.dataBuilder = dataBuilder;
     }
 
     @GetMapping("/login")
@@ -42,6 +52,13 @@ public class AuthController {
         }
         model.addAttribute("registrationForm", new RegistrationForm());
         return "auth/register";
+    }
+
+    @GetMapping("/register/uid-hint")
+    @ResponseBody
+    public String uidHint(@RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName) {
+        return dataBuilder.buildProfileUid(firstName, lastName);
     }
 
     @PostMapping("/register")
@@ -67,6 +84,10 @@ public class AuthController {
             HttpSession session = request.getSession(true);
             session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
             return "redirect:/" + profile.getUid();
+        } catch (UidAlreadyExistsException ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("uidSuggestions", uidSuggestionService.suggest(ex.getUid()));
+            return "auth/register";
         } catch (IllegalArgumentException ex) {
             model.addAttribute("errorMessage", ex.getMessage());
             return "auth/register";

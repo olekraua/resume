@@ -39,12 +39,15 @@
           <div class="text-center" style="margin-top: 10px;">
             <a th:href="@{/register}">Зареєструватися</a>
           </div>
+          <div class="text-center" style="margin-top: 6px;">
+            <a th:href="@{/restore}">Забули пароль?</a>
+          </div>
         </div>
       </div>
     </div>
   </div>
 <div th:replace="~{fragments/layout :: footer}"></div>
-<th:block th:replace="~{fragments/layout :: scripts}"></th:block>
+<th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
   <script>
     (function() {
       var toggle = document.getElementById('togglePassword');

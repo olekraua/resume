@@ -12,6 +12,7 @@ import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.entity.Skill;
 import net.devstudy.resume.entity.Contacts;
 import net.devstudy.resume.event.ProfileIndexingRequestedEvent;
+import net.devstudy.resume.exception.UidAlreadyExistsException;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.form.ContactsForm;
 import net.devstudy.resume.form.InfoForm;
@@ -121,7 +122,7 @@ public class ProfileServiceImpl implements ProfileService {
     public Profile register(String uid, String firstName, String lastName, String rawPassword) {
         String normalizedUid = normalizeUid(uid);
         if (profileRepository.findByUid(normalizedUid).isPresent()) {
-            throw new IllegalArgumentException("Uid already exists: " + normalizedUid);
+            throw new UidAlreadyExistsException(normalizedUid);
         }
         Profile profile = new Profile();
         profile.setUid(normalizedUid);
@@ -182,7 +183,7 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = getProfileOrThrow(profileId);
         String normalizedUid = normalizeUid(newUid);
         if (profileRepository.findByUid(normalizedUid).isPresent()) {
-            throw new IllegalArgumentException("Uid already exists: " + normalizedUid);
+            throw new UidAlreadyExistsException(normalizedUid);
         }
         profile.setUid(normalizedUid);
         profileRepository.save(profile);
