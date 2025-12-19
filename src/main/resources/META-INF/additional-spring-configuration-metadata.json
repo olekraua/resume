@@ -90,6 +90,23 @@
       "description": "Time-to-live for restore tokens."
     },
     {
+      "name": "app.restore.mail.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Enable sending restore links via email."
+    },
+    {
+      "name": "app.restore.mail.from",
+      "type": "java.lang.String",
+      "description": "From address for restore emails (defaults to spring.mail.username)."
+    },
+    {
+      "name": "app.restore.mail.subject",
+      "type": "java.lang.String",
+      "defaultValue": "Restore access",
+      "description": "Subject line for restore emails."
+    },
+    {
       "name": "app.search.elasticsearch.privacy.index-info",
       "type": "java.lang.Boolean",
       "defaultValue": true,

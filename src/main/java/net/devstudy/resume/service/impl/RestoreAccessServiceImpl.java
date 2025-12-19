@@ -8,6 +8,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import net.devstudy.resume.component.DataBuilder;
 import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.entity.ProfileRestore;
+import net.devstudy.resume.event.RestoreAccessMailRequestedEvent;
 import net.devstudy.resume.repository.storage.ProfileRepository;
 import net.devstudy.resume.repository.storage.ProfileRestoreRepository;
 import net.devstudy.resume.service.ProfileService;
@@ -27,17 +29,20 @@ public class RestoreAccessServiceImpl implements RestoreAccessService {
     private final ProfileRestoreRepository profileRestoreRepository;
     private final ProfileService profileService;
     private final DataBuilder dataBuilder;
+    private final ApplicationEventPublisher eventPublisher;
     private final Duration tokenTtl;
 
     public RestoreAccessServiceImpl(ProfileRepository profileRepository,
             ProfileRestoreRepository profileRestoreRepository,
             ProfileService profileService,
             DataBuilder dataBuilder,
+            ApplicationEventPublisher eventPublisher,
             @Value("${app.restore.token-ttl:PT1H}") Duration tokenTtl) {
         this.profileRepository = profileRepository;
         this.profileRestoreRepository = profileRestoreRepository;
         this.profileService = profileService;
         this.dataBuilder = dataBuilder;
+        this.eventPublisher = eventPublisher;
         this.tokenTtl = tokenTtl;
     }
 
@@ -57,7 +62,9 @@ public class RestoreAccessServiceImpl implements RestoreAccessService {
         restore.setCreated(Instant.now());
         profileRestoreRepository.save(restore);
 
-        return dataBuilder.buildRestoreAccessLink(appHost, token);
+        String link = dataBuilder.buildRestoreAccessLink(appHost, token);
+        publishRestoreMail(profile, link);
+        return link;
     }
 
     @Override
@@ -151,5 +158,18 @@ public class RestoreAccessServiceImpl implements RestoreAccessService {
         } catch (NoSuchAlgorithmException ex) {
             throw new IllegalStateException("SHA-256 not available", ex);
         }
+    }
+
+    private void publishRestoreMail(Profile profile, String link) {
+        if (profile == null || link == null || link.isBlank()) {
+            return;
+        }
+        String email = profile.getEmail();
+        if (email == null || email.isBlank()) {
+            return;
+        }
+        eventPublisher.publishEvent(new RestoreAccessMailRequestedEvent(email,
+                profile.getFirstName(),
+                link));
     }
 }
