@@ -11,7 +11,7 @@
         </div>
         <div class="panel-body">
           <p>Якщо профіль існує, ви отримаєте посилання для відновлення доступу.</p>
-          <div th:if="${restoreLink}" style="margin-top: 10px;">
+          <div th:if="${showRestoreLink and restoreLink}" style="margin-top: 10px;">
             <a th:href="${restoreLink}" th:text="${restoreLink}">restore link</a>
           </div>
         </div>

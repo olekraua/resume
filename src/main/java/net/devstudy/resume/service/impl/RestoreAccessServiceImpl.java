@@ -1,10 +1,14 @@
 package net.devstudy.resume.service.impl;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,47 +27,63 @@ public class RestoreAccessServiceImpl implements RestoreAccessService {
     private final ProfileRestoreRepository profileRestoreRepository;
     private final ProfileService profileService;
     private final DataBuilder dataBuilder;
+    private final Duration tokenTtl;
 
     public RestoreAccessServiceImpl(ProfileRepository profileRepository,
             ProfileRestoreRepository profileRestoreRepository,
             ProfileService profileService,
-            DataBuilder dataBuilder) {
+            DataBuilder dataBuilder,
+            @Value("${app.restore.token-ttl:PT1H}") Duration tokenTtl) {
         this.profileRepository = profileRepository;
         this.profileRestoreRepository = profileRestoreRepository;
         this.profileService = profileService;
         this.dataBuilder = dataBuilder;
+        this.tokenTtl = tokenTtl;
     }
 
     @Override
     @Transactional
     public String requestRestore(String identifier, String appHost) {
-        Profile profile = findProfileByIdentifier(identifier)
-                .orElseThrow(() -> new IllegalArgumentException("Профіль не знайдено"));
+        Profile profile = findProfileByIdentifier(identifier).orElse(null);
+        if (profile == null) {
+            return dataBuilder.buildRestoreAccessLink(appHost, generateToken());
+        }
 
         ProfileRestore restore = profileRestoreRepository.findByProfileId(profile.getId())
                 .orElseGet(ProfileRestore::new);
+        String token = generateToken();
         restore.setProfile(profile);
-        restore.setToken(generateToken());
+        restore.setToken(hashToken(token));
         restore.setCreated(Instant.now());
         profileRestoreRepository.save(restore);
 
-        return dataBuilder.buildRestoreAccessLink(appHost, restore.getToken());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<Profile> findProfileByToken(String token) {
-        if (token == null || token.isBlank()) {
-            return Optional.empty();
-        }
-        return profileRestoreRepository.findByToken(token).map(ProfileRestore::getProfile);
+        return dataBuilder.buildRestoreAccessLink(appHost, token);
     }
 
     @Override
     @Transactional
+    public Optional<Profile> findProfileByToken(String token) {
+        Optional<ProfileRestore> restore = findRestoreByToken(token);
+        if (restore.isEmpty()) {
+            return Optional.empty();
+        }
+        ProfileRestore existing = restore.get();
+        if (isExpired(existing, Instant.now())) {
+            profileRestoreRepository.delete(existing);
+            return Optional.empty();
+        }
+        return Optional.ofNullable(existing.getProfile());
+    }
+
+    @Override
+    @Transactional(noRollbackFor = IllegalArgumentException.class)
     public void resetPassword(String token, String rawPassword) {
-        ProfileRestore restore = profileRestoreRepository.findByToken(token)
+        ProfileRestore restore = findRestoreByToken(token)
                 .orElseThrow(() -> new IllegalArgumentException("Невірний токен відновлення"));
+        if (isExpired(restore, Instant.now())) {
+            profileRestoreRepository.delete(restore);
+            throw new IllegalArgumentException("Невірний токен відновлення");
+        }
         profileService.updatePassword(restore.getProfile().getId(), rawPassword);
         profileRestoreRepository.delete(restore);
     }
@@ -90,5 +110,46 @@ public class RestoreAccessServiceImpl implements RestoreAccessService {
 
     private String generateToken() {
         return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    private boolean isExpired(ProfileRestore restore, Instant now) {
+        Instant created = restore.getCreated();
+        if (created == null) {
+            return true;
+        }
+        return created.plus(tokenTtl).isBefore(now);
+    }
+
+    private Optional<ProfileRestore> findRestoreByToken(String token) {
+        if (token == null || token.isBlank()) {
+            return Optional.empty();
+        }
+        String trimmed = token.trim();
+        String hashed = hashToken(trimmed);
+        Optional<ProfileRestore> restore = profileRestoreRepository.findByToken(hashed);
+        if (restore.isPresent()) {
+            return restore;
+        }
+        Optional<ProfileRestore> legacy = profileRestoreRepository.findByToken(trimmed);
+        if (legacy.isPresent()) {
+            ProfileRestore existing = legacy.get();
+            existing.setToken(hashed);
+            return Optional.of(profileRestoreRepository.save(existing));
+        }
+        return Optional.empty();
+    }
+
+    private String hashToken(String token) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashed = digest.digest(token.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            StringBuilder hex = new StringBuilder(hashed.length * 2);
+            for (byte b : hashed) {
+                hex.append(String.format("%02x", b));
+            }
+            return hex.toString();
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IllegalStateException("SHA-256 not available", ex);
+        }
     }
 }

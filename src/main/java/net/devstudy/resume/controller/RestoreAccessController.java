@@ -1,5 +1,6 @@
 package net.devstudy.resume.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,9 +20,12 @@ import net.devstudy.resume.service.RestoreAccessService;
 public class RestoreAccessController {
 
     private final RestoreAccessService restoreAccessService;
+    private final boolean showRestoreLink;
 
-    public RestoreAccessController(RestoreAccessService restoreAccessService) {
+    public RestoreAccessController(RestoreAccessService restoreAccessService,
+            @Value("${app.restore.show-link:false}") boolean showRestoreLink) {
         this.restoreAccessService = restoreAccessService;
+        this.showRestoreLink = showRestoreLink;
     }
 
     @GetMapping("/restore")
@@ -53,7 +57,8 @@ public class RestoreAccessController {
     }
 
     @GetMapping("/restore/success")
-    public String restoreSuccess() {
+    public String restoreSuccess(Model model) {
+        model.addAttribute("showRestoreLink", showRestoreLink);
         return "auth/restore-success";
     }
 

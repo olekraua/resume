@@ -78,6 +78,18 @@
       "description": "Enable Elasticsearch integration."
     },
     {
+      "name": "app.restore.show-link",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Show restore link on success page (dev-only helper)."
+    },
+    {
+      "name": "app.restore.token-ttl",
+      "type": "java.time.Duration",
+      "defaultValue": "PT1H",
+      "description": "Time-to-live for restore tokens."
+    },
+    {
       "name": "app.search.elasticsearch.privacy.index-info",
       "type": "java.lang.Boolean",
       "defaultValue": true,
