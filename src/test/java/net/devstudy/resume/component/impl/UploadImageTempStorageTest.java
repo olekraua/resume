@@ -1,5 +1,6 @@
 package net.devstudy.resume.component.impl;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -57,6 +58,23 @@ class UploadImageTempStorageTest {
             assertFalse(Files.exists(lastPath.getLargeImagePath()));
             assertFalse(Files.exists(lastPath.getSmallImagePath()));
             assertNull(storage.getCurrentUploadTempPath());
+        });
+    }
+
+    @Test
+    void deleteQuietlyHandlesNullMissingAndExistingPaths() {
+        UploadImageTempStorage storage = new UploadImageTempStorage();
+
+        assertDoesNotThrow(() -> storage.deleteQuietly(null));
+
+        Path missingPath = Path.of("target", "missing-file-" + System.nanoTime());
+        assertDoesNotThrow(() -> storage.deleteQuietly(missingPath));
+
+        assertDoesNotThrow(() -> {
+            Path tempFile = Files.createTempFile("resume-test-", ".tmp");
+            assertTrue(Files.exists(tempFile));
+            storage.deleteQuietly(tempFile);
+            assertFalse(Files.exists(tempFile));
         });
     }
 
