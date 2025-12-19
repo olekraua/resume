@@ -10,16 +10,20 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.Query;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.repository.search.ProfileSearchRepository;
 import net.devstudy.resume.repository.storage.ProfileRepository;
@@ -83,6 +87,31 @@ class ProfileSearchServiceImplTest {
         Mockito.verify(elasticsearchOperations).search(any(Query.class), eq(ProfileSearchDocument.class));
         Mockito.verify(profileRepository, never()).findAll(pageable);
         Mockito.verify(profileRepository, never()).findAllById(any());
+    }
+
+    @Test
+    void searchUsesLanguageAnalyzersViaMultiFieldSubfields() {
+        Pageable pageable = PageRequest.of(0, 10);
+        @SuppressWarnings("unchecked")
+        SearchHits<ProfileSearchDocument> hits = Mockito.mock(SearchHits.class);
+        Mockito.when(hits.isEmpty()).thenReturn(true);
+        Mockito.when(elasticsearchOperations.search(any(Query.class), eq(ProfileSearchDocument.class))).thenReturn(hits);
+
+        service.search("java", pageable);
+
+        ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
+        Mockito.verify(elasticsearchOperations).search(queryCaptor.capture(), eq(ProfileSearchDocument.class));
+
+        Query query = queryCaptor.getValue();
+        assertTrue(query instanceof NativeQuery);
+
+        NativeQuery nativeQuery = (NativeQuery) query;
+        assertTrue(nativeQuery.getQuery().isMultiMatch());
+
+        MultiMatchQuery multiMatch = nativeQuery.getQuery().multiMatch();
+        assertEquals(TextQueryType.PhrasePrefix, multiMatch.type());
+        assertTrue(multiMatch.fields().contains("info.en"));
+        assertTrue(multiMatch.fields().contains("info.uk"));
     }
 
     @Test

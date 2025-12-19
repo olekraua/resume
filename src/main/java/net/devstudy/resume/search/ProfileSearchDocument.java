@@ -4,11 +4,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.InnerField;
+import org.springframework.data.elasticsearch.annotations.MultiField;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
 /**
  * Elasticsearch документ для пошуку профілів.
  */
 @Document(indexName = "profiles")
+@Setting(settingPath = "/elasticsearch/profile-search-settings.json")
 public class ProfileSearchDocument {
 
     @Id
@@ -26,16 +30,36 @@ public class ProfileSearchDocument {
     @Field(type = FieldType.Text)
     private String fullName;
 
-    @Field(type = FieldType.Text)
+    @MultiField(mainField = @Field(type = FieldType.Text),
+            otherFields = {
+                    @InnerField(suffix = "en", type = FieldType.Text, analyzer = "english", searchAnalyzer = "english"),
+                    @InnerField(suffix = "uk", type = FieldType.Text, analyzer = "ukrainian",
+                            searchAnalyzer = "ukrainian")
+            })
     private String objective;
 
-    @Field(type = FieldType.Text)
+    @MultiField(mainField = @Field(type = FieldType.Text),
+            otherFields = {
+                    @InnerField(suffix = "en", type = FieldType.Text, analyzer = "english", searchAnalyzer = "english"),
+                    @InnerField(suffix = "uk", type = FieldType.Text, analyzer = "ukrainian",
+                            searchAnalyzer = "ukrainian")
+            })
     private String summary;
 
-    @Field(type = FieldType.Text)
+    @MultiField(mainField = @Field(type = FieldType.Text),
+            otherFields = {
+                    @InnerField(suffix = "en", type = FieldType.Text, analyzer = "english", searchAnalyzer = "english"),
+                    @InnerField(suffix = "uk", type = FieldType.Text, analyzer = "ukrainian",
+                            searchAnalyzer = "ukrainian")
+            })
     private String info;
 
-    @Field(type = FieldType.Text)
+    @MultiField(mainField = @Field(type = FieldType.Text),
+            otherFields = {
+                    @InnerField(suffix = "en", type = FieldType.Text, analyzer = "english", searchAnalyzer = "english"),
+                    @InnerField(suffix = "uk", type = FieldType.Text, analyzer = "ukrainian",
+                            searchAnalyzer = "ukrainian")
+            })
     private String skills;
 
     public ProfileSearchDocument() {

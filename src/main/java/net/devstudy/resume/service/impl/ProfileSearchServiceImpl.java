@@ -11,6 +11,7 @@ import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
@@ -43,7 +44,11 @@ public class ProfileSearchServiceImpl implements ProfileSearchService {
         NativeQuery esQuery = NativeQuery.builder()
                 .withQuery(b -> b.multiMatch(mm -> mm
                         .query(q)
-                        .fields("fullName^3", "firstName^3", "lastName^3", "summary", "objective", "info", "skills")
+                        .fields("fullName^3", "firstName^3", "lastName^3",
+                                "summary.en", "summary.uk",
+                                "objective.en", "objective.uk",
+                                "info.en", "info.uk",
+                                "skills.en", "skills.uk")
                         .type(TextQueryType.PhrasePrefix)))
                 .withPageable(pageable)
                 .build();
@@ -73,7 +78,11 @@ public class ProfileSearchServiceImpl implements ProfileSearchService {
     @Override
     @Transactional(readOnly = true)
     public void reindexAll() {
-        profileSearchRepository.deleteAll();
+        IndexOperations indexOperations = elasticsearchOperations.indexOps(ProfileSearchDocument.class);
+        if (indexOperations.exists()) {
+            indexOperations.delete();
+        }
+        indexOperations.createWithMapping();
         List<Profile> profiles = profileRepository.findAll(Pageable.unpaged()).getContent();
         indexProfiles(profiles);
     }
