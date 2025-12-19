@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
@@ -50,6 +51,7 @@ class UploadImageTempStorageTest {
             RuntimeException ex = assertThrows(RuntimeException.class, probe::alwaysFails);
             assertEquals("boom", ex.getMessage());
 
+            assertTrue(probe.existedInsideBeforeThrow());
             UploadTempPath lastPath = probe.getLastTempPath();
             assertNotNull(lastPath);
             assertFalse(Files.exists(lastPath.getLargeImagePath()));
@@ -76,6 +78,7 @@ class UploadImageTempStorageTest {
     static class Probe {
         private final UploadImageTempStorage uploadImageTempStorage;
         private final AtomicReference<UploadTempPath> lastTempPath = new AtomicReference<>();
+        private final AtomicBoolean existedInsideBeforeThrow = new AtomicBoolean(false);
 
         Probe(UploadImageTempStorage uploadImageTempStorage) {
             this.uploadImageTempStorage = uploadImageTempStorage;
@@ -93,12 +96,21 @@ class UploadImageTempStorageTest {
 
         @EnableUploadImageTempStorage
         void alwaysFails() {
-            lastTempPath.set(uploadImageTempStorage.getCurrentUploadTempPath());
+            UploadTempPath tempPath = uploadImageTempStorage.getCurrentUploadTempPath();
+            lastTempPath.set(tempPath);
+            boolean existsInside = tempPath != null
+                    && Files.exists(tempPath.getLargeImagePath())
+                    && Files.exists(tempPath.getSmallImagePath());
+            existedInsideBeforeThrow.set(existsInside);
             throw new RuntimeException("boom");
         }
 
         UploadTempPath getLastTempPath() {
             return lastTempPath.get();
+        }
+
+        boolean existedInsideBeforeThrow() {
+            return existedInsideBeforeThrow.get();
         }
     }
 
