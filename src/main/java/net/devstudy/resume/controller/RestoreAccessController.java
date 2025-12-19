@@ -46,11 +46,10 @@ public class RestoreAccessController {
         try {
             String link = restoreAccessService.requestRestore(form.getIdentifier(), appHost);
             redirectAttributes.addFlashAttribute("restoreLink", link);
-            return "redirect:/restore/success";
         } catch (IllegalArgumentException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
-            return "auth/restore";
+            // Intentionally ignore to avoid account enumeration.
         }
+        return "redirect:/restore/success";
     }
 
     @GetMapping("/restore/success")
@@ -81,9 +80,7 @@ public class RestoreAccessController {
             restoreAccessService.resetPassword(token, form.getPassword());
             return "redirect:/login?restored";
         } catch (IllegalArgumentException ex) {
-            model.addAttribute("token", token);
-            model.addAttribute("errorMessage", ex.getMessage());
-            return "auth/restore-password";
+            return "redirect:/restore?invalid";
         }
     }
 }

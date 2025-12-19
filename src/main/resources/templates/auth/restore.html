@@ -17,7 +17,6 @@
               <div th:if="${#fields.hasErrors('identifier')}" class="text-danger" th:errors="*{identifier}">Помилка</div>
             </div>
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}" style="margin-top: 10px;"></div>
             <div th:if="${param.invalid}" class="alert alert-danger" style="margin-top: 10px;">
               Невірний або застарілий токен відновлення
             </div>

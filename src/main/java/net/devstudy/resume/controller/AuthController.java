@@ -85,7 +85,7 @@ public class AuthController {
             session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
             return "redirect:/" + profile.getUid();
         } catch (UidAlreadyExistsException ex) {
-            model.addAttribute("errorMessage", ex.getMessage());
+            bindingResult.rejectValue("uid", "uid.exists");
             model.addAttribute("uidSuggestions", uidSuggestionService.suggest(ex.getUid()));
             return "auth/register";
         } catch (IllegalArgumentException ex) {

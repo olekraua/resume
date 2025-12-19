@@ -46,11 +46,6 @@
               <input id="confirmPassword" th:field="*{confirmPassword}" type="password" class="form-control" required>
               <div th:if="${#fields.hasErrors('confirmPassword')}" class="text-danger" th:errors="*{confirmPassword}">Помилка</div>
             </div>
-            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
-              <ul>
-                <li th:each="err : ${#fields.globalErrors()}" th:text="${err}">Паролі мають збігатися</li>
-              </ul>
-            </div>
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}" style="margin-top: 10px;"></div>
             <button type="submit" class="btn btn-success btn-block">Зареєструватися</button>
