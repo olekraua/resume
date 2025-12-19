@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import net.devstudy.resume.annotation.EnableUploadImageTempStorage;
+import net.devstudy.resume.component.UploadTempPathFactory;
 import net.devstudy.resume.model.UploadTempPath;
 
 @Aspect
@@ -21,13 +22,18 @@ public class UploadImageTempStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger(UploadImageTempStorage.class);
 
     private final ThreadLocal<UploadTempPath> currentUploadTempPath = new ThreadLocal<>();
+    private final UploadTempPathFactory uploadTempPathFactory;
+
+    public UploadImageTempStorage(UploadTempPathFactory uploadTempPathFactory) {
+        this.uploadTempPathFactory = uploadTempPathFactory;
+    }
 
     @Around("@annotation(enableUploadImageTempStorage)")
     public Object advice(ProceedingJoinPoint pjp, EnableUploadImageTempStorage enableUploadImageTempStorage)
             throws Throwable {
         UploadTempPath uploadTempPath;
         try {
-            uploadTempPath = new UploadTempPath();
+            uploadTempPath = uploadTempPathFactory.create();
         } catch (IOException ex) {
             throw new IllegalStateException("Can't create temp image files: " + ex.getMessage(), ex);
         }
@@ -60,4 +66,3 @@ public class UploadImageTempStorage {
         }
     }
 }
-

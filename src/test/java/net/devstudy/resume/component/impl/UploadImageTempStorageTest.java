@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.CountDownLatch;
@@ -26,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 import net.devstudy.resume.annotation.EnableUploadImageTempStorage;
+import net.devstudy.resume.component.UploadTempPathFactory;
 import net.devstudy.resume.model.UploadTempPath;
 
 class UploadImageTempStorageTest {
@@ -69,7 +71,10 @@ class UploadImageTempStorageTest {
 
     @Test
     void deleteQuietlyHandlesNullMissingAndExistingPaths() {
-        UploadImageTempStorage storage = new UploadImageTempStorage();
+        UploadTempPathFactory factory = () -> {
+            throw new IOException("unused");
+        };
+        UploadImageTempStorage storage = new UploadImageTempStorage(factory);
 
         assertDoesNotThrow(() -> storage.deleteQuietly(null));
 
@@ -116,18 +121,58 @@ class UploadImageTempStorageTest {
         });
     }
 
+    @Test
+    void adviceThrowsIllegalStateWhenFactoryFails() {
+        ApplicationContextRunner failingContextRunner = new ApplicationContextRunner()
+                .withUserConfiguration(FailingFactoryConfig.class);
+
+        failingContextRunner.run(context -> {
+            FailingProbe probe = context.getBean(FailingProbe.class);
+
+            IllegalStateException ex = assertThrows(IllegalStateException.class, probe::invoke);
+            assertTrue(ex.getMessage().startsWith("Can't create temp image files:"));
+        });
+    }
+
     @Configuration
     @EnableAspectJAutoProxy(proxyTargetClass = true)
     static class TestConfig {
 
         @Bean
-        UploadImageTempStorage uploadImageTempStorage() {
-            return new UploadImageTempStorage();
+        UploadImageTempStorage uploadImageTempStorage(UploadTempPathFactory uploadTempPathFactory) {
+            return new UploadImageTempStorage(uploadTempPathFactory);
+        }
+
+        @Bean
+        UploadTempPathFactory uploadTempPathFactory() {
+            return UploadTempPath::new;
         }
 
         @Bean
         Probe probe(UploadImageTempStorage uploadImageTempStorage) {
             return new Probe(uploadImageTempStorage);
+        }
+    }
+
+    @Configuration
+    @EnableAspectJAutoProxy(proxyTargetClass = true)
+    static class FailingFactoryConfig {
+
+        @Bean
+        UploadImageTempStorage uploadImageTempStorage(UploadTempPathFactory uploadTempPathFactory) {
+            return new UploadImageTempStorage(uploadTempPathFactory);
+        }
+
+        @Bean
+        UploadTempPathFactory uploadTempPathFactory() {
+            return () -> {
+                throw new IOException("disk is full");
+            };
+        }
+
+        @Bean
+        FailingProbe failingProbe() {
+            return new FailingProbe();
         }
     }
 
@@ -179,6 +224,14 @@ class UploadImageTempStorageTest {
                 Thread.currentThread().interrupt();
             }
             return tempPath;
+        }
+    }
+
+    static class FailingProbe {
+
+        @EnableUploadImageTempStorage
+        void invoke() {
+            // no-op
         }
     }
 
