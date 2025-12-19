@@ -12,7 +12,7 @@ import net.devstudy.resume.search.ProfileSearchDocument;
 
 class ProfileSearchMapperImplTest {
 
-    private final ProfileSearchMapperImpl mapper = new ProfileSearchMapperImpl();
+    private final ProfileSearchMapperImpl mapper = new ProfileSearchMapperImpl(true, true);
 
     @Test
     void toDocumentStripsHtmlAndNormalizesWhitespace() {
@@ -57,5 +57,35 @@ class ProfileSearchMapperImplTest {
 
         assertEquals(ProfileSearchMapperImpl.MAX_INFO_LENGTH, doc.getInfo().length());
         assertEquals("a".repeat(ProfileSearchMapperImpl.MAX_INFO_LENGTH), doc.getInfo());
+    }
+
+    @Test
+    void toDocumentRedactsEmailAndPhoneFromInfoWhenEnabled() {
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john_doe");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        profile.setInfo("Contact me at john.doe@example.com or +380 (67) 123-45-67");
+
+        ProfileSearchDocument doc = mapper.toDocument(profile);
+
+        assertEquals("Contact me at or", doc.getInfo());
+    }
+
+    @Test
+    void toDocumentDoesNotIndexInfoWhenDisabled() {
+        ProfileSearchMapperImpl mapperWithoutInfo = new ProfileSearchMapperImpl(false, true);
+
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john_doe");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        profile.setInfo("About me");
+
+        ProfileSearchDocument doc = mapperWithoutInfo.toDocument(profile);
+
+        assertEquals("", doc.getInfo());
     }
 }
