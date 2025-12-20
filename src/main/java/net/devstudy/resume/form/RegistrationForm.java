@@ -13,7 +13,7 @@ import net.devstudy.resume.annotation.constraints.PasswordsMatch;
 public class RegistrationForm {
 
     @NotBlank
-    @Size(min = 3, max = 50)
+    @Size(min = 3, max = 64)
     @Pattern(regexp = "^[A-Za-z0-9_-]+$", message = "UID може містити лише літери, цифри, '-' або '_'")
     private String uid;
 

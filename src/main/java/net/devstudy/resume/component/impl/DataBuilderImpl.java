@@ -35,7 +35,7 @@ public class DataBuilderImpl implements DataBuilder {
         } else {
             joined = first + UID_DELIMITER + last;
         }
-        return truncate(joined, 50);
+        return truncate(joined, 64);
     }
 
     @Override

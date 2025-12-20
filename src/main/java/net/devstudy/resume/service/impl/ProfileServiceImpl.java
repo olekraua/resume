@@ -1,32 +1,8 @@
 package net.devstudy.resume.service.impl;
 
+import java.util.Locale;
 import java.util.Optional;
 
-import net.devstudy.resume.entity.Certificate;
-import net.devstudy.resume.entity.Course;
-import net.devstudy.resume.entity.Education;
-import net.devstudy.resume.entity.Hobby;
-import net.devstudy.resume.entity.Language;
-import net.devstudy.resume.entity.Practic;
-import net.devstudy.resume.entity.Profile;
-import net.devstudy.resume.entity.Skill;
-import net.devstudy.resume.entity.Contacts;
-import net.devstudy.resume.event.ProfileIndexingRequestedEvent;
-import net.devstudy.resume.exception.UidAlreadyExistsException;
-import net.devstudy.resume.model.CurrentProfile;
-import net.devstudy.resume.form.ContactsForm;
-import net.devstudy.resume.form.InfoForm;
-import net.devstudy.resume.security.CurrentProfileProvider;
-import net.devstudy.resume.repository.storage.CertificateRepository;
-import net.devstudy.resume.repository.storage.CourseRepository;
-import net.devstudy.resume.repository.storage.EducationRepository;
-import net.devstudy.resume.repository.storage.HobbyRepository;
-import net.devstudy.resume.repository.storage.LanguageRepository;
-import net.devstudy.resume.repository.storage.PracticRepository;
-import net.devstudy.resume.repository.storage.ProfileRepository;
-import net.devstudy.resume.repository.storage.SkillRepository;
-import net.devstudy.resume.service.ProfileService;
-import net.devstudy.resume.service.ProfileSearchService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,7 +12,31 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import java.util.Locale;
+import net.devstudy.resume.entity.Certificate;
+import net.devstudy.resume.entity.Contacts;
+import net.devstudy.resume.entity.Course;
+import net.devstudy.resume.entity.Education;
+import net.devstudy.resume.entity.Hobby;
+import net.devstudy.resume.entity.Language;
+import net.devstudy.resume.entity.Practic;
+import net.devstudy.resume.entity.Profile;
+import net.devstudy.resume.entity.Skill;
+import net.devstudy.resume.event.ProfileIndexingRequestedEvent;
+import net.devstudy.resume.exception.UidAlreadyExistsException;
+import net.devstudy.resume.form.ContactsForm;
+import net.devstudy.resume.form.InfoForm;
+import net.devstudy.resume.model.CurrentProfile;
+import net.devstudy.resume.repository.storage.CertificateRepository;
+import net.devstudy.resume.repository.storage.CourseRepository;
+import net.devstudy.resume.repository.storage.EducationRepository;
+import net.devstudy.resume.repository.storage.HobbyRepository;
+import net.devstudy.resume.repository.storage.LanguageRepository;
+import net.devstudy.resume.repository.storage.PracticRepository;
+import net.devstudy.resume.repository.storage.ProfileRepository;
+import net.devstudy.resume.repository.storage.SkillRepository;
+import net.devstudy.resume.security.CurrentProfileProvider;
+import net.devstudy.resume.service.ProfileSearchService;
+import net.devstudy.resume.service.ProfileService;
 
 @Service
 @RequiredArgsConstructor
@@ -166,8 +166,8 @@ public class ProfileServiceImpl implements ProfileService {
             throw new IllegalArgumentException("Uid must contain only latin letters, digits, '-' or '_'");
         }
         String normalized = candidate.toLowerCase(Locale.ENGLISH);
-        if (normalized.length() < 3 || normalized.length() > 50) {
-            throw new IllegalArgumentException("Uid must be 3-50 chars (a-z, 0-9, '-', '_')");
+        if (normalized.length() < 3 || normalized.length() > 64) {
+            throw new IllegalArgumentException("Uid must be 3-64 chars (a-z, 0-9, '-', '_')");
         }
         return normalized;
     }
