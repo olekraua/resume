@@ -17,13 +17,10 @@ public class SimpleTranslitConverter implements TranslitConverter {
             Map.entry('ґ', "g"),
             Map.entry('д', "d"),
             Map.entry('е', "e"),
-            Map.entry('є', "ye"),
             Map.entry('ж', "zh"),
             Map.entry('з', "z"),
             Map.entry('и', "y"),
             Map.entry('і', "i"),
-            Map.entry('ї', "yi"),
-            Map.entry('й', "y"),
             Map.entry('к', "k"),
             Map.entry('л', "l"),
             Map.entry('м', "m"),
@@ -40,13 +37,25 @@ public class SimpleTranslitConverter implements TranslitConverter {
             Map.entry('ч', "ch"),
             Map.entry('ш', "sh"),
             Map.entry('щ', "shch"),
-            Map.entry('ю', "yu"),
-            Map.entry('я', "ya"),
             Map.entry('ё', "yo"),
             Map.entry('ы', "y"),
             Map.entry('э', "e"),
             Map.entry('ъ', ""),
             Map.entry('ь', "")
+    );
+    private static final Map<Character, String> IOTATED_START_MAP = Map.ofEntries(
+            Map.entry('є', "ye"),
+            Map.entry('ї', "yi"),
+            Map.entry('й', "y"),
+            Map.entry('ю', "yu"),
+            Map.entry('я', "ya")
+    );
+    private static final Map<Character, String> IOTATED_CONTINUATION_MAP = Map.ofEntries(
+            Map.entry('є', "ie"),
+            Map.entry('ї', "i"),
+            Map.entry('й', "i"),
+            Map.entry('ю', "iu"),
+            Map.entry('я', "ia")
     );
 
     @Override
@@ -61,7 +70,11 @@ public class SimpleTranslitConverter implements TranslitConverter {
                 result.append(ch);
                 continue;
             }
-            String mapped = CYRILLIC_MAP.get(Character.toLowerCase(ch));
+            char lower = Character.toLowerCase(ch);
+            String mapped = resolveIotated(lower, isWordStart(text, i));
+            if (mapped == null) {
+                mapped = CYRILLIC_MAP.get(lower);
+            }
             if (mapped == null) {
                 continue;
             }
@@ -73,5 +86,17 @@ public class SimpleTranslitConverter implements TranslitConverter {
             }
         }
         return result.toString();
+    }
+
+    private boolean isWordStart(String text, int index) {
+        if (index == 0) {
+            return true;
+        }
+        char prev = text.charAt(index - 1);
+        return !Character.isLetter(prev);
+    }
+
+    private String resolveIotated(char ch, boolean wordStart) {
+        return wordStart ? IOTATED_START_MAP.get(ch) : IOTATED_CONTINUATION_MAP.get(ch);
     }
 }

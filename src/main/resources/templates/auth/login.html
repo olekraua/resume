@@ -10,10 +10,10 @@
           <h4 class="panel-title"><i class="fa fa-sign-in"></i> Вхід у ваш особистий кабінет</h4>
         </div>
         <div class="panel-body">
-          <p class="text-muted">Використовуйте ваш UID як логін.</p>
+          <p class="text-muted">Використовуйте ваш логін (username).</p>
           <form th:action="@{/login}" method="post">
             <div class="form-group">
-              <label for="username">Логін (uid)</label>
+              <label for="username">Логін (username)</label>
               <input id="username" name="username" type="text" class="form-control" required>
             </div>
             <div class="form-group">

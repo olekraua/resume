@@ -12,7 +12,7 @@
         <div class="panel-body">
           <form th:action="@{/restore}" th:object="${restoreAccessForm}" method="post">
             <div class="form-group">
-              <label for="identifier">UID або email або phone</label>
+              <label for="identifier">Логін (username) або email або телефон</label>
               <input id="identifier" th:field="*{identifier}" type="text" class="form-control" required>
               <div th:if="${#fields.hasErrors('identifier')}" class="text-danger" th:errors="*{identifier}">Помилка</div>
             </div>
