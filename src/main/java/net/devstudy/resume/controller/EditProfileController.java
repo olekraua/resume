@@ -10,6 +10,7 @@ import java.util.Set;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -585,11 +586,7 @@ public class EditProfileController {
     }
 
     private String prepareProfileMain(String uid, Model model) {
-        CurrentProfile current = currentProfileProvider.getCurrentProfile();
-        if (current == null || !current.getUsername().equals(uid)) {
-            return "redirect:/login";
-        }
-        Profile profile = profileService.findByIdWithAll(current.getId()).orElse(null);
+        Profile profile = resolveProfile(uid);
         if (profile == null) {
             return "redirect:/login";
         }
@@ -608,11 +605,7 @@ public class EditProfileController {
     }
 
     private String prepareProfileModel(String uid, Model model, String viewName, Object form) {
-        CurrentProfile current = currentProfileProvider.getCurrentProfile();
-        if (current == null || !current.getUsername().equals(uid)) {
-            return "redirect:/login";
-        }
-        Profile profile = profileService.findByIdWithAll(current.getId()).orElse(null);
+        Profile profile = resolveProfile(uid);
         if (profile == null) {
             return "redirect:/login";
         }
@@ -623,10 +616,14 @@ public class EditProfileController {
 
     private Profile resolveProfile(String uid) {
         CurrentProfile current = currentProfileProvider.getCurrentProfile();
-        if (current == null || !current.getUsername().equals(uid)) {
+        if (current == null) {
             return null;
         }
-        return profileService.findByIdWithAll(current.getId()).orElse(null);
+        if (!current.getUsername().equals(uid)) {
+            throw new AccessDeniedException("Access denied to profile");
+        }
+        return profileService.findByIdWithAll(current.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
     }
 
     private Object formFromProfile(Object emptyForm, Profile profile) {

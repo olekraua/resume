@@ -28,7 +28,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException ex)
             throws IOException, ServletException {
-        LOGGER.error("Detected AccessDeniedException: {}", ex.getMessage(), ex);
+        LOGGER.info("Access denied: {}", ex.getMessage(), ex);
         if (environment.acceptsProfiles(Profiles.of("prod"))) {
             response.sendRedirect("/error?status=403");
         } else {
