@@ -7,7 +7,7 @@
   <h2>Курсы</h2>
   <div th:replace="~{edit/_nav :: nav}"></div>
 
-  <form th:action="@{/edit/courses}" method="post" th:object="${form}">
+  <form th:action="${appHost} + @{/edit/courses}" method="post" th:object="${form}">
     <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
       <ul>
         <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>

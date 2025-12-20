@@ -7,7 +7,7 @@
   <h2>Edit Info</h2>
   <div th:replace="~{edit/_nav :: nav}"></div>
 
-  <form th:action="@{|/${profile.uid}/edit/info|}" method="post" th:object="${form}" class="form-horizontal">
+  <form th:action="${appHost} + @{|/${profile.uid}/edit/info|}" method="post" th:object="${form}" class="form-horizontal">
     <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
       <ul>
         <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>

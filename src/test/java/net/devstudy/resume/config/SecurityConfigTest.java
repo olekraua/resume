@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @WebMvcTest(controllers = SecurityConfigTest.TestController.class)
 @Import({
         SecurityConfig.class,
+        UiProperties.class,
         SecurityConfigTest.SecurityTestConfig.class,
         SecurityConfigTest.TestController.class
 })

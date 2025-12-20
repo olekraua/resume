@@ -9,7 +9,7 @@
     <div style="margin-bottom: 12px; text-align: center;">
       <strong>Поточний логін:</strong> <span th:text="${currentUid}">current-username</span>
     </div>
-    <form th:action="@{/account/login}" th:object="${changeLoginForm}" method="post">
+    <form th:action="${appHost} + @{/account/login}" th:object="${changeLoginForm}" method="post">
       <div style="margin-bottom: 12px;">
         <label for="newUid">Новий логін (username)</label><br>
         <input id="newUid" th:field="*{newUid}" type="text" required style="width: 100%; padding: 8px;">
@@ -29,12 +29,12 @@
       <button type="submit" style="width: 100%; padding: 10px;">Змінити логін</button>
     </form>
     <div style="margin-top: 12px; text-align: center;">
-      <a th:href="@{/login}">Увійти</a>
+      <a th:href="${appHost} + @{/login}">Увійти</a>
     </div>
   </div>
   </div>
   <div th:replace="~{fragments/layout :: footer}"></div>
   <th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
-  <script th:src="@{/js/uid-suggestions.js}"></script>
+  <script th:src="${appHost} + @{/js/uid-suggestions.js(v=${jsCommonVersion})}"></script>
 </body>
 </html>

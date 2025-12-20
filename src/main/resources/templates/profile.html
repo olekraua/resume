@@ -10,13 +10,13 @@
             <div class="col-xs-12 col-sm-6 col-md-4">
                 <div class="panel panel-primary">
                     <div class="panel-body">
-                        <a th:if="${ownProfile}" th:href="@{|/${profile.uid}/edit|}">
+                        <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit|}">
                             <img alt="photo" th:src="${profile.largePhoto != null ? profile.largePhoto : '/img/profile-placeholder.png'}" class="img-responsive photo">
                         </a>
                         <img th:if="${!ownProfile}" alt="photo" th:src="${profile.largePhoto != null ? profile.largePhoto : '/img/profile-placeholder.png'}" class="img-responsive photo">
                         <h1 class="text-center">
                             <span th:if="${ownProfile}">
-                                <a th:href="@{|/${profile.uid}/edit|}" style="color:black;" th:text="${profile.fullName}">Full Name</a>
+                                <a th:href="${appHost} + @{|/${profile.uid}/edit|}" style="color:black;" th:text="${profile.fullName}">Full Name</a>
                             </span>
                             <span th:if="${!ownProfile}" th:text="${profile.fullName}">Full Name</span>
                             <span th:if="${!profile.completed}" class="label label-warning" style="margin-left:8px;">Незавершений</span>
@@ -43,7 +43,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-language"></i> Foreign languages
-                            <a th:if="${ownProfile}" th:href="@{|/${profile.uid}/edit/languages|}" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit/languages|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -60,7 +60,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-heart"></i> Хобі
-                            <a th:if="${ownProfile}" th:href="@{|/${profile.uid}/edit/hobbies|}" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit/hobbies|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -79,7 +79,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-info-circle"></i> Additional info
-                            <a th:if="${ownProfile}" th:href="@{|/${profile.uid}/edit/info|}" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit/info|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body text-justify" th:text="${profile.info}">Info</div>
@@ -91,7 +91,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-bullseye"></i> Objective
-                            <a th:if="${ownProfile}" th:href="@{|/${profile.uid}/edit/profile#inputObjective|}" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit/profile#inputObjective|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -107,7 +107,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-code"></i> Technical Skills
-                            <a th:if="${ownProfile}" th:href="@{|/${profile.uid}/edit/skills|}" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit/skills|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -128,7 +128,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-briefcase"></i> Practic Experience
-                            <a th:if="${ownProfile}" th:href="@{|/${profile.uid}/edit/practics|}" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit/practics|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -172,7 +172,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-certificate"></i> Certificates
-                            <a th:if="${ownProfile}" href="/edit/certificates" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="${appHost} + @{/edit/certificates}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -189,7 +189,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-book"></i> Courses
-                            <a th:if="${ownProfile}" href="/edit/courses" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="${appHost} + @{/edit/courses}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -219,7 +219,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-graduation-cap"></i> Education
-                            <a th:if="${ownProfile}" href="/edit/education" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="${appHost} + @{/edit/education}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -254,7 +254,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-language"></i> Foreign languages
-                            <a th:if="${ownProfile}" href="/account/login" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="${appHost} + @{/account/login}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -271,7 +271,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-heart"></i> Хобі
-                            <a th:if="${ownProfile}" href="/account/login" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="${appHost} + @{/account/login}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body">
@@ -290,7 +290,7 @@
                     <div class="panel-heading">
                         <h3 class="panel-title">
                             <i class="fa fa-info-circle"></i> Additional info
-                            <a th:if="${ownProfile}" href="/account/login" class="edit-block">Edit</a>
+                            <a th:if="${ownProfile}" th:href="${appHost} + @{/account/login}" class="edit-block">Edit</a>
                         </h3>
                     </div>
                     <div class="panel-body text-justify" th:text="${profile.info}">Info</div>

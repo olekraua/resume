@@ -10,7 +10,7 @@
     <div class="panel-body">
       <h2 class="text-center" th:text="${profile.fullName}">Full Name</h2>
 
-      <form th:action="@{|/${profile.uid}/edit/profile|}" method="post" th:object="${form}" class="form-horizontal data-form" enctype="multipart/form-data">
+      <form th:action="${appHost} + @{|/${profile.uid}/edit/profile|}" method="post" th:object="${form}" class="form-horizontal data-form" enctype="multipart/form-data">
         <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
           <ul>
             <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>

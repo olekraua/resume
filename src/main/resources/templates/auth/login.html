@@ -11,7 +11,7 @@
         </div>
         <div class="panel-body">
           <p class="text-muted">Використовуйте ваш логін (username).</p>
-          <form th:action="@{/login}" method="post">
+          <form th:action="${appHost} + @{/login}" method="post">
             <div class="form-group">
               <label for="username">Логін (username)</label>
               <input id="username" name="username" type="text" class="form-control" required>
@@ -37,10 +37,10 @@
             <button type="submit" class="btn btn-primary btn-block">Увійти</button>
           </form>
           <div class="text-center" style="margin-top: 10px;">
-            <a th:href="@{/register}">Зареєструватися</a>
+            <a th:href="${appHost} + @{/register}">Зареєструватися</a>
           </div>
           <div class="text-center" style="margin-top: 6px;">
-            <a th:href="@{/restore}">Забули пароль?</a>
+            <a th:href="${appHost} + @{/restore}">Забули пароль?</a>
           </div>
         </div>
       </div>

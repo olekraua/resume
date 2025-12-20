@@ -1,5 +1,5 @@
 <div th:fragment="nav" th:with="uri=${#httpServletRequest != null ? #httpServletRequest.requestURI : ''},
-                               base=${profile != null ? '/' + profile.uid + '/edit' : '/edit'}">
+                               base=${profile != null ? appHost + '/' + profile.uid + '/edit' : appHost + '/edit'}">
   <ul class="nav nav-tabs" style="margin-bottom: 15px;">
     <li th:classappend="${uri.endsWith('/profile')}? 'active'">
       <a th:href="${base + '/profile'}">Основное</a>

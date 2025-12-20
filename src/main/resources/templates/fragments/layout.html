@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title th:text="${pageTitle} ?: 'My Resume'">My Resume</title>
-  <link rel="stylesheet" th:href="@{/css/bootstrap-3.3.6.css}" />
-  <link rel="stylesheet" th:href="@{/css/font-awesome-4.5.0.css}" />
-  <link rel="stylesheet" th:href="@{/css/bootstrap-theme-3.3.6.css}" />
-  <link rel="stylesheet" th:href="@{/css/timeline.css}" />
-  <link rel="stylesheet" th:href="@{/css/bootstrap-slider-6.1.6.css}" />
-  <link rel="stylesheet" th:href="@{/css/bootstrap-datepicker-1.6.0.css}" />
-  <link rel="stylesheet" th:href="@{/css/fileinput-4.3.2.css}" />
-  <link rel="stylesheet" th:href="@{/css/app.css}" />
+  <link rel="stylesheet" th:href="${appHost} + @{/css/bootstrap-3.3.6.css(v=${cssCommonVersion})}" />
+  <link rel="stylesheet" th:href="${appHost} + @{/css/font-awesome-4.5.0.css(v=${cssCommonVersion})}" />
+  <link rel="stylesheet" th:href="${appHost} + @{/css/bootstrap-theme-3.3.6.css(v=${cssCommonVersion})}" />
+  <link rel="stylesheet" th:href="${appHost} + @{/css/timeline.css(v=${cssCommonVersion})}" />
+  <link rel="stylesheet" th:href="${appHost} + @{/css/bootstrap-slider-6.1.6.css(v=${cssExVersion})}" />
+  <link rel="stylesheet" th:href="${appHost} + @{/css/bootstrap-datepicker-1.6.0.css(v=${cssExVersion})}" />
+  <link rel="stylesheet" th:href="${appHost} + @{/css/fileinput-4.3.2.css(v=${cssExVersion})}" />
+  <link rel="stylesheet" th:href="${appHost} + @{/css/app.css(v=${cssCommonVersion})}" />
   <style>
     body.resume { background-color: #eae8e7; }
     .layout-content { min-height: calc(100vh - 140px); padding: 16px; }
@@ -48,12 +48,12 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" th:href="@{/welcome}">My Resume</a>
+        <a class="navbar-brand" th:href="${appHost} + @{/welcome}">My Resume</a>
       </div>
       <div class="collapse navbar-collapse" id="main-nav">
         <ul class="nav navbar-nav navbar-right">
-          <li sec:authorize="!isAuthenticated()"><a th:href="@{/login}">Увійти</a></li>
-          <li sec:authorize="!isAuthenticated()"><a th:href="@{/register}">Реєстрація</a></li>
+          <li sec:authorize="!isAuthenticated()"><a th:href="${appHost} + @{/login}">Увійти</a></li>
+          <li sec:authorize="!isAuthenticated()"><a th:href="${appHost} + @{/register}">Реєстрація</a></li>
           <li class="dropdown nav-user" sec:authorize="isAuthenticated()">
             <a href="#" class="dropdown-toggle nav-user-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
               <span class="nav-user-avatar"><i class="fa fa-user"></i></span>
@@ -61,12 +61,12 @@
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <li><a th:href="@{/{u}(u=${CURRENT_PROFILE != null ? CURRENT_PROFILE.username : ''})}"><i class="fa fa-eye"></i> Мій профіль</a></li>
-              <li><a th:href="@{/{u}/edit/profile(u=${CURRENT_PROFILE != null ? CURRENT_PROFILE.username : ''})}"><i class="fa fa-pencil"></i> Редагувати</a></li>
-              <li><a th:href="@{@{/account/password}(u=${CURRENT_PROFILE != null ? CURRENT_PROFILE.username : ''})}"><i class="fa fa-unlock-alt"></i> Пароль</a></li>
+              <li><a th:href="${appHost} + @{/{u}(u=${CURRENT_PROFILE != null ? CURRENT_PROFILE.username : ''})}"><i class="fa fa-eye"></i> Мій профіль</a></li>
+              <li><a th:href="${appHost} + @{/{u}/edit/profile(u=${CURRENT_PROFILE != null ? CURRENT_PROFILE.username : ''})}"><i class="fa fa-pencil"></i> Редагувати</a></li>
+              <li><a th:href="${appHost} + @{/account/password}"><i class="fa fa-unlock-alt"></i> Пароль</a></li>
               <li role="separator" class="divider"></li>
               <li>
-                <form th:action="@{/logout}" method="post" class="nav-logout-form">
+                <form th:action="${appHost} + @{/logout}" method="post" class="nav-logout-form">
                   <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                   <button type="submit" class="btn btn-link"><i class="fa fa-sign-out"></i> Вийти</button>
                 </form>
@@ -74,7 +74,7 @@
             </ul>
           </li>
         </ul>
-        <form class="navbar-form navbar-center" role="search" th:action="@{/search}" method="get" id="nav-search-form">
+        <form class="navbar-form navbar-center" role="search" th:action="${appHost} + @{/search}" method="get" id="nav-search-form">
           <div class="form-group" style="position: relative;">
             <input type="text" class="form-control" placeholder="Search" name="q" id="nav-search-input" autocomplete="off">
             <ul class="suggest-list dropdown-menu" id="nav-search-suggest" style="display:none;"></ul>
@@ -93,16 +93,16 @@
 </footer>
 
 <th:block th:fragment="scripts-base">
-  <script th:src="@{/js/jquery-2.2.2.js}"></script>
-  <script th:src="@{/js/bootstrap-3.3.6.js}"></script>
-  <script th:src="@{/js/messages.js}"></script>
-  <script th:src="@{/js/app.js}"></script>
+  <script th:src="${appHost} + @{/js/jquery-2.2.2.js(v=${jsCommonVersion})}"></script>
+  <script th:src="${appHost} + @{/js/bootstrap-3.3.6.js(v=${jsCommonVersion})}"></script>
+  <script th:src="${appHost} + @{/js/messages.js(v=${jsMessagesVersion})}"></script>
+  <script th:src="${appHost} + @{/js/app.js(v=${jsCommonVersion})}"></script>
 </th:block>
 <th:block th:fragment="scripts-edit">
-  <script th:src="@{/js/bootstrap-slider-6.1.6.js}"></script>
-  <script th:src="@{/js/handlebars-4.0.5.js}"></script>
-  <script th:src="@{/js/bootstrap-datepicker-1.6.0.js}"></script>
-  <script th:src="@{/js/fileinput-4.3.2.js}"></script>
+  <script th:src="${appHost} + @{/js/bootstrap-slider-6.1.6.js(v=${jsExVersion})}"></script>
+  <script th:src="${appHost} + @{/js/handlebars-4.0.5.js(v=${jsExVersion})}"></script>
+  <script th:src="${appHost} + @{/js/bootstrap-datepicker-1.6.0.js(v=${jsExVersion})}"></script>
+  <script th:src="${appHost} + @{/js/fileinput-4.3.2.js(v=${jsExVersion})}"></script>
 </th:block>
 </body>
 </html>

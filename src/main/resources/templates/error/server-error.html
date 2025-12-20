@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Something went wrong</title>
-  <link rel="stylesheet" th:href="@{/static/css/common.css}" />
+  <link rel="stylesheet" th:href="${appHost} + @{/static/css/common.css(v=${cssCommonVersion})}" />
 </head>
 <body class="resume" style="padding: 32px; font-family: Arial, sans-serif;">
   <div style="max-width: 640px; margin: 0 auto;">
@@ -15,7 +15,7 @@
       <div><strong>Method:</strong> <span th:text="${method}"></span></div>
     </div>
     <div style="margin-top: 24px;">
-      <a th:href="@{/}" style="text-decoration: none; color: #1976d2;">Back to home</a>
+      <a th:href="${appHost} + @{/}" style="text-decoration: none; color: #1976d2;">Back to home</a>
     </div>
   </div>
 </body>

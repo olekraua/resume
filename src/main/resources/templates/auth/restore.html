@@ -10,7 +10,7 @@
           <h4 class="panel-title"><i class="fa fa-unlock"></i> Відновлення доступу</h4>
         </div>
         <div class="panel-body">
-          <form th:action="@{/restore}" th:object="${restoreAccessForm}" method="post">
+          <form th:action="${appHost} + @{/restore}" th:object="${restoreAccessForm}" method="post">
             <div class="form-group">
               <label for="identifier">Логін (username) або email або телефон</label>
               <input id="identifier" th:field="*{identifier}" type="text" class="form-control" required>
@@ -23,7 +23,7 @@
             <button type="submit" class="btn btn-primary btn-block">Відновити</button>
           </form>
           <div class="text-center" style="margin-top: 10px;">
-            <a th:href="@{/login}">Повернутися до входу</a>
+            <a th:href="${appHost} + @{/login}">Повернутися до входу</a>
           </div>
         </div>
       </div>

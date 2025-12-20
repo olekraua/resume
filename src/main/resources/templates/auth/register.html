@@ -10,7 +10,7 @@
           <h4 class="panel-title"><i class="fa fa-user-plus"></i> Вкажіть Ваші персональні дані</h4>
         </div>
         <div class="panel-body">
-          <form th:action="@{/register}" th:object="${registrationForm}" method="post">
+          <form th:action="${appHost} + @{/register}" th:object="${registrationForm}" method="post">
             <div class="form-group">
               <label for="uid">Логін (username)</label>
               <input id="uid" th:field="*{uid}" type="text" class="form-control" required>
@@ -51,7 +51,7 @@
             <button type="submit" class="btn btn-success btn-block">Зареєструватися</button>
           </form>
           <div class="text-center" style="margin-top: 10px;">
-            <a th:href="@{/login}">Уже є акаунт? Увійти</a>
+            <a th:href="${appHost} + @{/login}">Уже є акаунт? Увійти</a>
           </div>
         </div>
       </div>
@@ -59,6 +59,6 @@
   </div>
   <div th:replace="~{fragments/layout :: footer}"></div>
   <th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
-  <script th:src="@{/js/uid-suggestions.js}"></script>
+  <script th:src="${appHost} + @{/js/uid-suggestions.js(v=${jsCommonVersion})}"></script>
 </body>
 </html>

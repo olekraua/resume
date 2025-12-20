@@ -6,6 +6,17 @@
       "description": "Maximum number of profiles displayed per page."
     },
     {
+      "name": "ui.production",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Expose production flag to UI templates."
+    },
+    {
+      "name": "ui.host",
+      "type": "java.lang.String",
+      "description": "Base application host exposed to UI templates."
+    },
+    {
       "name": "ui.versions.css-common",
       "type": "java.lang.String",
       "description": "Static version token appended to the common CSS bundle."

@@ -5,17 +5,17 @@
     <div class="panel panel-default profile-item" th:each="profile : ${profiles}">
       <div class="media panel-body">
         <div class="media-left media-top">
-          <a th:href="@{/{uid}(uid=${profile.uid})}">
+          <a th:href="${appHost} + @{/{uid}(uid=${profile.uid})}">
             <img class="photo img-thumbnail" th:alt="${profile.fullName}"
                  th:src="${profile.smallPhoto != null} ? ${profile.smallPhoto} : '/img/profile-placeholder.png'">
           </a>
           <a class="btn btn-primary visible-xs-block" style="margin-top: 15px;"
-             th:href="@{/{uid}(uid=${profile.uid})}">Деталі</a>
+             th:href="${appHost} + @{/{uid}(uid=${profile.uid})}">Деталі</a>
         </div>
         <div class="media-body search-result-item">
-          <a class="btn btn-primary pull-right hidden-xs" th:href="@{/{uid}(uid=${profile.uid})}">Деталі</a>
+          <a class="btn btn-primary pull-right hidden-xs" th:href="${appHost} + @{/{uid}(uid=${profile.uid})}">Деталі</a>
           <h4 class="media-heading">
-            <a th:href="@{/{uid}(uid=${profile.uid})}"
+            <a th:href="${appHost} + @{/{uid}(uid=${profile.uid})}"
                th:text="|${profile.fullName}, ${profile.age}|">John Doe, 28</a>
           </h4>
           <strong th:text="${profile.objective}">Objective</strong>
