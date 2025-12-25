@@ -10,10 +10,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
@@ -25,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,6 +33,7 @@ import net.devstudy.resume.config.UiProperties;
 import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.exception.UidAlreadyExistsException;
 import net.devstudy.resume.form.ChangePasswordForm;
+import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.security.CurrentProfileProvider;
 import net.devstudy.resume.service.ProfileService;
 import net.devstudy.resume.service.UidSuggestionService;
@@ -57,9 +58,9 @@ class AccountControllerTest {
     private UidSuggestionService uidSuggestionService;
 
     @Test
-    @WithMockUser
     void rendersChangePasswordForm() throws Exception {
-        mockMvc.perform(get("/account/password"))
+        mockMvc.perform(get("/account/password")
+                        .with(user(buildCurrentProfile("owner-user"))))
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/change-password"))
                 .andExpect(model().attributeExists("changePasswordForm"))
@@ -67,30 +68,29 @@ class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser
     void returnsFormWhenBindingErrors() throws Exception {
         mockMvc.perform(post("/account/password")
-                        .with(csrf()))
+                        .with(csrf())
+                        .with(user(buildCurrentProfile("owner-user"))))
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/change-password"));
     }
 
     @Test
-    @WithMockUser
     void redirectsToLoginWhenCurrentUserMissing() throws Exception {
         when(currentProfileProvider.getCurrentId()).thenReturn(null);
 
         mockMvc.perform(post("/account/password")
                         .with(csrf())
+                        .with(user(buildCurrentProfile("owner-user")))
                         .param("currentPassword", "current")
                         .param("newPassword", "newpass")
                         .param("confirmPassword", "newpass"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(redirectedUrl("/login"));
     }
 
     @Test
-    @WithMockUser
     void returnsFormWhenCurrentPasswordInvalid() throws Exception {
         Profile profile = new Profile();
         profile.setPassword("encoded");
@@ -100,6 +100,7 @@ class AccountControllerTest {
 
         mockMvc.perform(post("/account/password")
                         .with(csrf())
+                        .with(user(buildCurrentProfile("owner-user")))
                         .param("currentPassword", "current")
                         .param("newPassword", "newpass")
                         .param("confirmPassword", "newpass"))
@@ -111,7 +112,6 @@ class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser
     void redirectsOnSuccessfulPasswordChange() throws Exception {
         Profile profile = new Profile();
         profile.setPassword("encoded");
@@ -121,45 +121,46 @@ class AccountControllerTest {
 
         mockMvc.perform(post("/account/password")
                         .with(csrf())
+                        .with(user(buildCurrentProfile("owner-user")))
                         .param("currentPassword", "current")
                         .param("newPassword", "newpass")
                         .param("confirmPassword", "newpass"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/account/password?success"));
+                .andExpect(redirectedUrl("/account/password?success"));
 
         verify(profileService).updatePassword(1L, "newpass");
     }
 
     @Test
-    @WithMockUser
     void redirectsToLoginWhenCurrentUserMissingForLoginForm() throws Exception {
         when(currentProfileProvider.getCurrentId()).thenReturn(null);
 
-        mockMvc.perform(get("/account/login"))
+        mockMvc.perform(get("/account/login")
+                        .with(user(buildCurrentProfile("owner-user"))))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(redirectedUrl("/login"));
     }
 
     @Test
-    @WithMockUser
     void redirectsToLoginWhenProfileMissingForLoginForm() throws Exception {
         when(currentProfileProvider.getCurrentId()).thenReturn(1L);
         when(profileService.findById(1L)).thenReturn(Optional.empty());
 
-        mockMvc.perform(get("/account/login"))
+        mockMvc.perform(get("/account/login")
+                        .with(user(buildCurrentProfile("owner-user"))))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(redirectedUrl("/login"));
     }
 
     @Test
-    @WithMockUser
     void rendersChangeLoginForm() throws Exception {
         Profile profile = new Profile();
         profile.setUid("owner-user");
         when(currentProfileProvider.getCurrentId()).thenReturn(1L);
         when(profileService.findById(1L)).thenReturn(Optional.of(profile));
 
-        mockMvc.perform(get("/account/login"))
+        mockMvc.perform(get("/account/login")
+                        .with(user(buildCurrentProfile("owner-user"))))
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/change-login"))
                 .andExpect(model().attribute("currentUid", "owner-user"))
@@ -167,19 +168,18 @@ class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser
     void redirectsToLoginWhenCurrentUserMissingForChangeLogin() throws Exception {
         when(currentProfileProvider.getCurrentId()).thenReturn(null);
 
         mockMvc.perform(post("/account/login")
                         .with(csrf())
+                        .with(user(buildCurrentProfile("owner-user")))
                         .param("newUid", "new-user"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+                .andExpect(redirectedUrl("/login"));
     }
 
     @Test
-    @WithMockUser
     void returnsFormWhenBindingErrorsOnChangeLogin() throws Exception {
         Profile profile = new Profile();
         profile.setUid("current-user");
@@ -187,14 +187,14 @@ class AccountControllerTest {
         when(profileService.findById(1L)).thenReturn(Optional.of(profile));
 
         mockMvc.perform(post("/account/login")
-                        .with(csrf()))
+                        .with(csrf())
+                        .with(user(buildCurrentProfile("owner-user"))))
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/change-login"))
                 .andExpect(model().attribute("currentUid", "current-user"));
     }
 
     @Test
-    @WithMockUser
     void returnsFormWhenUidAlreadyExists() throws Exception {
         Profile profile = new Profile();
         profile.setUid("current-user");
@@ -207,6 +207,7 @@ class AccountControllerTest {
 
         mockMvc.perform(post("/account/login")
                         .with(csrf())
+                        .with(user(buildCurrentProfile("owner-user")))
                         .param("newUid", "taken-uid"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/change-login"))
@@ -217,7 +218,6 @@ class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser
     void returnsFormWhenUidInvalid() throws Exception {
         Profile profile = new Profile();
         profile.setUid("current-user");
@@ -225,11 +225,12 @@ class AccountControllerTest {
         when(profileService.findById(1L)).thenReturn(Optional.of(profile));
         doThrow(new IllegalArgumentException("Bad uid"))
                 .when(profileService)
-                .updateUid(1L, "bad uid");
+                .updateUid(1L, "bad-uid");
 
         mockMvc.perform(post("/account/login")
                         .with(csrf())
-                        .param("newUid", "bad uid"))
+                        .with(user(buildCurrentProfile("owner-user")))
+                        .param("newUid", "bad-uid"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/change-login"))
                 .andExpect(model().attribute("currentUid", "current-user"))
@@ -239,7 +240,6 @@ class AccountControllerTest {
     }
 
     @Test
-    @WithMockUser
     void redirectsOnSuccessfulLoginChange() throws Exception {
         Profile profile = new Profile();
         profile.setUid("current-user");
@@ -248,10 +248,20 @@ class AccountControllerTest {
 
         mockMvc.perform(post("/account/login")
                         .with(csrf())
+                        .with(user(buildCurrentProfile("owner-user")))
                         .param("newUid", "new-user"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login?loginChanged"));
+                .andExpect(redirectedUrl("/login?loginChanged"));
 
         verify(profileService).updateUid(1L, "new-user");
+    }
+
+    private CurrentProfile buildCurrentProfile(String uid) {
+        Profile profile = new Profile();
+        profile.setUid(uid);
+        profile.setPassword("password");
+        profile.setFirstName("Test");
+        profile.setLastName("User");
+        return new CurrentProfile(profile);
     }
 }
