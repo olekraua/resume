@@ -6,7 +6,7 @@ import org.springframework.lang.Nullable;
 public interface DataBuilder {
 
     @NonNull
-    String buildProfileUid(@NonNull String firstName, @NonNull String lastName);
+    String buildProfileUid(@Nullable String firstName, @Nullable String lastName);
 
     @NonNull
     String buildRestoreAccessLink(@NonNull String appHost, @NonNull String token);
