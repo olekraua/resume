@@ -77,6 +77,21 @@ class AccountControllerTest {
     }
 
     @Test
+    void returnsFormWhenNewPasswordMismatch() throws Exception {
+        mockMvc.perform(post("/account/password")
+                        .with(csrf())
+                        .with(user(buildCurrentProfile("owner-user")))
+                        .param("currentPassword", "current")
+                        .param("newPassword", "newpass")
+                        .param("confirmPassword", "different"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/change-password"))
+                .andExpect(model().attributeHasFieldErrors("changePasswordForm", "confirmPassword"));
+
+        verify(profileService, never()).updatePassword(anyLong(), anyString());
+    }
+
+    @Test
     void redirectsToLoginWhenCurrentUserMissing() throws Exception {
         when(currentProfileProvider.getCurrentId()).thenReturn(null);
 
@@ -88,6 +103,24 @@ class AccountControllerTest {
                         .param("confirmPassword", "newpass"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
+    }
+
+    @Test
+    void returnsFormWhenProfileMissingForPasswordChange() throws Exception {
+        when(currentProfileProvider.getCurrentId()).thenReturn(1L);
+        when(profileService.findById(1L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/account/password")
+                        .with(csrf())
+                        .with(user(buildCurrentProfile("owner-user")))
+                        .param("currentPassword", "current")
+                        .param("newPassword", "newpass")
+                        .param("confirmPassword", "newpass"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("auth/change-password"))
+                .andExpect(model().attribute("errorMessage", "Невірний поточний пароль"));
+
+        verify(profileService, never()).updatePassword(anyLong(), anyString());
     }
 
     @Test
@@ -177,6 +210,21 @@ class AccountControllerTest {
                         .param("newUid", "new-user"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
+    }
+
+    @Test
+    void redirectsToLoginWhenProfileMissingForChangeLogin() throws Exception {
+        when(currentProfileProvider.getCurrentId()).thenReturn(1L);
+        when(profileService.findById(1L)).thenReturn(Optional.empty());
+
+        mockMvc.perform(post("/account/login")
+                        .with(csrf())
+                        .with(user(buildCurrentProfile("owner-user")))
+                        .param("newUid", "new-user"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/login"));
+
+        verify(profileService, never()).updateUid(anyLong(), anyString());
     }
 
     @Test
