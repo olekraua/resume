@@ -70,7 +70,7 @@ public class AuthController {
             return "redirect:/me";
         }
         if (bindingResult.hasErrors()) {
-            return "auth/register";
+            return renderRegisterForm(form, bindingResult, model);
         }
         try {
             var profile = profileService.register(form.getUid(), form.getFirstName(), form.getLastName(),
@@ -87,10 +87,10 @@ public class AuthController {
         } catch (UidAlreadyExistsException ex) {
             bindingResult.rejectValue("uid", "uid.exists");
             model.addAttribute("uidSuggestions", uidSuggestionService.suggest(ex.getUid()));
-            return "auth/register";
+            return renderRegisterForm(form, bindingResult, model);
         } catch (IllegalArgumentException ex) {
             model.addAttribute("errorMessage", ex.getMessage());
-            return "auth/register";
+            return renderRegisterForm(form, bindingResult, model);
         }
     }
 
@@ -101,5 +101,14 @@ public class AuthController {
             return "redirect:/login";
         }
         return "redirect:/" + currentProfile.getUsername();
+    }
+
+    private String renderRegisterForm(RegistrationForm form, BindingResult bindingResult, Model model) {
+        model.addAttribute("registrationForm", form);
+        String bindingResultKey = BindingResult.MODEL_KEY_PREFIX + "registrationForm";
+        if (!model.containsAttribute(bindingResultKey)) {
+            model.addAttribute(bindingResultKey, bindingResult);
+        }
+        return "auth/register";
     }
 }

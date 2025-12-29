@@ -13,10 +13,13 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 class AppInfoConfigTest {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-            .withUserConfiguration(AppInfoConfig.class);
+            .withUserConfiguration(AppInfoConfig.class)
+            .withPropertyValues(
+                    "spring.profiles.active=test",
+                    "app.search.elasticsearch.enabled=false");
 
     @Test
-    void createsInfoContributorWithDefaults() {
+    void createsInfoContributorWithTestDefaults() {
         contextRunner.run(context -> {
             InfoContributor contributor = context.getBean(InfoContributor.class);
             Info.Builder builder = new Info.Builder();
@@ -26,8 +29,8 @@ class AppInfoConfigTest {
             Map<String, Object> app = (Map<String, Object>) builder.build().getDetails().get("app");
 
             assertEquals("resume", app.get("name"));
-            assertEquals(List.of(), app.get("profiles"));
-            assertEquals(Boolean.TRUE, app.get("elasticsearchEnabled"));
+            assertEquals(List.of("test"), app.get("profiles"));
+            assertEquals(Boolean.FALSE, app.get("elasticsearchEnabled"));
         });
     }
 
@@ -52,4 +55,3 @@ class AppInfoConfigTest {
                 });
     }
 }
-

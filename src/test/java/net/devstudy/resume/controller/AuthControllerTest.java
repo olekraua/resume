@@ -21,11 +21,14 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import net.devstudy.resume.component.DataBuilder;
@@ -41,6 +44,8 @@ import net.devstudy.resume.service.UidSuggestionService;
 
 @WebMvcTest(controllers = AuthController.class)
 @Import({UiProperties.class, UiModelAttributes.class, SecurityConfig.class})
+@ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
+@TestPropertySource(properties = "spring.messages.basename=i18n.messages")
 class AuthControllerTest {
 
     @Autowired

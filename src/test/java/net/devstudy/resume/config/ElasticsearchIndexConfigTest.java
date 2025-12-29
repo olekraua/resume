@@ -15,11 +15,12 @@ import net.devstudy.resume.service.ProfileSearchService;
 class ElasticsearchIndexConfigTest {
 
     @Test
-    void createsCommandLineRunnerWhenElasticsearchEnabledByDefault() {
+    void createsCommandLineRunnerWhenElasticsearchEnabled() {
         ProfileSearchService profileSearchService = Mockito.mock(ProfileSearchService.class);
         new ApplicationContextRunner()
                 .withUserConfiguration(ElasticsearchIndexConfig.class)
                 .withBean(ProfileSearchService.class, () -> profileSearchService)
+                .withPropertyValues("app.search.elasticsearch.enabled=true")
                 .run(context -> {
                     Map<String, CommandLineRunner> runners = context.getBeansOfType(CommandLineRunner.class);
                     assertTrue(runners.containsKey("indexProfiles"));
@@ -47,6 +48,7 @@ class ElasticsearchIndexConfigTest {
         new ApplicationContextRunner()
                 .withUserConfiguration(ElasticsearchIndexConfig.class)
                 .withBean(ProfileSearchService.class, () -> profileSearchService)
+                .withPropertyValues("app.search.elasticsearch.enabled=true")
                 .run(context -> {
                     CommandLineRunner runner = context.getBean("indexProfiles", CommandLineRunner.class);
                     assertDoesNotThrow(() -> runner.run());
@@ -54,4 +56,3 @@ class ElasticsearchIndexConfigTest {
                 });
     }
 }
-
