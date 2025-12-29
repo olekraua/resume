@@ -101,6 +101,7 @@ public class Certificate extends AbstractEntity<Long> implements ProfileEntity {
         return profile;
     }
 
+    @Override
     public void setProfile(Profile profile) {
         this.profile = profile;
     }
