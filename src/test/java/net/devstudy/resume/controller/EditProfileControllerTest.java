@@ -1,6 +1,7 @@
 package net.devstudy.resume.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.when;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,6 +45,7 @@ import net.devstudy.resume.entity.Education;
 import net.devstudy.resume.entity.Course;
 import net.devstudy.resume.entity.Language;
 import net.devstudy.resume.entity.Hobby;
+import net.devstudy.resume.entity.Certificate;
 import net.devstudy.resume.form.ContactsForm;
 import net.devstudy.resume.form.CourseForm;
 import net.devstudy.resume.form.EducationForm;
@@ -53,6 +56,7 @@ import net.devstudy.resume.form.SkillForm;
 import net.devstudy.resume.form.PracticForm;
 import net.devstudy.resume.form.LanguageForm;
 import net.devstudy.resume.form.HobbyForm;
+import net.devstudy.resume.form.CertificateForm;
 import net.devstudy.resume.model.LanguageLevel;
 import net.devstudy.resume.model.LanguageType;
 import net.devstudy.resume.model.CurrentProfile;
@@ -237,6 +241,117 @@ class EditProfileControllerTest {
         profile.setFirstName("John");
         profile.setLastName("Doe");
         return new CurrentProfile(profile);
+    }
+
+    @Test
+    void formFromProfilePopulatesSupportedForms() {
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                mock(ProfileService.class),
+                mock(CurrentProfileProvider.class));
+
+        Profile profile = new Profile();
+        List<Skill> skills = List.of(new Skill());
+        List<Practic> practics = List.of(new Practic());
+        List<Education> educations = List.of(new Education());
+        List<Course> courses = List.of(new Course());
+        List<Language> languages = List.of(new Language());
+        profile.setSkills(skills);
+        profile.setPractics(practics);
+        profile.setEducations(educations);
+        profile.setCourses(courses);
+        profile.setLanguages(languages);
+
+        SkillForm skillForm = new SkillForm();
+        assertSame(skillForm, invokeFormFromProfile(controller, skillForm, profile));
+        assertSame(skills, skillForm.getItems());
+
+        PracticForm practicForm = new PracticForm();
+        assertSame(practicForm, invokeFormFromProfile(controller, practicForm, profile));
+        assertSame(practics, practicForm.getItems());
+
+        EducationForm educationForm = new EducationForm();
+        assertSame(educationForm, invokeFormFromProfile(controller, educationForm, profile));
+        assertSame(educations, educationForm.getItems());
+
+        CourseForm courseForm = new CourseForm();
+        assertSame(courseForm, invokeFormFromProfile(controller, courseForm, profile));
+        assertSame(courses, courseForm.getItems());
+
+        LanguageForm languageForm = new LanguageForm();
+        assertSame(languageForm, invokeFormFromProfile(controller, languageForm, profile));
+        assertSame(languages, languageForm.getItems());
+
+        Profile profileWithHobbies = new Profile();
+        Hobby hobby = new Hobby("Chess");
+        hobby.setId(10L);
+        profileWithHobbies.setHobbies(List.of(hobby));
+        HobbyForm hobbyForm = new HobbyForm();
+        assertSame(hobbyForm, invokeFormFromProfile(controller, hobbyForm, profileWithHobbies));
+        assertEquals(List.of(10L), hobbyForm.getHobbyIds());
+
+        Profile profileWithoutHobbies = new Profile();
+        HobbyForm hobbyFormEmpty = new HobbyForm();
+        assertSame(hobbyFormEmpty, invokeFormFromProfile(controller, hobbyFormEmpty, profileWithoutHobbies));
+        assertEquals(List.of(), hobbyFormEmpty.getHobbyIds());
+
+        Profile contactsProfile = new Profile();
+        contactsProfile.setPhone("+380000000000");
+        contactsProfile.setEmail("john@example.com");
+        Contacts contacts = new Contacts();
+        contacts.setFacebook("fb");
+        contacts.setLinkedin("li");
+        contacts.setGithub("gh");
+        contacts.setStackoverflow("so");
+        contactsProfile.setContacts(contacts);
+        ContactsForm contactsForm = new ContactsForm();
+        assertSame(contactsForm, invokeFormFromProfile(controller, contactsForm, contactsProfile));
+        assertEquals(contactsProfile.getPhone(), contactsForm.getPhone());
+        assertEquals(contactsProfile.getEmail(), contactsForm.getEmail());
+        assertEquals("fb", contactsForm.getFacebook());
+        assertEquals("li", contactsForm.getLinkedin());
+        assertEquals("gh", contactsForm.getGithub());
+        assertEquals("so", contactsForm.getStackoverflow());
+
+        Profile contactsNullProfile = new Profile();
+        contactsNullProfile.setPhone("123");
+        contactsNullProfile.setEmail("mail@example.com");
+        ContactsForm contactsFormEmpty = new ContactsForm();
+        assertSame(contactsFormEmpty, invokeFormFromProfile(controller, contactsFormEmpty, contactsNullProfile));
+        assertNotNull(contactsNullProfile.getContacts());
+
+        Profile infoProfile = new Profile();
+        infoProfile.setBirthDay(Date.valueOf("2002-03-04"));
+        infoProfile.setCountry("Ukraine");
+        infoProfile.setCity("Kyiv");
+        infoProfile.setObjective("Objective");
+        infoProfile.setSummary("Summary");
+        infoProfile.setInfo("Info");
+        InfoForm infoForm = new InfoForm();
+        assertSame(infoForm, invokeFormFromProfile(controller, infoForm, infoProfile));
+        assertEquals(infoProfile.getBirthDay(), infoForm.getBirthDay());
+        assertEquals("Ukraine", infoForm.getCountry());
+        assertEquals("Kyiv", infoForm.getCity());
+        assertEquals("Objective", infoForm.getObjective());
+        assertEquals("Summary", infoForm.getSummary());
+        assertEquals("Info", infoForm.getInfo());
+
+        Object plain = new Object();
+        assertSame(plain, invokeFormFromProfile(controller, plain, infoProfile));
+    }
+
+    private Object invokeFormFromProfile(EditProfileController controller, Object form, Profile profile) {
+        try {
+            Method method = EditProfileController.class.getDeclaredMethod("formFromProfile", Object.class, Profile.class);
+            method.setAccessible(true);
+            return method.invoke(controller, form, profile);
+        } catch (ReflectiveOperationException ex) {
+            throw new AssertionError("Failed to invoke formFromProfile", ex);
+        }
     }
 
     @Test
@@ -980,7 +1095,11 @@ class EditProfileControllerTest {
         Practic valid = new Practic();
         valid.setCompany("Acme");
         PracticForm form = new PracticForm();
-        form.setItems(List.of(empty, valid));
+        List<Practic> items = new java.util.ArrayList<>();
+        items.add(null);
+        items.add(empty);
+        items.add(valid);
+        form.setItems(items);
 
         String view = controller.savePractics("john-doe", form, bindingResult, new ExtendedModelMap());
 
@@ -1220,6 +1339,1333 @@ class EditProfileControllerTest {
         List<Education> updated = itemsCaptor.getValue();
         assertEquals(1, updated.size());
         assertSame(valid, updated.get(0));
+    }
+
+    @Test
+    void saveCoursesRedirectsToLoginWhenCurrentProfileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(null);
+
+        CourseForm form = new CourseForm();
+        String view = controller.saveCourses("john-doe", form, bindingResult, new ExtendedModelMap());
+
+        assertEquals("redirect:/login", view);
+        verify(profileService, never()).updateCourses(anyLong(), any());
+    }
+
+    @Test
+    void saveCoursesThrowsAccessDeniedForDifferentUid() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("owner-user", 1L));
+
+        AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class,
+                () -> controller.saveCourses("other-user", new CourseForm(), bindingResult,
+                        new ExtendedModelMap()));
+
+        assertEquals("Access denied to profile", accessDeniedException.getMessage());
+        verify(profileService, never()).findByIdWithAll(anyLong());
+    }
+
+    @Test
+    void saveCoursesThrowsNotFoundWhenProfileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.empty());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> controller.saveCourses("john-doe", new CourseForm(), bindingResult,
+                        new ExtendedModelMap()));
+
+        assertEquals(404, ex.getStatusCode().value());
+    }
+
+    @Test
+    void saveCoursesReturnsFormWhenBindingErrors() {
+        StaticDataService staticDataService = mock(StaticDataService.class);
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                staticDataService,
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        List<Integer> years = List.of(2024, 2023);
+        Map<Integer, String> months = Map.of(1, "Jan");
+        when(staticDataService.findCoursesYears()).thenReturn(years);
+        when(staticDataService.findMonthMap()).thenReturn(months);
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(bindingResult.hasErrors()).thenReturn(true);
+
+        CourseForm form = new CourseForm();
+        form.setItems(List.of(new Course()));
+        ExtendedModelMap model = new ExtendedModelMap();
+        String view = controller.saveCourses("john-doe", form, bindingResult, model);
+
+        assertEquals("edit/courses", view);
+        assertSame(profile, model.get("profile"));
+        assertSame(form, model.get("form"));
+        assertSame(years, model.get("years"));
+        assertSame(months, model.get("months"));
+        verify(profileService, never()).updateCourses(anyLong(), any());
+    }
+
+    @Test
+    void saveCoursesUpdatesAndRedirectsOnSuccess() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        Course course = new Course();
+        course.setName("Course");
+        CourseForm form = new CourseForm();
+        form.setItems(List.of(course));
+
+        String view = controller.saveCourses("john-doe", form, bindingResult, new ExtendedModelMap());
+
+        assertEquals("redirect:/john-doe/edit/courses?success", view);
+        verify(profileService).updateCourses(1L, form.getItems());
+    }
+
+    @Test
+    void saveLanguagesRedirectsToLoginWhenCurrentProfileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(null);
+
+        LanguageForm form = new LanguageForm();
+        String view = controller.saveLanguages("john-doe", form, bindingResult, new ExtendedModelMap());
+
+        assertEquals("redirect:/login", view);
+        verify(profileService, never()).updateLanguages(anyLong(), any());
+    }
+
+    @Test
+    void saveLanguagesThrowsAccessDeniedForDifferentUid() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("owner-user", 1L));
+
+        AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class,
+                () -> controller.saveLanguages("other-user", new LanguageForm(), bindingResult,
+                        new ExtendedModelMap()));
+
+        assertEquals("Access denied to profile", accessDeniedException.getMessage());
+        verify(profileService, never()).findByIdWithAll(anyLong());
+    }
+
+    @Test
+    void saveLanguagesThrowsNotFoundWhenProfileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.empty());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> controller.saveLanguages("john-doe", new LanguageForm(), bindingResult,
+                        new ExtendedModelMap()));
+
+        assertEquals(404, ex.getStatusCode().value());
+    }
+
+    @Test
+    void saveLanguagesReturnsFormWhenBindingErrors() {
+        StaticDataService staticDataService = mock(StaticDataService.class);
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                staticDataService,
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        List<LanguageType> languageTypes = List.of(LanguageType.SPOKEN);
+        List<LanguageLevel> languageLevels = List.of(LanguageLevel.INTERMEDIATE);
+        when(staticDataService.findAllLanguageTypes()).thenReturn(languageTypes);
+        when(staticDataService.findAllLanguageLevels()).thenReturn(languageLevels);
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(bindingResult.hasErrors()).thenReturn(true);
+
+        LanguageForm form = new LanguageForm();
+        form.setItems(List.of(new Language()));
+        ExtendedModelMap model = new ExtendedModelMap();
+        String view = controller.saveLanguages("john-doe", form, bindingResult, model);
+
+        assertEquals("edit/languages", view);
+        assertSame(profile, model.get("profile"));
+        assertSame(form, model.get("form"));
+        assertSame(languageTypes, model.get("languageTypes"));
+        assertSame(languageLevels, model.get("languageLevels"));
+        verify(profileService, never()).updateLanguages(anyLong(), any());
+    }
+
+    @Test
+    void saveLanguagesUpdatesAndRedirectsOnSuccess() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        Language language = new Language();
+        language.setType(LanguageType.SPOKEN);
+        language.setLevel(LanguageLevel.INTERMEDIATE);
+        language.setName("English");
+        LanguageForm form = new LanguageForm();
+        form.setItems(List.of(language));
+
+        String view = controller.saveLanguages("john-doe", form, bindingResult, new ExtendedModelMap());
+
+        assertEquals("redirect:/john-doe/edit/languages?success", view);
+        verify(profileService).updateLanguages(1L, form.getItems());
+    }
+
+    @Test
+    void uploadPhotoRedirectsToLoginWhenCurrentProfileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        PhotoStorageService photoStorageService = mock(PhotoStorageService.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                photoStorageService,
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(null);
+
+        String view = controller.uploadPhoto("john-doe", null);
+
+        assertEquals("redirect:/login", view);
+        verify(profileService, never()).updatePhoto(anyLong(), any(), any());
+        verify(photoStorageService, never()).store(any(MultipartFile.class));
+    }
+
+    @Test
+    void uploadPhotoThrowsAccessDeniedForDifferentUid() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        PhotoStorageService photoStorageService = mock(PhotoStorageService.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                photoStorageService,
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("owner-user", 1L));
+
+        AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class,
+                () -> controller.uploadPhoto("other-user", null));
+
+        assertEquals("Access denied to profile", accessDeniedException.getMessage());
+        verify(profileService, never()).findByIdWithAll(anyLong());
+        verify(photoStorageService, never()).store(any(MultipartFile.class));
+    }
+
+    @Test
+    void uploadPhotoThrowsNotFoundWhenProfileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        PhotoStorageService photoStorageService = mock(PhotoStorageService.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                photoStorageService,
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.empty());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> controller.uploadPhoto("john-doe", null));
+
+        assertEquals(404, ex.getStatusCode().value());
+        verify(photoStorageService, never()).store(any(MultipartFile.class));
+    }
+
+    @Test
+    void uploadPhotoRedirectsToErrorWhenFileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        PhotoStorageService photoStorageService = mock(PhotoStorageService.class);
+        MultipartFile profilePhoto = mock(MultipartFile.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                photoStorageService,
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(profilePhoto.isEmpty()).thenReturn(true);
+
+        String view = controller.uploadPhoto("john-doe", profilePhoto);
+
+        assertEquals("redirect:/john-doe/edit/photo?error", view);
+        verify(photoStorageService, never()).store(any(MultipartFile.class));
+        verify(profileService, never()).updatePhoto(anyLong(), any(), any());
+    }
+
+    @Test
+    void uploadPhotoRedirectsToSuccessWhenStored() throws Exception {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        PhotoStorageService photoStorageService = mock(PhotoStorageService.class);
+        MultipartFile profilePhoto = mock(MultipartFile.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                photoStorageService,
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(profilePhoto.isEmpty()).thenReturn(false);
+        when(photoStorageService.store(profilePhoto)).thenReturn(new String[] {"/large", "/small"});
+
+        String view = controller.uploadPhoto("john-doe", profilePhoto);
+
+        assertEquals("redirect:/john-doe/edit/photo?success", view);
+        verify(profileService).updatePhoto(1L, "/large", "/small");
+    }
+
+    @Test
+    void uploadPhotoRedirectsToErrorWhenStoreFails() throws Exception {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        PhotoStorageService photoStorageService = mock(PhotoStorageService.class);
+        MultipartFile profilePhoto = mock(MultipartFile.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                photoStorageService,
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(profilePhoto.isEmpty()).thenReturn(false);
+        when(photoStorageService.store(profilePhoto)).thenThrow(new RuntimeException("boom"));
+
+        String view = controller.uploadPhoto("john-doe", profilePhoto);
+
+        assertEquals("redirect:/john-doe/edit/photo?error", view);
+        verify(profileService, never()).updatePhoto(anyLong(), any(), any());
+    }
+
+    @Test
+    void saveCertificatesRedirectsToLoginWhenCurrentProfileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(null);
+
+        CertificateForm form = new CertificateForm();
+        String view = controller.saveCertificates("john-doe", form, bindingResult, new ExtendedModelMap());
+
+        assertEquals("redirect:/login", view);
+        verify(profileService, never()).updateCertificates(anyLong(), any());
+    }
+
+    @Test
+    void saveCertificatesThrowsAccessDeniedForDifferentUid() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("owner-user", 1L));
+
+        AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class,
+                () -> controller.saveCertificates("other-user", new CertificateForm(), bindingResult,
+                        new ExtendedModelMap()));
+
+        assertEquals("Access denied to profile", accessDeniedException.getMessage());
+        verify(profileService, never()).findByIdWithAll(anyLong());
+    }
+
+    @Test
+    void saveCertificatesThrowsNotFoundWhenProfileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.empty());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> controller.saveCertificates("john-doe", new CertificateForm(), bindingResult,
+                        new ExtendedModelMap()));
+
+        assertEquals(404, ex.getStatusCode().value());
+    }
+
+    @Test
+    void saveCertificatesReturnsFormWhenBindingErrors() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(bindingResult.hasErrors()).thenReturn(true);
+
+        CertificateForm form = new CertificateForm();
+        form.setItems(List.of(new Certificate()));
+        ExtendedModelMap model = new ExtendedModelMap();
+        String view = controller.saveCertificates("john-doe", form, bindingResult, model);
+
+        assertEquals("edit/certificates", view);
+        assertSame(profile, model.get("profile"));
+        assertSame(form, model.get("form"));
+        verify(profileService, never()).updateCertificates(anyLong(), any());
+    }
+
+    @Test
+    void saveCertificatesUpdatesAndRedirectsOnSuccess() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        Certificate certificate = new Certificate();
+        certificate.setName("Certificate");
+        CertificateForm form = new CertificateForm();
+        form.setItems(List.of(certificate));
+
+        String view = controller.saveCertificates("john-doe", form, bindingResult, new ExtendedModelMap());
+
+        assertEquals("redirect:/john-doe/edit/certificates?success", view);
+        verify(profileService).updateCertificates(1L, form.getItems());
+    }
+
+    @Test
+    void saveHobbiesRedirectsToLoginWhenCurrentProfileMissing() {
+        StaticDataService staticDataService = mock(StaticDataService.class);
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+
+        EditProfileController controller = new EditProfileController(
+                staticDataService,
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(null);
+
+        HobbyForm form = new HobbyForm();
+        String view = controller.saveHobbies("john-doe", form, null, new ExtendedModelMap());
+
+        assertEquals("redirect:/login", view);
+        verify(profileService, never()).updateHobbies(anyLong(), any());
+    }
+
+    @Test
+    void saveHobbiesThrowsAccessDeniedForDifferentUid() {
+        StaticDataService staticDataService = mock(StaticDataService.class);
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+
+        EditProfileController controller = new EditProfileController(
+                staticDataService,
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("owner-user", 1L));
+
+        AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class,
+                () -> controller.saveHobbies("other-user", new HobbyForm(), null, new ExtendedModelMap()));
+
+        assertEquals("Access denied to profile", accessDeniedException.getMessage());
+        verify(profileService, never()).findByIdWithAll(anyLong());
+    }
+
+    @Test
+    void saveHobbiesThrowsNotFoundWhenProfileMissing() {
+        StaticDataService staticDataService = mock(StaticDataService.class);
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+
+        EditProfileController controller = new EditProfileController(
+                staticDataService,
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.empty());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> controller.saveHobbies("john-doe", new HobbyForm(), null, new ExtendedModelMap()));
+
+        assertEquals(404, ex.getStatusCode().value());
+    }
+
+    @Test
+    void saveHobbiesReturnsFormWhenHobbiesParamInvalid() {
+        StaticDataService staticDataService = mock(StaticDataService.class);
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+
+        EditProfileController controller = new EditProfileController(
+                staticDataService,
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+
+        List<Hobby> hobbies = List.of(new Hobby());
+        when(staticDataService.findAllHobbiesWithSelected(eq(List.of()))).thenReturn(hobbies);
+
+        HobbyForm form = new HobbyForm();
+        form.setHobbyIds(List.of());
+        ExtendedModelMap model = new ExtendedModelMap();
+        String view = controller.saveHobbies("john-doe", form, "1,abc", model);
+
+        assertEquals("edit/hobbies", view);
+        assertEquals("Невірний формат ідентифікатора хобі", model.get("hobbyError"));
+        assertSame(profile, model.get("profile"));
+        assertSame(form, model.get("form"));
+        assertSame(hobbies, model.get("hobbies"));
+        verify(profileService, never()).updateHobbies(anyLong(), any());
+    }
+
+    @Test
+    void saveHobbiesReturnsFormWhenIdsEmpty() {
+        StaticDataService staticDataService = mock(StaticDataService.class);
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+
+        EditProfileController controller = new EditProfileController(
+                staticDataService,
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+
+        List<Hobby> hobbies = List.of(new Hobby());
+        when(staticDataService.findAllHobbiesWithSelected(eq(List.of()))).thenReturn(hobbies);
+
+        HobbyForm form = new HobbyForm();
+        ExtendedModelMap model = new ExtendedModelMap();
+        String view = controller.saveHobbies("john-doe", form, null, model);
+
+        assertEquals("edit/hobbies", view);
+        assertEquals("Оберіть хоча б одне хобі", model.get("hobbyError"));
+        assertSame(profile, model.get("profile"));
+        assertSame(form, model.get("form"));
+        assertSame(hobbies, model.get("hobbies"));
+        verify(profileService, never()).updateHobbies(anyLong(), any());
+    }
+
+    @Test
+    void saveHobbiesUpdatesAndRedirectsOnSuccess() {
+        StaticDataService staticDataService = mock(StaticDataService.class);
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+
+        EditProfileController controller = new EditProfileController(
+                staticDataService,
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+
+        HobbyForm form = new HobbyForm();
+        form.setHobbyIds(List.of());
+        String view = controller.saveHobbies("john-doe", form, "1,2,3", new ExtendedModelMap());
+
+        assertEquals("redirect:/john-doe/edit/hobbies?success", view);
+        verify(profileService).updateHobbies(1L, List.of(1L, 2L, 3L));
+        verify(staticDataService, never()).findAllHobbiesWithSelected(any());
+    }
+
+    @Test
+    void saveContactsRedirectsToLoginWhenCurrentProfileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(null);
+
+        ContactsForm form = new ContactsForm();
+        String view = controller.saveContacts("john-doe", form, bindingResult, new ExtendedModelMap());
+
+        assertEquals("redirect:/login", view);
+        verify(profileService, never()).updateContacts(anyLong(), any());
+    }
+
+    @Test
+    void saveContactsThrowsAccessDeniedForDifferentUid() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("owner-user", 1L));
+
+        AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class,
+                () -> controller.saveContacts("other-user", new ContactsForm(), bindingResult,
+                        new ExtendedModelMap()));
+
+        assertEquals("Access denied to profile", accessDeniedException.getMessage());
+        verify(profileService, never()).findByIdWithAll(anyLong());
+    }
+
+    @Test
+    void saveContactsThrowsNotFoundWhenProfileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.empty());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> controller.saveContacts("john-doe", new ContactsForm(), bindingResult,
+                        new ExtendedModelMap()));
+
+        assertEquals(404, ex.getStatusCode().value());
+    }
+
+    @Test
+    void saveContactsReturnsFormWhenBindingErrors() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(bindingResult.hasErrors()).thenReturn(true);
+
+        ContactsForm form = new ContactsForm();
+        ExtendedModelMap model = new ExtendedModelMap();
+        String view = controller.saveContacts("john-doe", form, bindingResult, model);
+
+        assertEquals("edit/contacts", view);
+        assertSame(profile, model.get("profile"));
+        assertSame(form, model.get("form"));
+        verify(profileService, never()).updateContacts(anyLong(), any());
+    }
+
+    @Test
+    void saveContactsUpdatesAndRedirectsOnSuccess() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        ContactsForm form = new ContactsForm();
+        form.setEmail("john@example.com");
+        form.setPhone("+380000000000");
+        String view = controller.saveContacts("john-doe", form, bindingResult, new ExtendedModelMap());
+
+        assertEquals("redirect:/john-doe/edit/contacts?success", view);
+        verify(profileService).updateContacts(1L, form);
+    }
+
+    @Test
+    void saveInfoRedirectsToLoginWhenCurrentProfileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(null);
+
+        InfoForm form = new InfoForm();
+        String view = controller.saveInfo("john-doe", form, bindingResult, new ExtendedModelMap());
+
+        assertEquals("redirect:/login", view);
+        verify(profileService, never()).updateInfo(anyLong(), any());
+    }
+
+    @Test
+    void saveInfoThrowsAccessDeniedForDifferentUid() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("owner-user", 1L));
+
+        AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class,
+                () -> controller.saveInfo("other-user", new InfoForm(), bindingResult,
+                        new ExtendedModelMap()));
+
+        assertEquals("Access denied to profile", accessDeniedException.getMessage());
+        verify(profileService, never()).findByIdWithAll(anyLong());
+    }
+
+    @Test
+    void saveInfoThrowsNotFoundWhenProfileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.empty());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> controller.saveInfo("john-doe", new InfoForm(), bindingResult,
+                        new ExtendedModelMap()));
+
+        assertEquals(404, ex.getStatusCode().value());
+    }
+
+    @Test
+    void saveInfoReturnsFormWhenBindingErrors() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(bindingResult.hasErrors()).thenReturn(true);
+
+        InfoForm form = new InfoForm();
+        ExtendedModelMap model = new ExtendedModelMap();
+        String view = controller.saveInfo("john-doe", form, bindingResult, model);
+
+        assertEquals("edit/info", view);
+        assertSame(profile, model.get("profile"));
+        assertSame(form, model.get("form"));
+        verify(profileService, never()).updateInfo(anyLong(), any());
+    }
+
+    @Test
+    void saveInfoUpdatesAndRedirectsOnSuccess() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(bindingResult.hasErrors()).thenReturn(false);
+
+        InfoForm form = new InfoForm();
+        form.setCountry("Ukraine");
+        form.setCity("Kyiv");
+        String view = controller.saveInfo("john-doe", form, bindingResult, new ExtendedModelMap());
+
+        assertEquals("redirect:/john-doe/edit/info?success", view);
+        verify(profileService).updateInfo(1L, form);
+    }
+
+    @Test
+    void savePasswordRedirectsToLoginWhenCurrentProfileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(null);
+
+        ChangePasswordForm form = new ChangePasswordForm();
+        String view = controller.savePassword("john-doe", form, bindingResult, new ExtendedModelMap());
+
+        assertEquals("redirect:/login", view);
+        verify(profileService, never()).updatePassword(anyLong(), any());
+    }
+
+    @Test
+    void savePasswordThrowsAccessDeniedForDifferentUid() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("owner-user", 1L));
+
+        AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class,
+                () -> controller.savePassword("other-user", new ChangePasswordForm(), bindingResult,
+                        new ExtendedModelMap()));
+
+        assertEquals("Access denied to profile", accessDeniedException.getMessage());
+        verify(profileService, never()).findByIdWithAll(anyLong());
+    }
+
+    @Test
+    void savePasswordThrowsNotFoundWhenProfileMissing() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.empty());
+
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> controller.savePassword("john-doe", new ChangePasswordForm(), bindingResult,
+                        new ExtendedModelMap()));
+
+        assertEquals(404, ex.getStatusCode().value());
+    }
+
+    @Test
+    void savePasswordReturnsFormWhenBindingErrors() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                mock(PasswordEncoder.class),
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(bindingResult.hasErrors()).thenReturn(true);
+
+        ChangePasswordForm form = new ChangePasswordForm();
+        ExtendedModelMap model = new ExtendedModelMap();
+        String view = controller.savePassword("john-doe", form, bindingResult, model);
+
+        assertEquals("edit/password", view);
+        assertSame(profile, model.get("profile"));
+        assertSame(form, model.get("form"));
+        verify(profileService, never()).updatePassword(anyLong(), any());
+    }
+
+    @Test
+    void savePasswordReturnsFormWhenCurrentPasswordMismatch() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                passwordEncoder,
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(passwordEncoder.matches("old", "hash")).thenReturn(false);
+
+        ChangePasswordForm form = new ChangePasswordForm();
+        form.setCurrentPassword("old");
+        form.setNewPassword("newpass");
+        form.setConfirmPassword("newpass");
+        ExtendedModelMap model = new ExtendedModelMap();
+        String view = controller.savePassword("john-doe", form, bindingResult, model);
+
+        assertEquals("edit/password", view);
+        assertSame(profile, model.get("profile"));
+        assertSame(form, model.get("form"));
+        verify(bindingResult).rejectValue("currentPassword", "password.mismatch", "Невірний поточний пароль");
+        verify(profileService, never()).updatePassword(anyLong(), any());
+    }
+
+    @Test
+    void savePasswordReturnsFormWhenConfirmPasswordMismatch() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                passwordEncoder,
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(passwordEncoder.matches("old", "hash")).thenReturn(true);
+
+        ChangePasswordForm form = new ChangePasswordForm();
+        form.setCurrentPassword("old");
+        form.setNewPassword("newpass");
+        form.setConfirmPassword("otherpass");
+        ExtendedModelMap model = new ExtendedModelMap();
+        String view = controller.savePassword("john-doe", form, bindingResult, model);
+
+        assertEquals("edit/password", view);
+        assertSame(profile, model.get("profile"));
+        assertSame(form, model.get("form"));
+        verify(bindingResult).rejectValue("confirmPassword", "password.confirm", "Паролі не співпадають");
+        verify(profileService, never()).updatePassword(anyLong(), any());
+    }
+
+    @Test
+    void savePasswordUpdatesAndRedirectsOnSuccess() {
+        CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
+        ProfileService profileService = mock(ProfileService.class);
+        PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
+        BindingResult bindingResult = mock(BindingResult.class);
+
+        EditProfileController controller = new EditProfileController(
+                mock(StaticDataService.class),
+                mock(CertificateStorageService.class),
+                mock(PhotoStorageService.class),
+                passwordEncoder,
+                mock(Validator.class),
+                profileService,
+                currentProfileProvider);
+
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("john-doe", 1L));
+        Profile profile = new Profile();
+        profile.setId(1L);
+        profile.setUid("john-doe");
+        profile.setPassword("hash");
+        profile.setFirstName("John");
+        profile.setLastName("Doe");
+        when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(passwordEncoder.matches("old", "hash")).thenReturn(true);
+
+        ChangePasswordForm form = new ChangePasswordForm();
+        form.setCurrentPassword("old");
+        form.setNewPassword("newpass");
+        form.setConfirmPassword("newpass");
+        String view = controller.savePassword("john-doe", form, bindingResult, new ExtendedModelMap());
+
+        assertEquals("redirect:/john-doe/edit/password?success", view);
+        verify(profileService).updatePassword(1L, "newpass");
     }
 
     @Test
