@@ -70,6 +70,7 @@ public class Hobby extends AbstractEntity<Long> implements Comparable<Hobby>, Pr
         return profile;
     }
 
+    @Override
     public void setProfile(Profile profile) {
         this.profile = profile;
     }

@@ -120,6 +120,8 @@ public class Practic extends AbstractFinishDateEntity<Long> implements ProfileEn
     public Profile getProfile() {
         return profile;
     }
+
+    @Override
     public void setProfile(Profile profile) {
         this.profile = profile;
     }

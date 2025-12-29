@@ -4,6 +4,7 @@ import java.io.Serial;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -72,6 +73,7 @@ public class Course extends AbstractFinishDateEntity<Long> implements ProfileEnt
         return profile;
     }
 
+    @Override
     public void setProfile(Profile profile) {
         this.profile = profile;
     }

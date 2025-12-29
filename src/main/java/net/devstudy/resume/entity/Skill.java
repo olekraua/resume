@@ -15,7 +15,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
-
 import net.devstudy.resume.annotation.constraints.EnglishLanguage;
 
 @Entity
@@ -78,6 +77,7 @@ public class Skill extends AbstractEntity<Long> implements ProfileEntity {
         return this.profile;
     }
 
+    @Override
     public void setProfile(Profile profile) {
         this.profile = profile;
     }
