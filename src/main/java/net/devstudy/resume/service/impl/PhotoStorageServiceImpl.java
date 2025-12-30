@@ -4,13 +4,17 @@ import java.io.IOException;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import net.devstudy.resume.component.ImageFormatConverter;
+import net.devstudy.resume.component.ImageOptimizator;
 import net.devstudy.resume.service.PhotoStorageService;
 
 @Service
@@ -19,8 +23,17 @@ public class PhotoStorageServiceImpl implements PhotoStorageService {
     private static final long MAX_SIZE_BYTES = 5 * 1024 * 1024; // 5MB
     private static final int MIN_DIMENSION = 400;
 
+    private final ImageOptimizator imageOptimizator;
+    private final ImageFormatConverter pngToJpegImageFormatConverter;
+
     @Value("${upload.photos.dir:uploads/photos}")
     private String photosDir;
+
+    public PhotoStorageServiceImpl(ImageOptimizator imageOptimizator,
+            ImageFormatConverter pngToJpegImageFormatConverter) {
+        this.imageOptimizator = imageOptimizator;
+        this.pngToJpegImageFormatConverter = pngToJpegImageFormatConverter;
+    }
 
     @Override
     public String[] store(MultipartFile file) {
@@ -34,16 +47,31 @@ public class PhotoStorageServiceImpl implements PhotoStorageService {
             Path dir = Path.of(photosDir);
             Files.createDirectories(dir);
             String ext = getExtension(file.getOriginalFilename());
+            boolean isPng = isPng(file, ext);
+            String targetExt = isPng ? "jpg" : ext;
             String baseName = UUID.randomUUID().toString();
-            String fileName = baseName + (ext.isEmpty() ? "" : "." + ext);
-            String smallName = baseName + "-sm" + (ext.isEmpty() ? "" : "." + ext);
+            String fileName = baseName + (targetExt.isEmpty() ? "" : "." + targetExt);
+            String smallName = baseName + "-sm" + (targetExt.isEmpty() ? "" : "." + targetExt);
 
             Path largeTarget = dir.resolve(fileName);
             Path smallTarget = dir.resolve(smallName);
 
-            Files.write(largeTarget, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            // simple small copy (без ресайзу; можна додати ресайз пізніше)
-            Files.write(smallTarget, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            if (isPng) {
+                Path tmp = Files.createTempFile("resume-photo-", ".png");
+                try {
+                    Files.write(tmp, data, StandardOpenOption.TRUNCATE_EXISTING);
+                    pngToJpegImageFormatConverter.convert(tmp, largeTarget);
+                } finally {
+                    Files.deleteIfExists(tmp);
+                }
+                Files.copy(largeTarget, smallTarget, StandardCopyOption.REPLACE_EXISTING);
+            } else {
+                Files.write(largeTarget, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                // simple small copy (без ресайзу; можна додати ресайз пізніше)
+                Files.write(smallTarget, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            }
+            imageOptimizator.optimize(largeTarget);
+            imageOptimizator.optimize(smallTarget);
 
             String baseUrl = "/uploads/photos/";
             return new String[] { baseUrl + fileName, baseUrl + smallName };
@@ -77,5 +105,13 @@ public class PhotoStorageServiceImpl implements PhotoStorageService {
         if (name == null) return "";
         int idx = name.lastIndexOf('.');
         return (idx >= 0 && idx < name.length() - 1) ? name.substring(idx + 1) : "";
+    }
+
+    private boolean isPng(MultipartFile file, String ext) {
+        if ("png".equalsIgnoreCase(ext)) {
+            return true;
+        }
+        String contentType = file.getContentType();
+        return contentType != null && contentType.toLowerCase(Locale.ROOT).contains("png");
     }
 }
