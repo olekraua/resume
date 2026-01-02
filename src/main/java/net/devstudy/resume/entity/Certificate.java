@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -31,10 +32,12 @@ public class Certificate extends AbstractEntity<Long> implements ProfileEntity {
     @Column(unique = true, nullable = false)
     private Long id;
 
+    @NotBlank
     @Size(max = 255)
     @Column(name = "large_url", nullable = false, length = 255)
     private String largeUrl;
 
+    @NotBlank
     @Size(max = 255)
     @Column(name = "small_url", nullable = false, length = 255)
     private String smallUrl;

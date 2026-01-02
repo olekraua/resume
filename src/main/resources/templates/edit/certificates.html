@@ -134,7 +134,8 @@
   /*<![CDATA[*/
   $(document).ready(function () {
     resume.initCertificateViewer();
-    resume.createCertificateUploader(/*[[${_csrf.token}]]*/'');
+    var uploadUrl = /*[[@{|/${profile.uid}/edit/certificates/upload|}]]*/'';
+    resume.createCertificateUploader(/*[[${_csrf.token}]]*/'', uploadUrl);
   });
   /*]]>*/
 </script>

@@ -4,17 +4,17 @@ import java.io.IOException;
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Locale;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import net.devstudy.resume.component.ImageFormatConverter;
 import net.devstudy.resume.component.ImageOptimizator;
+import net.devstudy.resume.component.ImageResizer;
+import net.devstudy.resume.config.PhotoUploadProperties;
 import net.devstudy.resume.service.PhotoStorageService;
 
 @Service
@@ -25,14 +25,17 @@ public class PhotoStorageServiceImpl implements PhotoStorageService {
 
     private final ImageOptimizator imageOptimizator;
     private final ImageFormatConverter pngToJpegImageFormatConverter;
-
-    @Value("${upload.photos.dir:uploads/photos}")
-    private String photosDir;
+    private final ImageResizer imageResizer;
+    private final PhotoUploadProperties photoUploadProperties;
 
     public PhotoStorageServiceImpl(ImageOptimizator imageOptimizator,
-            ImageFormatConverter pngToJpegImageFormatConverter) {
+            ImageFormatConverter pngToJpegImageFormatConverter,
+            ImageResizer imageResizer,
+            PhotoUploadProperties photoUploadProperties) {
         this.imageOptimizator = imageOptimizator;
         this.pngToJpegImageFormatConverter = pngToJpegImageFormatConverter;
+        this.imageResizer = imageResizer;
+        this.photoUploadProperties = photoUploadProperties;
     }
 
     @Override
@@ -44,7 +47,7 @@ public class PhotoStorageServiceImpl implements PhotoStorageService {
             byte[] data = file.getBytes();
             validatePhoto(file, data);
 
-            Path dir = Path.of(photosDir);
+            Path dir = Path.of(photoUploadProperties.getDir());
             Files.createDirectories(dir);
             String ext = getExtension(file.getOriginalFilename());
             boolean isPng = isPng(file, ext);
@@ -64,12 +67,10 @@ public class PhotoStorageServiceImpl implements PhotoStorageService {
                 } finally {
                     Files.deleteIfExists(tmp);
                 }
-                Files.copy(largeTarget, smallTarget, StandardCopyOption.REPLACE_EXISTING);
             } else {
                 Files.write(largeTarget, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-                // simple small copy (без ресайзу; можна додати ресайз пізніше)
-                Files.write(smallTarget, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             }
+            resizePhoto(largeTarget, smallTarget);
             imageOptimizator.optimize(largeTarget);
             imageOptimizator.optimize(smallTarget);
 
@@ -78,6 +79,15 @@ public class PhotoStorageServiceImpl implements PhotoStorageService {
         } catch (IOException e) {
             throw new RuntimeException("Can't store photo file", e);
         }
+    }
+
+    private void resizePhoto(Path largeTarget, Path smallTarget) throws IOException {
+        imageResizer.resize(largeTarget, smallTarget,
+                photoUploadProperties.getSmallWidth(),
+                photoUploadProperties.getSmallHeight());
+        imageResizer.resize(largeTarget, largeTarget,
+                photoUploadProperties.getLargeWidth(),
+                photoUploadProperties.getLargeHeight());
     }
 
     private void validatePhoto(MultipartFile file, byte[] data) {

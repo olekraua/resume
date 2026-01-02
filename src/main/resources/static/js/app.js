@@ -32,10 +32,15 @@ var resume = {
 	    	$('#currentPhoto').css('display', 'none');
 	    });
 	},
-	createCertificateUploader : function(csrfToken){
+	createCertificateUploader : function(csrfToken, uploadUrl){
 		//https://github.com/kartik-v/bootstrap-fileinput
+		var resolvedUploadUrl = uploadUrl || '/edit/certificates/upload';
+		if(csrfToken && resolvedUploadUrl.indexOf('_csrf=') === -1) {
+			var separator = resolvedUploadUrl.indexOf('?') === -1 ? '?' : '&';
+			resolvedUploadUrl += separator + '_csrf='+csrfToken;
+		}
 		$("#certificateFile").fileinput({
-			uploadUrl: '/edit/certificates/upload?_csrf='+csrfToken,
+			uploadUrl: resolvedUploadUrl,
 		 	allowedFileExtensions : ['jpg', 'png'],
 			maxFileCount: 1,
 			showPreview:false
@@ -153,6 +158,12 @@ var resume = {
 
 	certificates : {
 		showUploadDialog : function() {
+			$('#certificateUploader').attr('data-small-url', '').attr('data-large-url', '');
+			$('#certificateName').val('');
+			$('#certificateIssuer').val('');
+			if($('#certificateFile').length) {
+				$('#certificateFile').fileinput('clear');
+			}
 			$('#certificateUploader').modal({
 				show : true
 			});
@@ -165,6 +176,12 @@ var resume = {
 				alert('certificateName is null')
 				return;
 			}
+			var smallUrl = $('#certificateUploader').attr('data-small-url');
+			var largeUrl = $('#certificateUploader').attr('data-large-url');
+			if(!smallUrl || !largeUrl) {
+				resume.showErrorDialog(messages.errorUploadCertificate);
+				return;
+			}
 			var template = resume.ui.getTemplate();
 			var container = $('#ui-block-container');
 			var blockIndex = container.find('.ui-item').length;
@@ -172,8 +189,8 @@ var resume = {
 				blockIndex : blockIndex,
 				name : $('#certificateName').val(),
 				issuer : $('#certificateIssuer').val(),
-				smallUrl : $('#certificateUploader').attr('data-small-url'),
-				largeUrl : $('#certificateUploader').attr('data-large-url')
+				smallUrl : smallUrl,
+				largeUrl : largeUrl
 			};
 			container.append(template(context));
 			$('#certificateUploader').modal('hide');

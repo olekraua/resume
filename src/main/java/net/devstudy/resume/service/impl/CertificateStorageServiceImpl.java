@@ -1,17 +1,22 @@
 package net.devstudy.resume.service.impl;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.util.Locale;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.component.DataBuilder;
+import net.devstudy.resume.component.ImageFormatConverter;
+import net.devstudy.resume.component.ImageOptimizator;
+import net.devstudy.resume.component.ImageResizer;
+import net.devstudy.resume.config.CertificateUploadProperties;
 import net.devstudy.resume.model.UploadCertificateResult;
 import net.devstudy.resume.service.CertificateStorageService;
 
@@ -19,9 +24,11 @@ import net.devstudy.resume.service.CertificateStorageService;
 @RequiredArgsConstructor
 public class CertificateStorageServiceImpl implements CertificateStorageService {
 
-    @Value("${upload.certificates.dir:uploads/certificates}")
-    private String certificatesDir;
     private final DataBuilder dataBuilder;
+    private final ImageOptimizator imageOptimizator;
+    private final ImageFormatConverter pngToJpegImageFormatConverter;
+    private final ImageResizer imageResizer;
+    private final CertificateUploadProperties certificateUploadProperties;
 
     @Override
     public UploadCertificateResult store(MultipartFile file) {
@@ -29,19 +36,65 @@ public class CertificateStorageServiceImpl implements CertificateStorageService 
             throw new IllegalArgumentException("Empty certificate file");
         }
         try {
-            Path dir = Path.of(certificatesDir);
+            byte[] data = file.getBytes();
+            validateCertificate(file, data);
+
+            Path dir = Path.of(certificateUploadProperties.getDir());
             Files.createDirectories(dir);
             String ext = getExtension(file.getOriginalFilename());
+            boolean isPng = isPng(file, ext);
+            String targetExt = isPng ? "jpg" : ext;
             String baseName = UUID.randomUUID().toString();
-            String fileName = baseName + (ext.isEmpty() ? "" : "." + ext);
-            Path target = dir.resolve(fileName);
-            Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+            String fileName = baseName + (targetExt.isEmpty() ? "" : "." + targetExt);
+            String smallName = baseName + "-sm" + (targetExt.isEmpty() ? "" : "." + targetExt);
+            Path largeTarget = dir.resolve(fileName);
+            Path smallTarget = dir.resolve(smallName);
 
-            String url = "/uploads/certificates/" + fileName;
+            if (isPng) {
+                Path tmp = Files.createTempFile("resume-certificate-", ".png");
+                try {
+                    Files.write(tmp, data, StandardOpenOption.TRUNCATE_EXISTING);
+                    pngToJpegImageFormatConverter.convert(tmp, largeTarget);
+                } finally {
+                    Files.deleteIfExists(tmp);
+                }
+            } else {
+                Files.write(largeTarget, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            }
+            resizeCertificate(largeTarget, smallTarget);
+            imageOptimizator.optimize(largeTarget);
+            imageOptimizator.optimize(smallTarget);
+
+            String largeUrl = "/uploads/certificates/" + fileName;
+            String smallUrl = "/uploads/certificates/" + smallName;
             String certName = dataBuilder.buildCertificateName(file.getOriginalFilename());
-            return new UploadCertificateResult(certName, url, url);
+            return new UploadCertificateResult(certName, largeUrl, smallUrl);
         } catch (IOException e) {
             throw new RuntimeException("Can't store certificate file", e);
+        }
+    }
+
+    private void resizeCertificate(Path largeTarget, Path smallTarget) throws IOException {
+        imageResizer.resize(largeTarget, smallTarget,
+                certificateUploadProperties.getSmallWidth(),
+                certificateUploadProperties.getSmallHeight());
+        imageResizer.resize(largeTarget, largeTarget,
+                certificateUploadProperties.getLargeWidth(),
+                certificateUploadProperties.getLargeHeight());
+    }
+
+    private void validateCertificate(MultipartFile file, byte[] data) {
+        String ext = getExtension(file.getOriginalFilename()).toLowerCase(Locale.ROOT);
+        if (!(ext.equals("jpg") || ext.equals("jpeg") || ext.equals("png"))) {
+            throw new IllegalArgumentException("Only jpg or png images are allowed");
+        }
+        try {
+            var img = javax.imageio.ImageIO.read(new ByteArrayInputStream(data));
+            if (img == null) {
+                throw new IllegalArgumentException("Invalid image format");
+            }
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Can't read image", e);
         }
     }
 
@@ -51,4 +104,11 @@ public class CertificateStorageServiceImpl implements CertificateStorageService 
         return (idx >= 0 && idx < name.length() - 1) ? name.substring(idx + 1) : "";
     }
 
+    private boolean isPng(MultipartFile file, String ext) {
+        if ("png".equalsIgnoreCase(ext)) {
+            return true;
+        }
+        String contentType = file.getContentType();
+        return contentType != null && contentType.toLowerCase(Locale.ROOT).contains("png");
+    }
 }
