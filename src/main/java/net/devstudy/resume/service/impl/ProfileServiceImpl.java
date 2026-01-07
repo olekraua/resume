@@ -9,9 +9,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.util.StringUtils;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import net.devstudy.resume.component.CertificateFileStorage;
+import net.devstudy.resume.component.impl.UploadCertificateLinkTempStorage;
 import net.devstudy.resume.entity.Certificate;
 import net.devstudy.resume.entity.Contacts;
 import net.devstudy.resume.entity.Course;
@@ -51,6 +56,8 @@ public class ProfileServiceImpl implements ProfileService {
     private final LanguageRepository languageRepository;
     private final HobbyRepository hobbyRepository;
     private final CertificateRepository certificateRepository;
+    private final CertificateFileStorage certificateFileStorage;
+    private final UploadCertificateLinkTempStorage uploadCertificateLinkTempStorage;
     private final PasswordEncoder passwordEncoder;
     private final ProfileSearchService profileSearchService;
     private final CurrentProfileProvider currentProfileProvider;
@@ -324,6 +331,8 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     @Transactional
     public void updateCertificates(Long profileId, java.util.List<Certificate> items) {
+        java.util.List<String> oldUrls = collectCertificateUrls(certificateRepository.findByProfileId(profileId));
+        java.util.Set<String> newUrls = collectCertificateUrlsAsSet(items);
         Profile profile = getProfileOrThrow(profileId);
         certificateRepository.deleteByProfileId(profileId);
         if (items != null) {
@@ -333,6 +342,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
             certificateRepository.saveAll(items);
         }
+        registerCertificateCleanup(oldUrls, newUrls);
         profile.setCompleted(isProfileCompleted(profile));
         requestIndexing(profileId);
     }
@@ -358,6 +368,62 @@ public class ProfileServiceImpl implements ProfileService {
     private Profile getProfileOrThrow(Long profileId) {
         return profileRepository.findById(profileId)
                 .orElseThrow(() -> new EntityNotFoundException("Profile not found: " + profileId));
+    }
+
+    private java.util.List<String> collectCertificateUrls(java.util.List<Certificate> certificates) {
+        if (certificates == null || certificates.isEmpty()) {
+            return java.util.List.of();
+        }
+        java.util.List<String> urls = new java.util.ArrayList<>();
+        for (Certificate certificate : certificates) {
+            if (certificate == null) {
+                continue;
+            }
+            if (StringUtils.hasText(certificate.getLargeUrl())) {
+                urls.add(certificate.getLargeUrl());
+            }
+            if (StringUtils.hasText(certificate.getSmallUrl())) {
+                urls.add(certificate.getSmallUrl());
+            }
+        }
+        return urls;
+    }
+
+    private java.util.Set<String> collectCertificateUrlsAsSet(java.util.List<Certificate> certificates) {
+        if (certificates == null || certificates.isEmpty()) {
+            return java.util.Set.of();
+        }
+        java.util.Set<String> urls = new java.util.HashSet<>();
+        for (Certificate certificate : certificates) {
+            if (certificate == null) {
+                continue;
+            }
+            if (StringUtils.hasText(certificate.getLargeUrl())) {
+                urls.add(certificate.getLargeUrl());
+            }
+            if (StringUtils.hasText(certificate.getSmallUrl())) {
+                urls.add(certificate.getSmallUrl());
+            }
+        }
+        return urls;
+    }
+
+    private void registerCertificateCleanup(java.util.List<String> oldUrls, java.util.Set<String> newUrls) {
+        java.util.List<String> toRemove = oldUrls.stream()
+                .filter(url -> !newUrls.contains(url))
+                .toList();
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            uploadCertificateLinkTempStorage.clearImageLinks();
+            certificateFileStorage.removeAll(toRemove);
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                uploadCertificateLinkTempStorage.clearImageLinks();
+                certificateFileStorage.removeAll(toRemove);
+            }
+        });
     }
 
     private void initializeCollections(Profile profile) {

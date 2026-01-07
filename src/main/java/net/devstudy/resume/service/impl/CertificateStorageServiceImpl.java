@@ -16,6 +16,7 @@ import net.devstudy.resume.component.DataBuilder;
 import net.devstudy.resume.component.ImageFormatConverter;
 import net.devstudy.resume.component.ImageOptimizator;
 import net.devstudy.resume.component.ImageResizer;
+import net.devstudy.resume.component.impl.UploadCertificateLinkTempStorage;
 import net.devstudy.resume.config.CertificateUploadProperties;
 import net.devstudy.resume.model.UploadCertificateResult;
 import net.devstudy.resume.service.CertificateStorageService;
@@ -29,6 +30,7 @@ public class CertificateStorageServiceImpl implements CertificateStorageService 
     private final ImageFormatConverter pngToJpegImageFormatConverter;
     private final ImageResizer imageResizer;
     private final CertificateUploadProperties certificateUploadProperties;
+    private final UploadCertificateLinkTempStorage uploadCertificateLinkTempStorage;
 
     @Override
     public UploadCertificateResult store(MultipartFile file) {
@@ -68,6 +70,7 @@ public class CertificateStorageServiceImpl implements CertificateStorageService 
             String largeUrl = "/uploads/certificates/" + fileName;
             String smallUrl = "/uploads/certificates/" + smallName;
             String certName = dataBuilder.buildCertificateName(file.getOriginalFilename());
+            uploadCertificateLinkTempStorage.addImageLinks(largeUrl, smallUrl);
             return new UploadCertificateResult(certName, largeUrl, smallUrl);
         } catch (IOException e) {
             throw new RuntimeException("Can't store certificate file", e);
