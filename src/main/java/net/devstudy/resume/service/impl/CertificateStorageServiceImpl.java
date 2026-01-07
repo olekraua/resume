@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Locale;
 import java.util.UUID;
@@ -12,13 +13,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import net.devstudy.resume.annotation.EnableUploadImageTempStorage;
 import net.devstudy.resume.component.DataBuilder;
 import net.devstudy.resume.component.ImageFormatConverter;
 import net.devstudy.resume.component.ImageOptimizator;
 import net.devstudy.resume.component.ImageResizer;
+import net.devstudy.resume.component.impl.UploadImageTempStorage;
 import net.devstudy.resume.component.impl.UploadCertificateLinkTempStorage;
 import net.devstudy.resume.config.CertificateUploadProperties;
 import net.devstudy.resume.model.UploadCertificateResult;
+import net.devstudy.resume.model.UploadTempPath;
 import net.devstudy.resume.service.CertificateStorageService;
 
 @Service
@@ -31,12 +35,16 @@ public class CertificateStorageServiceImpl implements CertificateStorageService 
     private final ImageResizer imageResizer;
     private final CertificateUploadProperties certificateUploadProperties;
     private final UploadCertificateLinkTempStorage uploadCertificateLinkTempStorage;
+    private final UploadImageTempStorage uploadImageTempStorage;
 
     @Override
+    @EnableUploadImageTempStorage
     public UploadCertificateResult store(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Empty certificate file");
         }
+        UploadTempPath uploadTempPath = resolveUploadTempPath();
+        boolean cleanupTempFiles = uploadTempPath != uploadImageTempStorage.getCurrentUploadTempPath();
         try {
             byte[] data = file.getBytes();
             validateCertificate(file, data);
@@ -51,21 +59,25 @@ public class CertificateStorageServiceImpl implements CertificateStorageService 
             String smallName = baseName + "-sm" + (targetExt.isEmpty() ? "" : "." + targetExt);
             Path largeTarget = dir.resolve(fileName);
             Path smallTarget = dir.resolve(smallName);
+            Path tempLarge = uploadTempPath.getLargeImagePath();
+            Path tempSmall = uploadTempPath.getSmallImagePath();
 
             if (isPng) {
                 Path tmp = Files.createTempFile("resume-certificate-", ".png");
                 try {
                     Files.write(tmp, data, StandardOpenOption.TRUNCATE_EXISTING);
-                    pngToJpegImageFormatConverter.convert(tmp, largeTarget);
+                    pngToJpegImageFormatConverter.convert(tmp, tempLarge);
                 } finally {
                     Files.deleteIfExists(tmp);
                 }
             } else {
-                Files.write(largeTarget, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.write(tempLarge, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             }
-            resizeCertificate(largeTarget, smallTarget);
-            imageOptimizator.optimize(largeTarget);
-            imageOptimizator.optimize(smallTarget);
+            resizeCertificate(tempLarge, tempSmall);
+            imageOptimizator.optimize(tempLarge);
+            imageOptimizator.optimize(tempSmall);
+            Files.copy(tempLarge, largeTarget, StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(tempSmall, smallTarget, StandardCopyOption.REPLACE_EXISTING);
 
             String largeUrl = "/uploads/certificates/" + fileName;
             String smallUrl = "/uploads/certificates/" + smallName;
@@ -74,6 +86,11 @@ public class CertificateStorageServiceImpl implements CertificateStorageService 
             return new UploadCertificateResult(certName, largeUrl, smallUrl);
         } catch (IOException e) {
             throw new RuntimeException("Can't store certificate file", e);
+        } finally {
+            if (cleanupTempFiles) {
+                deleteQuietly(uploadTempPath.getLargeImagePath());
+                deleteQuietly(uploadTempPath.getSmallImagePath());
+            }
         }
     }
 
@@ -84,6 +101,29 @@ public class CertificateStorageServiceImpl implements CertificateStorageService 
         imageResizer.resize(largeTarget, largeTarget,
                 certificateUploadProperties.getLargeWidth(),
                 certificateUploadProperties.getLargeHeight());
+    }
+
+    private UploadTempPath resolveUploadTempPath() {
+        UploadTempPath uploadTempPath = uploadImageTempStorage.getCurrentUploadTempPath();
+        if (uploadTempPath != null) {
+            return uploadTempPath;
+        }
+        try {
+            return new UploadTempPath();
+        } catch (IOException ex) {
+            throw new IllegalStateException("Can't create temp image files: " + ex.getMessage(), ex);
+        }
+    }
+
+    private void deleteQuietly(Path path) {
+        if (path == null) {
+            return;
+        }
+        try {
+            Files.deleteIfExists(path);
+        } catch (IOException ex) {
+            // ignore: best-effort cleanup
+        }
     }
 
     private void validateCertificate(MultipartFile file, byte[] data) {
