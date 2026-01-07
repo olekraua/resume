@@ -3,82 +3,70 @@
 <head th:replace="~{fragments/layout :: head('Edit Certificates')}"></head>
 <body class="resume">
 <div th:replace="~{fragments/layout :: header}"></div>
-<div class="layout-content container certificates">
-  <h2>Certificates</h2>
+<div class="layout-content container">
   <div th:replace="~{edit/_nav :: nav}"></div>
-
-  <form th:action="${appHost} + @{|/${profile.uid}/edit/certificates|}" method="post" th:object="${form}">
-    <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
-      <ul>
-        <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
-      </ul>
-    </div>
-    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-    <div id="ui-block-container">
-      <div th:each="cert,iter : *{items}" class="row ui-item certificate-item" th:id="|ui-item-${iter.index}|">
-        <div class="col-xs-12 col-sm-4">
-          <a class="thumbnail certificate-link" href="#"
-             th:attr="data-title=${cert.name},data-url=${cert.largeUrl}">
-            <img class="img-responsive" th:src="${cert.smallUrl}" th:alt="${cert.name}">
-            <span th:text="${cert.name}">Certificate</span>
-          </a>
+  <div class="panel panel-default certificates">
+    <div class="panel-body">
+      <h4 class="data-header">Сертификаты</h4>
+      <hr />
+      <form th:action="${appHost} + @{|/${profile.uid}/edit/certificates|}" method="post" th:object="${form}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+          <ul>
+            <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
+          </ul>
         </div>
-        <div class="col-xs-12 col-sm-8">
-          <button type="button" class="close" th:onclick="|$('#ui-item-${iter.index}').remove();|">
-            <span aria-hidden="true">&times;</span>
-          </button>
-      <input type="hidden" th:field="*{items[__${iter.index}__].smallUrl}"/>
-      <input type="hidden" th:field="*{items[__${iter.index}__].largeUrl}"/>
-      <div class="form-group">
-        <label>Name</label>
-        <input class="form-control" type="text" th:field="*{items[__${iter.index}__].name}"/>
-      </div>
-      <div class="form-group">
-        <label>Issuer</label>
-        <input class="form-control" type="text" th:field="*{items[__${iter.index}__].issuer}"/>
-      </div>
+        <div id="ui-block-container">
+          <div th:each="cert,iter : *{items}" class="thumbnail ui-item" th:id="|ui-item-${iter.index}|">
+            <input type="hidden" th:field="*{items[__${iter.index}__].smallUrl}"/>
+            <input type="hidden" th:field="*{items[__${iter.index}__].largeUrl}"/>
+            <input type="hidden" th:field="*{items[__${iter.index}__].name}"/>
+            <input type="hidden" th:field="*{items[__${iter.index}__].issuer}"/>
+            <button type="button" class="close" th:onclick="|$('#ui-item-${iter.index}').remove();|">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <a class="certificate-link" href="#"
+               th:attr="data-title=${cert.name},data-url=${cert.largeUrl}">
+              <img class="img-responsive" th:src="${cert.smallUrl}" th:alt="${cert.name}">
+              <span th:text="${cert.name}">Certificate</span>
+            </a>
+            <small class="text-muted" th:if="${cert.issuer}" th:text="${cert.issuer}">Issuer</small>
+          </div>
         </div>
-      </div>
+        <hr />
+        <div class="row">
+          <div class="col-xs-12">
+            <a href="javascript:resume.certificates.showUploadDialog();">+ Добавить сертификат</a>
+          </div>
+        </div>
+        <hr />
+        <div class="row">
+          <div class="col-xs-12 text-center">
+            <input type="submit" class="btn btn-primary" value="Сохранить">
+          </div>
+        </div>
+      </form>
     </div>
-    <hr/>
-    <div class="row">
-      <div class="col-xs-12">
-        <a href="javascript:resume.certificates.showUploadDialog();">+ Добавить сертификат</a>
-      </div>
-    </div>
-    <hr/>
-    <div class="row">
-      <div class="col-xs-12 text-center">
-        <input type="submit" class="btn btn-primary" value="Сохранить">
-      </div>
-    </div>
-  </form>
+  </div>
 </div>
 
 <!-- шаблон для Handlebars -->
 <script id="ui-block-template" type="text/x-handlebars-template">
-  <div class="row ui-item certificate-item" id="ui-item-{{blockIndex}}">
-    <div class="col-xs-12 col-sm-4">
-      <a class="thumbnail certificate-link" href="#" data-title="{{name}}" data-url="{{largeUrl}}">
-        <img class="img-responsive" src="{{smallUrl}}" alt="{{name}}">
-        <span>{{name}}</span>
-      </a>
-    </div>
-    <div class="col-xs-12 col-sm-8">
-      <button type="button" class="close" onclick="$('#ui-item-{{blockIndex}}').remove();">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      <input type="hidden" name="items[{{blockIndex}}].smallUrl" value="{{smallUrl}}"/>
-      <input type="hidden" name="items[{{blockIndex}}].largeUrl" value="{{largeUrl}}"/>
-      <div class="form-group">
-        <label>Name</label>
-        <input class="form-control" type="text" name="items[{{blockIndex}}].name" value="{{name}}"/>
-      </div>
-      <div class="form-group">
-        <label>Issuer</label>
-        <input class="form-control" type="text" name="items[{{blockIndex}}].issuer" value="{{issuer}}"/>
-      </div>
-    </div>
+  <div class="thumbnail ui-item" id="ui-item-{{blockIndex}}">
+    <input type="hidden" name="items[{{blockIndex}}].smallUrl" value="{{smallUrl}}"/>
+    <input type="hidden" name="items[{{blockIndex}}].largeUrl" value="{{largeUrl}}"/>
+    <input type="hidden" name="items[{{blockIndex}}].name" value="{{name}}"/>
+    <input type="hidden" name="items[{{blockIndex}}].issuer" value="{{issuer}}"/>
+    <button type="button" class="close" onclick="$('#ui-item-{{blockIndex}}').remove();">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <a class="certificate-link" href="#" data-title="{{name}}" data-url="{{largeUrl}}">
+      <img class="img-responsive" src="{{smallUrl}}" alt="{{name}}">
+      <span>{{name}}</span>
+    </a>
+    {{#if issuer}}
+      <small class="text-muted">{{issuer}}</small>
+    {{/if}}
   </div>
 </script>
 
