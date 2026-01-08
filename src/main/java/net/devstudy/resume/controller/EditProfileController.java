@@ -39,6 +39,7 @@ import net.devstudy.resume.entity.Practic;
 import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.entity.SkillCategory;
 import net.devstudy.resume.form.ChangePasswordForm;
+import net.devstudy.resume.form.CertificateForm;
 import net.devstudy.resume.form.ContactsForm;
 import net.devstudy.resume.form.CourseForm;
 import net.devstudy.resume.form.EducationForm;
@@ -646,6 +647,10 @@ public class EditProfileController {
         if (emptyForm instanceof LanguageForm languageForm) {
             languageForm.setItems(profile.getLanguages());
             return languageForm;
+        }
+        if (emptyForm instanceof CertificateForm certificateForm) {
+            certificateForm.setItems(profile.getCertificates());
+            return certificateForm;
         }
         if (emptyForm instanceof HobbyForm hobbyForm) {
             java.util.List<Long> ids = profile.getHobbies() == null ? java.util.List.of()
