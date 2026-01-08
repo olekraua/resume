@@ -20,8 +20,6 @@
           <div th:each="cert,iter : *{items}" class="thumbnail ui-item" th:id="|ui-item-${iter.index}|">
             <input type="hidden" th:field="*{items[__${iter.index}__].smallUrl}"/>
             <input type="hidden" th:field="*{items[__${iter.index}__].largeUrl}"/>
-            <input type="hidden" th:field="*{items[__${iter.index}__].name}"/>
-            <input type="hidden" th:field="*{items[__${iter.index}__].issuer}"/>
             <button type="button" class="close" th:onclick="|$('#ui-item-${iter.index}').remove();|">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -30,7 +28,14 @@
               <img class="img-responsive" th:src="${cert.smallUrl}" th:alt="${cert.name}">
               <span th:text="${cert.name}">Certificate</span>
             </a>
-            <small class="text-muted" th:if="${cert.issuer}" th:text="${cert.issuer}">Issuer</small>
+            <div class="form-group">
+              <input class="form-control input-sm" type="text" placeholder="Название"
+                     th:field="*{items[__${iter.index}__].name}"/>
+            </div>
+            <div class="form-group">
+              <input class="form-control input-sm" type="text" placeholder="Компания/организация"
+                     th:field="*{items[__${iter.index}__].issuer}"/>
+            </div>
           </div>
         </div>
         <hr />
@@ -55,8 +60,6 @@
   <div class="thumbnail ui-item" id="ui-item-{{blockIndex}}">
     <input type="hidden" name="items[{{blockIndex}}].smallUrl" value="{{smallUrl}}"/>
     <input type="hidden" name="items[{{blockIndex}}].largeUrl" value="{{largeUrl}}"/>
-    <input type="hidden" name="items[{{blockIndex}}].name" value="{{name}}"/>
-    <input type="hidden" name="items[{{blockIndex}}].issuer" value="{{issuer}}"/>
     <button type="button" class="close" onclick="$('#ui-item-{{blockIndex}}').remove();">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -64,9 +67,14 @@
       <img class="img-responsive" src="{{smallUrl}}" alt="{{name}}">
       <span>{{name}}</span>
     </a>
-    {{#if issuer}}
-      <small class="text-muted">{{issuer}}</small>
-    {{/if}}
+    <div class="form-group">
+      <input class="form-control input-sm" type="text" name="items[{{blockIndex}}].name" value="{{name}}"
+             placeholder="Название"/>
+    </div>
+    <div class="form-group">
+      <input class="form-control input-sm" type="text" name="items[{{blockIndex}}].issuer" value="{{issuer}}"
+             placeholder="Компания/организация"/>
+    </div>
   </div>
 </script>
 
