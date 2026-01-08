@@ -10,6 +10,9 @@ target/
 /uploads/
 !/uploads/.gitkeep
 
+### Legacy ###
+/legacy/
+
 ### STS ###
 .apt_generated
 .classpath
