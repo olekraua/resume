@@ -192,6 +192,12 @@ public class EditProfileController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         binder.registerCustomEditor(Date.class, new CustomDateEditor(new SimpleDateFormat("yyyy-MM-dd"), true));
+        binder.registerCustomEditor(java.sql.Date.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                setValue(StringUtils.hasText(text) ? java.sql.Date.valueOf(text.trim()) : null);
+            }
+        });
         binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
         binder.registerCustomEditor(LanguageType.class, new PropertyEditorSupport() {
             @Override

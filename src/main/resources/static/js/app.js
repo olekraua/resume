@@ -11,11 +11,28 @@ var resume = {
 		});
 	},
 	createDatePicker : function() {
-		/* http://bootstrap-datepicker.readthedocs.org/en/latest/options.html */
-		$('.datepicker').datepicker({
-			autoclose : true,
-			clearBtn : true
-		});
+		if (typeof flatpickr === 'function') {
+			var elements = document.querySelectorAll('.datepicker');
+			if (elements.length === 0) {
+				return;
+			}
+			elements.forEach(function(element) {
+				if (element._flatpickr) {
+					return;
+				}
+				flatpickr(element, {
+					dateFormat: 'Y-m-d',
+					allowInput: true
+				});
+			});
+			return;
+		}
+		if ($.fn.datepicker) {
+			$('.datepicker').datepicker({
+				autoclose : true,
+				clearBtn : true
+			});
+		}
 	},
 	createPhotoUploader : function(){
 		//https://github.com/kartik-v/bootstrap-fileinput
