@@ -6,6 +6,10 @@ target/
 !**/src/test/**/target/
 *.DS_Store
 
+### Uploads ###
+/uploads/
+!/uploads/.gitkeep
+
 ### STS ###
 .apt_generated
 .classpath
