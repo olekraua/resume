@@ -9,13 +9,14 @@
 
   <div th:if="${hobbyError}" class="alert alert-danger" th:text="${hobbyError}"></div>
 
-  <div id="hobbyContainer" class="row" th:attr="data-csrf-value=${_csrf.token},data-max-hobbies=5">
-    <div class="col-xs-12">
-      <div id="errorAlert" class="alert alert-danger" style="display:none;">
+  <div id="hobbyContainer" class="panel panel-default" th:attr="data-csrf-value=${_csrf.token}">
+    <div class="panel-body">
+      <h4 class="data-header">Некоторые работодатели уделяют внимание на хобби кандидата</h4>
+      <div id="errorAlert" class="alert alert-danger" role="alert" style="display:none;">
         <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        Максимальна кількість хобі перевищена.
+        <span th:inline="text">Максимальна кількість хобі перевищена. Виберіть не більше [[${maxHobbies}]] пунктів.</span>
       </div>
-      <div class="btn-group" data-toggle="buttons">
+      <div id="ui-block-container" class="btn-group" data-toggle="buttons" th:attr="data-max-hobbies=${maxHobbies}">
         <label th:each="hobby : ${hobbies}"
                class="btn btn-default hobby-btn"
                th:classappend="${hobby.selected} ? ' active' : ''"

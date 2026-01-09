@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.http.HttpStatus;
@@ -71,6 +72,9 @@ public class EditProfileController {
     private final Validator validator;
     private final ProfileService profileService;
     private final CurrentProfileProvider currentProfileProvider;
+
+    @Value("${profile.hobbies.max:5}")
+    private int maxHobbies;
 
     @ModelAttribute("skillCategories")
     public java.util.List<SkillCategory> skillCategories() {
@@ -405,6 +409,7 @@ public class EditProfileController {
         if (profile == null)
             return "redirect:/login";
         Long profileId = profile.getId();
+        model.addAttribute("maxHobbies", maxHobbies);
         List<Long> ids = form.getHobbyIds();
         if ((ids == null || ids.isEmpty()) && StringUtils.hasText(hobbiesParam)) {
             try {
@@ -556,6 +561,7 @@ public class EditProfileController {
             }
         });
         model.addAttribute("hobbies", staticDataService.findAllHobbiesWithSelected(form.getHobbyIds()));
+        model.addAttribute("maxHobbies", maxHobbies);
         return prepareProfileModel(uid, model, "edit/hobbies", form);
     }
 
