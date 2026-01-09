@@ -13,6 +13,9 @@
        th:attr="data-csrf-value=${_csrf.token},data-post-url=${appHost} + @{|/${profile.uid}/edit/hobbies|}">
     <div class="panel-body">
       <h4 class="data-header">Некоторые работодатели уделяют внимание на хобби кандидата</h4>
+      <h6 class="text-center help-block" th:inline="text">
+  Выберите не более [[${maxHobbies}]] пунктов!
+</h6>
       <div id="errorAlert" class="alert alert-danger" role="alert" style="display:none;">
         <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <span th:inline="text">Максимальна кількість хобі перевищена. Виберіть не більше [[${maxHobbies}]] пунктів.</span>
