@@ -9,7 +9,8 @@
 
   <div th:if="${hobbyError}" class="alert alert-danger" th:text="${hobbyError}"></div>
 
-  <div id="hobbyContainer" class="panel panel-default" th:attr="data-csrf-value=${_csrf.token}">
+  <div id="hobbyContainer" class="panel panel-default"
+       th:attr="data-csrf-value=${_csrf.token},data-post-url=${appHost} + @{|/${profile.uid}/edit/hobbies|}">
     <div class="panel-body">
       <h4 class="data-header">Некоторые работодатели уделяют внимание на хобби кандидата</h4>
       <div id="errorAlert" class="alert alert-danger" role="alert" style="display:none;">

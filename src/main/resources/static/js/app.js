@@ -239,7 +239,8 @@ var resume = {
 				}
 			}
 			var _csrfToken = $('#hobbyContainer').attr('data-csrf-value');
-			resume.post('/edit/hobbies', {
+			var postUrl = $('#hobbyContainer').attr('data-post-url') || '/edit/hobbies';
+			resume.post(postUrl, {
 				hobbies : hobbies,
 				_csrf : _csrfToken
 			});
