@@ -276,21 +276,16 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     public void updateHobbies(Long profileId, java.util.List<Long> hobbyIds) {
         Profile profile = getProfileOrThrow(profileId);
-        hobbyRepository.deleteByProfileId(profileId);
-        if (hobbyIds != null && !hobbyIds.isEmpty()) {
-            // беремо існуючі хобі за id, щоб зберегти назву; створюємо нові записи для
-            // профілю
-            Iterable<Hobby> found = hobbyRepository.findAllById(hobbyIds);
-            java.util.List<Hobby> toSave = new java.util.ArrayList<>();
-            for (Hobby hobby : found) {
-                Hobby clone = new Hobby();
-                clone.setName(hobby.getName());
-                clone.setProfile(profile);
-                toSave.add(clone);
-            }
-            hobbyRepository.saveAll(toSave);
+        java.util.List<Hobby> selected = hobbyIds == null || hobbyIds.isEmpty()
+                ? java.util.List.of()
+                : hobbyRepository.findAllById(hobbyIds);
+        if (profile.getHobbies() == null) {
+            profile.setHobbies(new java.util.ArrayList<>());
         }
+        profile.getHobbies().clear();
+        profile.getHobbies().addAll(selected);
         profile.setCompleted(isProfileCompleted(profile));
+        profileRepository.save(profile);
         requestIndexing(profileId);
     }
 

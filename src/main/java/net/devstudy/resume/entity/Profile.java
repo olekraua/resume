@@ -16,6 +16,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
@@ -110,7 +113,10 @@ public class Profile extends AbstractEntity<Long> {
     @JsonIgnore
     private List<Education> educations;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
+    @JoinTable(name = "profile_hobby",
+            joinColumns = @JoinColumn(name = "id_profile"),
+            inverseJoinColumns = @JoinColumn(name = "id_hobby"))
     @OrderBy("name ASC")
     @JsonIgnore
     private List<Hobby> hobbies;
@@ -176,7 +182,6 @@ public class Profile extends AbstractEntity<Long> {
     public List<Hobby> getHobbies() { return this.hobbies; }
     public void setHobbies(List<Hobby> hobbies) {
         this.hobbies = hobbies;
-        updateListSetProfile(this.hobbies);
     }
 
     public List<Language> getLanguages() { return this.languages; }

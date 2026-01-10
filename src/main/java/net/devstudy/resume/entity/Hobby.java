@@ -5,18 +5,15 @@ import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "hobby")
-public class Hobby extends AbstractEntity<Long> implements Comparable<Hobby>, ProfileEntity {
+public class Hobby extends AbstractEntity<Long> implements Comparable<Hobby> {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -26,13 +23,8 @@ public class Hobby extends AbstractEntity<Long> implements Comparable<Hobby>, Pr
     @Column(unique = true, nullable = false)
     private Long id;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 30, unique = true)
     private String name;
-
-    // bi-directional many-to-one association to Profile
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_profile", nullable = false)
-    private Profile profile;
 
     @Transient
     private boolean selected;
@@ -64,15 +56,6 @@ public class Hobby extends AbstractEntity<Long> implements Comparable<Hobby>, Pr
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Profile getProfile() {
-        return profile;
-    }
-
-    @Override
-    public void setProfile(Profile profile) {
-        this.profile = profile;
     }
 
     public boolean isSelected() {
@@ -112,4 +95,3 @@ public class Hobby extends AbstractEntity<Long> implements Comparable<Hobby>, Pr
         return "Hobby[name=%s]".formatted(name);
     }
 }
-

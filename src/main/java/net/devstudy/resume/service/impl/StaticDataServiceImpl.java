@@ -75,12 +75,12 @@ public class StaticDataServiceImpl implements StaticDataService {
 
     @Override
     public List<Hobby> findAllHobbies() {
-        return hobbyRepository.findAll();
+        return hobbyRepository.findAll(Sort.by("name"));
     }
 
     @Override
     public List<Hobby> findAllHobbiesWithSelected(List<Long> selectedIds) {
-        List<Hobby> all = hobbyRepository.findAll();
+        List<Hobby> all = findAllHobbies();
         if (selectedIds != null && !selectedIds.isEmpty()) {
             all.forEach(h -> h.setSelected(selectedIds.contains(h.getId())));
         }
