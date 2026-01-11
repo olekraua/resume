@@ -1,7 +1,6 @@
 package net.devstudy.resume.entity;
 
 import java.io.Serial;
-import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -111,23 +110,15 @@ public class Certificate extends AbstractEntity<Long> implements ProfileEntity {
 
     @Override
     public int hashCode() {
-        // Beibehaltung der ursprünglichen Semantik (id, largeUrl, name, smallUrl +
-        // super)
-        return Objects.hash(super.hashCode(), id, largeUrl, name, smallUrl, issuer);
+        return super.hashCode();
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (!super.equals(obj))
+        if (!(obj instanceof Certificate))
             return false;
-        if (!(obj instanceof Certificate other))
-            return false;
-        return Objects.equals(id, other.id)
-                && Objects.equals(largeUrl, other.largeUrl)
-                && Objects.equals(name, other.name)
-                && Objects.equals(smallUrl, other.smallUrl)
-                && Objects.equals(issuer, other.issuer);
+        return super.equals(obj);
     }
 }
