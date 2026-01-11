@@ -7,6 +7,8 @@ import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.URL;
 
 @Embeddable
 @Access(AccessType.FIELD)
@@ -14,15 +16,23 @@ public class Contacts implements Serializable {
     @Serial
     private static final long serialVersionUID = -3685720846934765841L;
 
+    @Size(max = 255)
+    @URL
     @Column(length = 255)
     private String facebook;
 
+    @Size(max = 255)
+    @URL
     @Column(length = 255)
     private String linkedin;
 
+    @Size(max = 255)
+    @URL
     @Column(length = 255)
     private String github;
 
+    @Size(max = 255)
+    @URL
     @Column(length = 255)
     private String stackoverflow;
 
@@ -60,5 +70,4 @@ public class Contacts implements Serializable {
         this.stackoverflow = stackoverflow;
     }
 }
-
 
