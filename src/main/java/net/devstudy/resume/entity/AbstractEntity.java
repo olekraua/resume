@@ -15,7 +15,8 @@ public abstract class AbstractEntity<T> extends AbstractModel implements Seriali
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId());
+        T id = getId();
+        return id != null ? id.hashCode() : System.identityHashCode(this);
     }
 
     @Override
@@ -24,12 +25,12 @@ public abstract class AbstractEntity<T> extends AbstractModel implements Seriali
             return true;
         if (!(obj instanceof AbstractEntity<?> other))
             return false;
-        return Objects.equals(getId(), other.getId());
-
+        T id = getId();
+        return id != null && Objects.equals(id, other.getId());
     }
 
     @Override
-    public String toString(){
-        return String.format("%s[id=%s]",getClass().getSimpleName(), getId());
+    public String toString() {
+        return String.format("%s[id=%s]", getClass().getSimpleName(), getId());
     }
 }
