@@ -11,4 +11,6 @@ public interface ProfileRestoreRepository extends JpaRepository<ProfileRestore, 
     Optional<ProfileRestore> findByToken(String token);
 
     Optional<ProfileRestore> findByProfileId(Long profileId);
+
+    void deleteByProfileId(Long profileId);
 }

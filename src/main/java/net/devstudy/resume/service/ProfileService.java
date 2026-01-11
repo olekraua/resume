@@ -33,6 +33,8 @@ public interface ProfileService {
 
     void updatePassword(Long profileId, String rawPassword);
 
+    void removeProfile(Long profileId);
+
     Profile register(String uid, String firstName, String lastName, String rawPassword);
 
     Optional<Profile> findById(Long id);

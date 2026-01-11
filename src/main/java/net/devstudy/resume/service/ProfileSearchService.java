@@ -13,4 +13,6 @@ public interface ProfileSearchService {
     void reindexAll();
 
     void indexProfiles(List<Profile> profiles);
+
+    void removeProfile(Long profileId);
 }

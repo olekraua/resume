@@ -1,0 +1,26 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Видалення акаунту')}"></head>
+<body class="resume">
+  <div th:replace="~{fragments/layout :: header}"></div>
+  <div class="layout-content" style="display: flex; justify-content: center;">
+    <div style="max-width: 560px; width: 100%; margin: 40px auto; padding: 24px; border: 1px solid #f1b0b7; border-radius: 6px; background: #fff;">
+    <h2 style="margin-top: 0; text-align: center; color: #b71c1c;">Видалення акаунту</h2>
+    <p style="margin: 12px 0; text-align: center;">
+      Видалення акаунту <strong>не можна скасувати</strong>.
+    </p>
+    <p style="margin: 12px 0; text-align: center;">
+      Підтвердіть видалення профілю
+      <strong th:text="${currentProfile != null ? currentProfile.username : ''}">username</strong>.
+    </p>
+    <form th:action="${appHost} + @{/account/remove}" method="post" style="text-align: center; margin-top: 18px;">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+      <button type="submit" style="padding: 10px 18px; background: #c62828; color: #fff; border: 0; border-radius: 4px;">Підтвердити видалення</button>
+      <a th:href="${appHost} + @{/me}" style="margin-left: 12px;">Скасувати</a>
+    </form>
+  </div>
+  </div>
+  <div th:replace="~{fragments/layout :: footer}"></div>
+  <th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
+</body>
+</html>

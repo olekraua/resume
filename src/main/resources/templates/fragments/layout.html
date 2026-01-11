@@ -64,6 +64,7 @@
               <li><a th:href="${appHost} + @{/{u}(u=${CURRENT_PROFILE != null ? CURRENT_PROFILE.username : ''})}"><i class="fa fa-eye"></i> Мій профіль</a></li>
               <li><a th:href="${appHost} + @{/{u}/edit/profile(u=${CURRENT_PROFILE != null ? CURRENT_PROFILE.username : ''})}"><i class="fa fa-pencil"></i> Редагувати</a></li>
               <li><a th:href="${appHost} + @{/account/password}"><i class="fa fa-unlock-alt"></i> Пароль</a></li>
+              <li><a th:href="${appHost} + @{/account/remove}"><i class="fa fa-trash-o"></i> Видалити акаунт</a></li>
               <li role="separator" class="divider"></li>
               <li>
                 <form th:action="${appHost} + @{/logout}" method="post" class="nav-logout-form">

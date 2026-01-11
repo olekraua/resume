@@ -9,6 +9,8 @@ import net.devstudy.resume.service.ProfileService;
 import net.devstudy.resume.service.UidSuggestionService;
 import net.devstudy.resume.exception.UidAlreadyExistsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import java.util.Optional;
 
@@ -107,5 +111,27 @@ public class AccountController {
             return "auth/change-login";
         }
         return "redirect:/login?loginChanged";
+    }
+
+    @GetMapping("/remove")
+    public String removeAccountForm(Model model) {
+        var currentProfile = currentProfileProvider.getCurrentProfile();
+        if (currentProfile == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("currentProfile", currentProfile);
+        return "auth/remove";
+    }
+
+    @PostMapping("/remove")
+    public String removeAccount(HttpServletRequest request, HttpServletResponse response,
+            Authentication authentication) {
+        Long currentId = currentProfileProvider.getCurrentId();
+        if (currentId == null) {
+            return "redirect:/login";
+        }
+        profileService.removeProfile(currentId);
+        new SecurityContextLogoutHandler().logout(request, response, authentication);
+        return "redirect:/welcome?removed";
     }
 }

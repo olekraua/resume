@@ -3,6 +3,8 @@ package net.devstudy.resume.service.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,6 +29,8 @@ import net.devstudy.resume.service.ProfileSearchService;
 @ConditionalOnProperty(name = "app.search.elasticsearch.enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class ProfileSearchServiceImpl implements ProfileSearchService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProfileSearchServiceImpl.class);
 
     private final ProfileRepository profileRepository;
     private final ProfileSearchRepository profileSearchRepository;
@@ -96,5 +100,17 @@ public class ProfileSearchServiceImpl implements ProfileSearchService {
                 .map(profileSearchMapper::toDocument)
                 .toList();
         profileSearchRepository.saveAll(docs);
+    }
+
+    @Override
+    public void removeProfile(Long profileId) {
+        if (profileId == null) {
+            return;
+        }
+        try {
+            profileSearchRepository.deleteById(profileId);
+        } catch (Exception ex) {
+            LOGGER.warn("Elasticsearch delete failed: {}", ex.getMessage());
+        }
     }
 }

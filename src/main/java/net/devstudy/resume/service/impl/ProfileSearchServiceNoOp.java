@@ -30,4 +30,9 @@ public class ProfileSearchServiceNoOp implements ProfileSearchService {
     public void indexProfiles(List<Profile> profiles) {
         // no-op
     }
+
+    @Override
+    public void removeProfile(Long profileId) {
+        // no-op
+    }
 }

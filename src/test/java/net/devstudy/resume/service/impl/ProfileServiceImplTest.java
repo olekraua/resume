@@ -9,8 +9,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import net.devstudy.resume.component.CertificateFileStorage;
+import net.devstudy.resume.component.PhotoFileStorage;
 import net.devstudy.resume.component.impl.UploadCertificateLinkTempStorage;
 import net.devstudy.resume.repository.storage.ProfileRepository;
+import net.devstudy.resume.repository.storage.ProfileRestoreRepository;
 import net.devstudy.resume.security.CurrentProfileProvider;
 import net.devstudy.resume.service.ProfileSearchService;
 
@@ -23,15 +25,17 @@ class ProfileServiceImplTest {
     void setUp() {
         ProfileRepository profileRepository = Mockito.mock(ProfileRepository.class);
         CertificateFileStorage certificateFileStorage = Mockito.mock(CertificateFileStorage.class);
+        PhotoFileStorage photoFileStorage = Mockito.mock(PhotoFileStorage.class);
         UploadCertificateLinkTempStorage uploadCertificateLinkTempStorage =
                 Mockito.mock(UploadCertificateLinkTempStorage.class);
+        ProfileRestoreRepository profileRestoreRepository = Mockito.mock(ProfileRestoreRepository.class);
         PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
         ProfileSearchService searchService = Mockito.mock(ProfileSearchService.class);
         CurrentProfileProvider currentProfileProvider = Mockito.mock(CurrentProfileProvider.class);
         ApplicationEventPublisher eventPublisher = Mockito.mock(ApplicationEventPublisher.class);
         service = new ProfileServiceImpl(profileRepository, null, null, null, null, null, null, null,
-                certificateFileStorage, uploadCertificateLinkTempStorage, passwordEncoder, searchService,
-                currentProfileProvider, eventPublisher);
+                certificateFileStorage, photoFileStorage, uploadCertificateLinkTempStorage,
+                profileRestoreRepository, passwordEncoder, searchService, currentProfileProvider, eventPublisher);
     }
 
     @Test

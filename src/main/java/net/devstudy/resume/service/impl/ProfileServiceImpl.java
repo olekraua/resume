@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.component.CertificateFileStorage;
+import net.devstudy.resume.component.PhotoFileStorage;
 import net.devstudy.resume.component.impl.UploadCertificateLinkTempStorage;
 import net.devstudy.resume.entity.Certificate;
 import net.devstudy.resume.entity.Contacts;
@@ -38,6 +39,7 @@ import net.devstudy.resume.repository.storage.HobbyRepository;
 import net.devstudy.resume.repository.storage.LanguageRepository;
 import net.devstudy.resume.repository.storage.PracticRepository;
 import net.devstudy.resume.repository.storage.ProfileRepository;
+import net.devstudy.resume.repository.storage.ProfileRestoreRepository;
 import net.devstudy.resume.repository.storage.SkillRepository;
 import net.devstudy.resume.security.CurrentProfileProvider;
 import net.devstudy.resume.service.ProfileSearchService;
@@ -57,7 +59,9 @@ public class ProfileServiceImpl implements ProfileService {
     private final HobbyRepository hobbyRepository;
     private final CertificateRepository certificateRepository;
     private final CertificateFileStorage certificateFileStorage;
+    private final PhotoFileStorage photoFileStorage;
     private final UploadCertificateLinkTempStorage uploadCertificateLinkTempStorage;
+    private final ProfileRestoreRepository profileRestoreRepository;
     private final PasswordEncoder passwordEncoder;
     private final ProfileSearchService profileSearchService;
     private final CurrentProfileProvider currentProfileProvider;
@@ -143,6 +147,23 @@ public class ProfileServiceImpl implements ProfileService {
         Profile saved = profileRepository.save(profile);
         requestIndexing(saved.getId());
         return saved;
+    }
+
+    @Override
+    @Transactional
+    public void removeProfile(Long profileId) {
+        if (profileId == null) {
+            return;
+        }
+        Profile profile = profileRepository.findById(profileId).orElse(null);
+        if (profile == null) {
+            return;
+        }
+        java.util.List<String> photoUrls = collectProfilePhotoUrls(profile);
+        java.util.List<String> certificateUrls = collectProfileCertificateUrls(profileId);
+        profileRestoreRepository.deleteByProfileId(profileId);
+        profileRepository.delete(profile);
+        registerProfileCleanup(profileId, photoUrls, certificateUrls);
     }
 
     private boolean isProfileCompleted(Profile profile) {
@@ -358,6 +379,61 @@ public class ProfileServiceImpl implements ProfileService {
             return;
         }
         eventPublisher.publishEvent(new ProfileIndexingRequestedEvent(profileId));
+    }
+
+    private java.util.List<String> collectProfilePhotoUrls(Profile profile) {
+        java.util.List<String> urls = new java.util.ArrayList<>(2);
+        if (profile == null) {
+            return urls;
+        }
+        if (StringUtils.hasText(profile.getLargePhoto())) {
+            urls.add(profile.getLargePhoto());
+        }
+        if (StringUtils.hasText(profile.getSmallPhoto())) {
+            urls.add(profile.getSmallPhoto());
+        }
+        return urls;
+    }
+
+    private java.util.List<String> collectProfileCertificateUrls(Long profileId) {
+        java.util.List<Certificate> certificates = certificateRepository.findByProfileId(profileId);
+        if (certificates == null || certificates.isEmpty()) {
+            return java.util.List.of();
+        }
+        java.util.List<String> urls = new java.util.ArrayList<>(certificates.size() * 2);
+        for (Certificate certificate : certificates) {
+            if (certificate == null) {
+                continue;
+            }
+            if (StringUtils.hasText(certificate.getLargeUrl())) {
+                urls.add(certificate.getLargeUrl());
+            }
+            if (StringUtils.hasText(certificate.getSmallUrl())) {
+                urls.add(certificate.getSmallUrl());
+            }
+        }
+        return urls;
+    }
+
+    private void registerProfileCleanup(Long profileId, java.util.List<String> photoUrls,
+            java.util.List<String> certificateUrls) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            cleanupProfileResources(profileId, photoUrls, certificateUrls);
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                cleanupProfileResources(profileId, photoUrls, certificateUrls);
+            }
+        });
+    }
+
+    private void cleanupProfileResources(Long profileId, java.util.List<String> photoUrls,
+            java.util.List<String> certificateUrls) {
+        photoFileStorage.removeAll(photoUrls);
+        certificateFileStorage.removeAll(certificateUrls);
+        profileSearchService.removeProfile(profileId);
     }
 
     private Profile getProfileOrThrow(Long profileId) {
