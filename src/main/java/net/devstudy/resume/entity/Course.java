@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 
 /**
  * @author devstudy
@@ -30,9 +31,11 @@ public class Course extends AbstractFinishDateEntity<Long> implements ProfileEnt
     @Column(unique = true, nullable = false)
     private Long id;
 
+    @Size(max = 60)
     @Column(length = 60)
     private String name;
 
+    @Size(max = 60)
     @Column(length = 60)
     private String school;
 
