@@ -2,10 +2,9 @@ package net.devstudy.resume.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Objects;
 
 import org.junit.jupiter.api.Test;
 
@@ -44,13 +43,14 @@ class AbstractEntityTest {
     }
 
     @Test
-    void equalsReturnsTrueWhenBothIdsNull() {
+    void equalsReturnsFalseWhenBothIdsNull() {
         TestEntity first = new TestEntity(null);
         TestEntity second = new TestEntity(null);
 
         assertNotSame(first, second);
-        assertEquals(first, second);
-        assertEquals(Objects.hash((Object) null), first.hashCode());
+        assertNotEquals(first, second);
+        assertEquals(System.identityHashCode(first), first.hashCode());
+        assertEquals(System.identityHashCode(second), second.hashCode());
     }
 
     @Test

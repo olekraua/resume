@@ -43,11 +43,12 @@ class CertificateTest {
     }
 
     @Test
-    void equalsReturnsFalseWhenFieldDiffers() {
+    void equalsReturnsTrueWhenIdMatchesEvenIfFieldsDiffer() {
         Certificate first = buildCertificate(1L, "large", "name", "small", "issuer");
         Certificate second = buildCertificate(1L, "large", "name", "small", "other");
 
-        assertFalse(first.equals(second));
+        assertEquals(first, second);
+        assertEquals(first.hashCode(), second.hashCode());
     }
 
     private static Certificate buildCertificate(Long id, String largeUrl, String name, String smallUrl,
