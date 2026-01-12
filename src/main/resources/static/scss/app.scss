@@ -503,6 +503,9 @@
 	--language-col-gap: 16px;
 	--language-slider-pad-left: 10px;
 	--language-slider-pad-right: 10px;
+	--language-slider-top-offset: 4px;
+	--language-slider-label-gap: 24px;
+	--language-slider-bottom-space: 12px;
 }
 
 .resume .edit-languages .language-col {
@@ -517,6 +520,12 @@
 	width: calc(100% - var(--language-slider-pad-left) - var(--language-slider-pad-right));
 	margin-left: var(--language-slider-pad-left);
 	margin-right: var(--language-slider-pad-right);
+	margin-top: var(--language-slider-top-offset);
+	margin-bottom: var(--language-slider-bottom-space);
+}
+
+.resume .edit-languages .language-col-level .slider.slider-horizontal .slider-tick-label-container {
+	margin-top: var(--language-slider-label-gap);
 }
 
 @media ( min-width : 768px) {
@@ -525,6 +534,7 @@
 		grid-template-columns: var(--language-type-width) var(--language-name-width) var(--language-level-width);
 		grid-template-areas: "type name level";
 		column-gap: var(--language-col-gap);
+		align-items: start;
 	}
 	.resume .edit-languages .language-col {
 		float: none;
