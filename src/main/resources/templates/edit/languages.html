@@ -22,29 +22,33 @@
         </div>
         <div class="panel-body">
           <input type="hidden" th:field="*{items[__${iter.index}__].id}"/>
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Мова</label>
-            <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].name}"/></div>
-            <div class="col-sm-offset-3 col-sm-9 help-block"><small>Наприклад: English, Deutsch, Français.</small></div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Рівень</label>
-            <div class="col-sm-9">
-              <input class="level-slider" type="text" style="width: 100%;"
-                     th:attr="name=|items[${iter.index}].level|,id=|items${iter.index}level|,data-slider-value=${item.level != null ? item.level.sliderIntValue : 4},data-slider-min=0,data-slider-max=${languageLevels.size() - 1}"
-                     data-slider-step="1" data-slider-tooltip="hide" data-slider-handle="square">
+          <div class="row">
+            <div class="col-xs-12 col-sm-2">
+              <div class="form-group">
+                <label class="control-label">Тип</label>
+                <select class="form-control" th:field="*{items[__${iter.index}__].type}">
+                  <option th:each="entry : ${languageTypeLabels}" th:value="${entry.key}"
+                          th:text="${entry.value}">TYPE</option>
+                </select>
+                <div class="help-block"><small>Тип: розмовна/письмова тощо.</small></div>
+              </div>
             </div>
-            <div class="col-sm-offset-3 col-sm-9 help-block"><small>Оберіть рівень володіння мовою.</small></div>
-          </div>
-          <div class="form-group">
-            <label class="col-sm-3 control-label">Тип</label>
-            <div class="col-sm-9">
-              <select class="form-control" th:field="*{items[__${iter.index}__].type}">
-                <option th:each="entry : ${languageTypeLabels}" th:value="${entry.key}"
-                        th:text="${entry.value}">TYPE</option>
-              </select>
+            <div class="col-xs-12 col-sm-3">
+              <div class="form-group">
+                <label class="control-label">Мова</label>
+                <input class="form-control" type="text" th:field="*{items[__${iter.index}__].name}"/>
+                <div class="help-block"><small>Наприклад: English, Deutsch, Français.</small></div>
+              </div>
             </div>
-            <div class="col-sm-offset-3 col-sm-9 help-block"><small>Тип: розмовна/письмова тощо.</small></div>
+            <div class="col-xs-12 col-sm-7">
+              <div class="form-group">
+                <label class="control-label">Рівень</label>
+                <input class="level-slider" type="text" style="width: 100%;"
+                       th:attr="name=|items[${iter.index}].level|,id=|items${iter.index}level|,data-slider-value=${item.level != null ? item.level.sliderIntValue : 4},data-slider-min=0,data-slider-max=${languageLevels.size() - 1}"
+                       data-slider-step="1" data-slider-tooltip="hide" data-slider-handle="square">
+                <div class="help-block"><small>Оберіть рівень володіння мовою.</small></div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -75,27 +79,34 @@
       <button type="button" class="close pull-right" onclick="$('#ui-item-{{blockIndex}}').remove();"><span aria-hidden="true">&times;</span></button>
     </div>
     <div class="panel-body">
-      <div class="form-group">
-        <label class="col-sm-3 control-label">Название</label>
-        <div class="col-sm-9"><input class="form-control" type="text" name="items[{{blockIndex}}].name"/></div>
-      </div>
-      <div class="form-group">
-        <label class="col-sm-3 control-label">Уровень</label>
-        <div class="col-sm-9">
-          <input class="level-slider" type="text" style="width: 100%;"
-                 name="items[{{blockIndex}}].level" id="items{{blockIndex}}level"
-                 data-slider-value="{{levelDefault}}" data-slider-min="0" data-slider-max="{{levelMax}}"
-                 data-slider-step="1" data-slider-tooltip="hide" data-slider-handle="square">
+      <div class="row">
+        <div class="col-xs-12 col-sm-2">
+          <div class="form-group">
+            <label class="control-label">Тип</label>
+            <select class="form-control" name="items[{{blockIndex}}].type">
+              {{#each (types)}}
+              <option value="{{this}}">{{typeLabel this}}</option>
+              {{/each}}
+            </select>
+            <div class="help-block"><small>Тип: розмовна/письмова тощо.</small></div>
+          </div>
         </div>
-      </div>
-      <div class="form-group">
-        <label class="col-sm-3 control-label">Тип</label>
-        <div class="col-sm-9">
-          <select class="form-control" name="items[{{blockIndex}}].type">
-            {{#each (types)}}
-            <option value="{{this}}">{{typeLabel this}}</option>
-            {{/each}}
-          </select>
+        <div class="col-xs-12 col-sm-3">
+          <div class="form-group">
+            <label class="control-label">Мова</label>
+            <input class="form-control" type="text" name="items[{{blockIndex}}].name"/>
+            <div class="help-block"><small>Наприклад: English, Deutsch, Français.</small></div>
+          </div>
+        </div>
+        <div class="col-xs-12 col-sm-7">
+          <div class="form-group">
+            <label class="control-label">Рівень</label>
+            <input class="level-slider" type="text" style="width: 100%;"
+                   name="items[{{blockIndex}}].level" id="items{{blockIndex}}level"
+                   data-slider-value="{{levelDefault}}" data-slider-min="0" data-slider-max="{{levelMax}}"
+                   data-slider-step="1" data-slider-tooltip="hide" data-slider-handle="square">
+            <div class="help-block"><small>Оберіть рівень володіння мовою.</small></div>
+          </div>
         </div>
       </div>
     </div>
