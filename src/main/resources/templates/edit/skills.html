@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <form th:action="${appHost} + @{/edit/skills}" method="post" th:object="${form}">
+  <form th:action="${appHost} + @{|/${profile.uid}/edit/skills|}" method="post" th:object="${form}">
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
     <div id="ui-block-container">
