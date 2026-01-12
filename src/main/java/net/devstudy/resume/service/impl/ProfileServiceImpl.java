@@ -284,57 +284,13 @@ public class ProfileServiceImpl implements ProfileService {
     public void updateLanguages(Long profileId, java.util.List<Language> items) {
         Profile profile = getProfileOrThrow(profileId);
         java.util.List<Language> existing = languageRepository.findByProfileId(profileId);
-        java.util.Map<Long, Language> existingById = new java.util.HashMap<>();
-        for (Language item : existing) {
-            if (item != null && item.getId() != null) {
-                existingById.put(item.getId(), item);
-            }
-        }
-        java.util.Set<Long> incomingIds = new java.util.HashSet<>();
+        java.util.Map<Long, Language> existingById = mapExistingLanguagesById(existing);
         java.util.List<Language> toSave = new java.util.ArrayList<>();
-        if (items != null) {
-            for (Language item : items) {
-                if (item == null) {
-                    continue;
-                }
-                LanguageType resolvedType = item.getType() == null ? LanguageType.ALL : item.getType();
-                Language target = item;
-                if (item.getId() != null) {
-                    Language stored = existingById.get(item.getId());
-                    if (stored != null) {
-                        stored.setName(item.getName());
-                        stored.setLevel(item.getLevel());
-                        stored.setType(resolvedType);
-                        target = stored;
-                        incomingIds.add(stored.getId());
-                    } else {
-                        item.setId(null);
-                    }
-                }
-                target.setProfile(profile);
-                if (target.getType() == null) {
-                    target.setType(LanguageType.ALL);
-                }
-                toSave.add(target);
-            }
-        }
-        if (!existing.isEmpty()) {
-            java.util.List<Language> toDelete = new java.util.ArrayList<>();
-            for (Language item : existing) {
-                if (item == null || item.getId() == null) {
-                    continue;
-                }
-                if (!incomingIds.contains(item.getId())) {
-                    toDelete.add(item);
-                }
-            }
-            if (!toDelete.isEmpty()) {
-                languageRepository.deleteAll(toDelete);
-            }
-        }
-        if (!toSave.isEmpty()) {
-            languageRepository.saveAll(toSave);
-        }
+        java.util.Set<Long> incomingIds = new java.util.HashSet<>();
+
+        addLanguagesToSave(items, existingById, toSave, incomingIds, profile);
+        deleteRemovedLanguages(existing, incomingIds);
+        saveLanguages(toSave);
         requestIndexing(profileId);
     }
 
@@ -417,6 +373,85 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setCompleted(isProfileCompleted(profile));
         profileRepository.save(profile);
         requestIndexing(profileId);
+    }
+
+    private java.util.Map<Long, Language> mapExistingLanguagesById(java.util.List<Language> existing) {
+        java.util.Map<Long, Language> existingById = new java.util.HashMap<>();
+        if (existing == null) {
+            return existingById;
+        }
+        for (Language item : existing) {
+            if (item != null && item.getId() != null) {
+                existingById.put(item.getId(), item);
+            }
+        }
+        return existingById;
+    }
+
+    private void addLanguagesToSave(java.util.List<Language> items, java.util.Map<Long, Language> existingById,
+            java.util.List<Language> toSave, java.util.Set<Long> incomingIds, Profile profile) {
+        if (items == null) {
+            return;
+        }
+        for (Language item : items) {
+            if (item == null) {
+                continue;
+            }
+            LanguageType resolvedType = resolveLanguageType(item);
+            Language target = selectLanguageTarget(item, existingById, incomingIds, resolvedType);
+            target.setProfile(profile);
+            toSave.add(target);
+        }
+    }
+
+    private LanguageType resolveLanguageType(Language item) {
+        if (item.getType() == null) {
+            return LanguageType.ALL;
+        }
+        return item.getType();
+    }
+
+    private Language selectLanguageTarget(Language item, java.util.Map<Long, Language> existingById,
+            java.util.Set<Long> incomingIds, LanguageType resolvedType) {
+        if (item.getId() == null) {
+            item.setType(resolvedType);
+            return item;
+        }
+        Language stored = existingById.get(item.getId());
+        if (stored == null) {
+            item.setId(null);
+            item.setType(resolvedType);
+            return item;
+        }
+        stored.setName(item.getName());
+        stored.setLevel(item.getLevel());
+        stored.setType(resolvedType);
+        incomingIds.add(stored.getId());
+        return stored;
+    }
+
+    private void deleteRemovedLanguages(java.util.List<Language> existing, java.util.Set<Long> incomingIds) {
+        if (existing == null || existing.isEmpty()) {
+            return;
+        }
+        java.util.List<Language> toDelete = new java.util.ArrayList<>();
+        for (Language item : existing) {
+            if (item == null || item.getId() == null) {
+                continue;
+            }
+            if (!incomingIds.contains(item.getId())) {
+                toDelete.add(item);
+            }
+        }
+        if (!toDelete.isEmpty()) {
+            languageRepository.deleteAll(toDelete);
+        }
+    }
+
+    private void saveLanguages(java.util.List<Language> toSave) {
+        if (!toSave.isEmpty()) {
+            languageRepository.saveAll(toSave);
+        }
     }
 
     private void requestIndexing(Long profileId) {
