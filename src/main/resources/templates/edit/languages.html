@@ -23,12 +23,12 @@
         <div class="panel-body">
           <input type="hidden" th:field="*{items[__${iter.index}__].id}"/>
           <div class="form-group">
-            <label class="col-sm-3 control-label">Название</label>
+            <label class="col-sm-3 control-label">Мова</label>
             <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].name}"/></div>
             <div class="col-sm-offset-3 col-sm-9 help-block"><small>Наприклад: English, Deutsch, Français.</small></div>
           </div>
           <div class="form-group">
-            <label class="col-sm-3 control-label">Уровень</label>
+            <label class="col-sm-3 control-label">Рівень</label>
             <div class="col-sm-9">
               <input class="level-slider" type="text" style="width: 100%;"
                      th:attr="name=|items[${iter.index}].level|,id=|items${iter.index}level|,data-slider-value=${item.level != null ? item.level.sliderIntValue : 4},data-slider-min=0,data-slider-max=${languageLevels.size() - 1}"
