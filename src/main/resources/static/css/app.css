@@ -495,12 +495,12 @@
 }
 
 .resume .edit-languages {
-  --language-type-width: 12%;
-  --language-name-width: 12%;
-  --language-level-width: 76%;
+  --language-type-width: 14%;
+  --language-name-width: 14%;
+  --language-level-width: 72%;
   --language-col-gap: 16px;
-  --language-slider-pad-left: 0px;
-  --language-slider-pad-right: 0px;
+  --language-slider-pad-left: 10px;
+  --language-slider-pad-right: 10px;
 }
 
 .resume .edit-languages .language-col {
