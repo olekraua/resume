@@ -496,6 +496,54 @@
 	right: 5px;
 }
 
+.resume .edit-languages {
+	--language-left-width: 35%;
+	--language-level-width: 65%;
+	--language-col-gap: 16px;
+	--language-row-gap: 8px;
+}
+
+.resume .edit-languages .language-col {
+	box-sizing: border-box;
+	padding-left: 0;
+	padding-right: 0;
+}
+
+@media ( min-width : 768px) {
+	.resume .edit-languages .language-grid {
+		display: grid;
+		grid-template-columns: var(--language-left-width) var(--language-level-width);
+		grid-template-areas:
+			"type level"
+			"name level";
+		column-gap: var(--language-col-gap);
+		row-gap: var(--language-row-gap);
+	}
+	.resume .edit-languages .language-col {
+		float: none;
+	}
+	.resume .edit-languages .language-col-type {
+		grid-area: type;
+	}
+	.resume .edit-languages .language-col-name {
+		grid-area: name;
+	}
+	.resume .edit-languages .language-col-level {
+		grid-area: level;
+	}
+}
+
+@media ( max-width : 767px) {
+	.resume .edit-languages .language-grid::before,
+	.resume .edit-languages .language-grid::after {
+		content: " ";
+		display: table;
+	}
+	.resume .edit-languages .language-grid::after {
+		clear: both;
+	}
+}
+
 .resume .edit-password .form-control-feedback {
 	right: 0px;
 }

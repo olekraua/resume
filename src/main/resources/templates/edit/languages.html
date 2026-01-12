@@ -3,7 +3,7 @@
 <head th:replace="~{fragments/layout :: head('Edit Languages')}"></head>
 <body class="resume">
 <div th:replace="~{fragments/layout :: header}"></div>
-<div class="layout-content container">
+<div class="layout-content container edit-languages">
   <h2>Иностранные языки</h2>
   <div th:replace="~{edit/_nav :: nav}"></div>
 
@@ -22,8 +22,8 @@
         </div>
         <div class="panel-body">
           <input type="hidden" th:field="*{items[__${iter.index}__].id}"/>
-          <div class="row">
-            <div class="col-xs-12 col-sm-2">
+          <div class="language-grid">
+            <div class="col-xs-12 language-col language-col-type">
               <div class="form-group">
                 <label class="control-label">Тип</label>
                 <select class="form-control" th:field="*{items[__${iter.index}__].type}">
@@ -33,14 +33,14 @@
                 <div class="help-block"><small>Тип: розмовна/письмова тощо.</small></div>
               </div>
             </div>
-            <div class="col-xs-12 col-sm-3">
+            <div class="col-xs-12 language-col language-col-name">
               <div class="form-group">
                 <label class="control-label">Мова</label>
                 <input class="form-control" type="text" th:field="*{items[__${iter.index}__].name}"/>
                 <div class="help-block"><small>Наприклад: English, Deutsch, Français.</small></div>
               </div>
             </div>
-            <div class="col-xs-12 col-sm-7">
+            <div class="col-xs-12 language-col language-col-level">
               <div class="form-group">
                 <label class="control-label">Рівень</label>
                 <input class="level-slider" type="text" style="width: 100%;"
@@ -79,8 +79,8 @@
       <button type="button" class="close pull-right" onclick="$('#ui-item-{{blockIndex}}').remove();"><span aria-hidden="true">&times;</span></button>
     </div>
     <div class="panel-body">
-      <div class="row">
-        <div class="col-xs-12 col-sm-2">
+      <div class="language-grid">
+        <div class="col-xs-12 language-col language-col-type">
           <div class="form-group">
             <label class="control-label">Тип</label>
             <select class="form-control" name="items[{{blockIndex}}].type">
@@ -91,14 +91,14 @@
             <div class="help-block"><small>Тип: розмовна/письмова тощо.</small></div>
           </div>
         </div>
-        <div class="col-xs-12 col-sm-3">
+        <div class="col-xs-12 language-col language-col-name">
           <div class="form-group">
             <label class="control-label">Мова</label>
             <input class="form-control" type="text" name="items[{{blockIndex}}].name"/>
             <div class="help-block"><small>Наприклад: English, Deutsch, Français.</small></div>
           </div>
         </div>
-        <div class="col-xs-12 col-sm-7">
+        <div class="col-xs-12 language-col language-col-level">
           <div class="form-group">
             <label class="control-label">Рівень</label>
             <input class="level-slider" type="text" style="width: 100%;"
