@@ -502,8 +502,9 @@
   --language-slider-pad-left: 10px;
   --language-slider-pad-right: 10px;
   --language-slider-top-offset: 4px;
-  --language-slider-label-gap: 24px;
-  --language-slider-bottom-space: 12px;
+  --language-slider-label-gap: 22px;
+  --language-slider-bottom-space: 10px;
+  --language-level-label-offset: 2px;
 }
 
 .resume .edit-languages .language-col {
@@ -511,6 +512,11 @@
           box-sizing: border-box;
   padding-left: 0;
   padding-right: 0;
+}
+
+.resume .edit-languages .language-col-level .control-label {
+  position: relative;
+  top: var(--language-level-label-offset);
 }
 
 .resume .edit-languages .language-col-level .slider.slider-horizontal {
@@ -524,7 +530,9 @@
 }
 
 .resume .edit-languages .language-col-level .slider.slider-horizontal .slider-tick-label-container {
-  margin-top: var(--language-slider-label-gap);
+  margin-top: 0;
+  position: relative;
+  top: var(--language-slider-label-gap);
 }
 
 @media (min-width: 768px) {
@@ -535,7 +543,9 @@
     -webkit-column-gap: var(--language-col-gap);
        -moz-column-gap: var(--language-col-gap);
             column-gap: var(--language-col-gap);
-    align-items: start;
+    -webkit-box-align: start;
+        -ms-flex-align: start;
+            align-items: start;
   }
   .resume .edit-languages .language-col {
     float: none;
