@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -212,7 +213,21 @@ public class EditProfileController {
         binder.registerCustomEditor(LanguageLevel.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String text) {
-                setValue(text == null || text.isBlank() ? null : LanguageLevel.valueOf(text.trim()));
+                if (!StringUtils.hasText(text)) {
+                    setValue(null);
+                    return;
+                }
+                String trimmed = text.trim();
+                if (trimmed.matches("\\d+")) {
+                    int index = Integer.parseInt(trimmed);
+                    LanguageLevel[] values = LanguageLevel.values();
+                    if (index < 0 || index >= values.length) {
+                        throw new IllegalArgumentException("Unsupported language level index: " + trimmed);
+                    }
+                    setValue(values[index]);
+                } else {
+                    setValue(LanguageLevel.valueOf(trimmed.toUpperCase(Locale.ROOT)));
+                }
             }
         });
     }

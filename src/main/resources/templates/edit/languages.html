@@ -29,9 +29,9 @@
           <div class="form-group">
             <label class="col-sm-3 control-label">Уровень</label>
             <div class="col-sm-9">
-              <select class="form-control" th:field="*{items[__${iter.index}__].level}">
-                <option th:each="lvl : ${languageLevels}" th:value="${lvl}" th:text="${lvl}">LEVEL</option>
-              </select>
+              <input class="level-slider" type="text" style="width: 100%;"
+                     th:attr="name=|items[${iter.index}].level|,id=|items${iter.index}level|,data-slider-value=${item.level != null ? item.level.sliderIntValue : 4},data-slider-min=0,data-slider-max=${languageLevels.size() - 1}"
+                     data-slider-step="1" data-slider-tooltip="hide" data-slider-handle="square">
             </div>
             <div class="col-sm-offset-3 col-sm-9 help-block"><small>Оберіть рівень володіння мовою.</small></div>
           </div>
@@ -76,11 +76,10 @@
       <div class="form-group">
         <label class="col-sm-3 control-label">Уровень</label>
         <div class="col-sm-9">
-          <select class="form-control" name="items[{{blockIndex}}].level">
-            {{#each levels}}
-            <option value="{{this}}">{{this}}</option>
-            {{/each}}
-          </select>
+          <input class="level-slider" type="text" style="width: 100%;"
+                 name="items[{{blockIndex}}].level" id="items{{blockIndex}}level"
+                 data-slider-value="{{levelDefault}}" data-slider-min="0" data-slider-max="{{levelMax}}"
+                 data-slider-step="1" data-slider-tooltip="hide" data-slider-handle="square">
         </div>
       </div>
       <div class="form-group">
@@ -101,6 +100,17 @@
   Handlebars.registerHelper('inc', function(value) { return parseInt(value) + 1; });
   window.languageLevels = /*[[${languageLevels}]]*/ [];
   window.languageTypes = /*[[${languageTypes}]]*/ [];
+  var toLevelLabel = function(value) {
+    if (!value) {
+      return '';
+    }
+    var normalized = value.toLowerCase().replace(/_/g, '-');
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  };
+  window.languageLevelTicks = window.languageLevels.map(function(value, index) { return index; });
+  window.languageLevelLabels = window.languageLevels.map(toLevelLabel);
+  window.languageLevelMax = window.languageLevelTicks.length ? window.languageLevelTicks[window.languageLevelTicks.length - 1] : 0;
+  window.languageLevelDefault = Math.min(4, window.languageLevelMax);
   resume.ui.getTemplate = function() {
     if (resume.ui.template == null) {
       var source = $("#ui-block-template").html();
@@ -108,8 +118,10 @@
     }
     return resume.ui.template;
   };
-  Handlebars.registerHelper('levels', function() { return window.languageLevels; });
   Handlebars.registerHelper('types', function() { return window.languageTypes; });
+  if (resume && typeof resume.initLevelSliders === 'function') {
+    resume.initLevelSliders($('#ui-block-container'));
+  }
   /*]]>*/
 </script>
 </body>

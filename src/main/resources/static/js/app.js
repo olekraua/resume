@@ -28,6 +28,27 @@ var resume = {
 			});
 		});
 	},
+	initLevelSliders : function(container) {
+		if (typeof $.fn.slider !== 'function') {
+			return;
+		}
+		if (!Array.isArray(window.languageLevelTicks) || !Array.isArray(window.languageLevelLabels)) {
+			return;
+		}
+		var $container = container ? $(container) : $(document);
+		$container.find('input.level-slider').each(function() {
+			var $input = $(this);
+			if ($input.data('slider')) {
+				return;
+			}
+			$input.slider({
+				ticks: window.languageLevelTicks,
+				ticks_labels: window.languageLevelLabels,
+				handle: 'square',
+				tooltip: 'hide'
+			});
+		});
+	},
 	createPhotoUploader : function(){
 		//https://github.com/kartik-v/bootstrap-fileinput
 		$("#profilePhoto").fileinput({
@@ -153,10 +174,16 @@ var resume = {
 			var context = {
 				blockIndex : blockIndex
 			};
+			if (window.languageLevelDefault !== undefined) {
+				context.levelDefault = window.languageLevelDefault;
+			}
+			if (window.languageLevelMax !== undefined) {
+				context.levelMax = window.languageLevelMax;
+			}
 			container.append(template(context));
 
 			resume.createDatePicker();
-			container.find('input.level-slider').slider();
+			resume.initLevelSliders(container);
 		},
 		
 		updateSelect : function(thisObj) {
