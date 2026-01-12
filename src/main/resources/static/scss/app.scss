@@ -497,10 +497,10 @@
 }
 
 .resume .edit-languages {
-	--language-left-width: 15%;
-	--language-level-width: 65%;
+	--language-type-width: 12%;
+	--language-name-width: 12%;
+	--language-level-width: 76%;
 	--language-col-gap: 16px;
-	--language-row-gap: 8px;
 }
 
 .resume .edit-languages .language-col {
@@ -512,12 +512,9 @@
 @media ( min-width : 768px) {
 	.resume .edit-languages .language-grid {
 		display: grid;
-		grid-template-columns: var(--language-left-width) var(--language-level-width);
-		grid-template-areas:
-			"type level"
-			"name level";
+		grid-template-columns: var(--language-type-width) var(--language-name-width) var(--language-level-width);
+		grid-template-areas: "type name level";
 		column-gap: var(--language-col-gap);
-		row-gap: var(--language-row-gap);
 	}
 	.resume .edit-languages .language-col {
 		float: none;
