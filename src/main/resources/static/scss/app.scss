@@ -501,12 +501,22 @@
 	--language-name-width: 12%;
 	--language-level-width: 76%;
 	--language-col-gap: 16px;
+	--language-slider-pad-left: 0px;
+	--language-slider-pad-right: 0px;
 }
 
 .resume .edit-languages .language-col {
 	box-sizing: border-box;
 	padding-left: 0;
 	padding-right: 0;
+}
+
+.resume .edit-languages .language-col-level .slider.slider-horizontal {
+	display: block;
+	max-width: 100%;
+	width: calc(100% - var(--language-slider-pad-left) - var(--language-slider-pad-right));
+	margin-left: var(--language-slider-pad-left);
+	margin-right: var(--language-slider-pad-right);
 }
 
 @media ( min-width : 768px) {
