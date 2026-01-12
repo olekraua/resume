@@ -21,6 +21,7 @@
           <button type="button" class="close pull-right" th:onclick="|$('#ui-item-${iter.index}').remove();|"><span aria-hidden="true">&times;</span></button>
         </div>
         <div class="panel-body">
+          <input type="hidden" th:field="*{items[__${iter.index}__].id}"/>
           <div class="form-group">
             <label class="col-sm-3 control-label">Название</label>
             <div class="col-sm-9"><input class="form-control" type="text" th:field="*{items[__${iter.index}__].name}"/></div>
@@ -39,7 +40,8 @@
             <label class="col-sm-3 control-label">Тип</label>
             <div class="col-sm-9">
               <select class="form-control" th:field="*{items[__${iter.index}__].type}">
-                <option th:each="tp : ${languageTypes}" th:value="${tp}" th:text="${tp}">TYPE</option>
+                <option th:each="entry : ${languageTypeLabels}" th:value="${entry.key}"
+                        th:text="${entry.value}">TYPE</option>
               </select>
             </div>
             <div class="col-sm-offset-3 col-sm-9 help-block"><small>Тип: розмовна/письмова тощо.</small></div>
@@ -52,6 +54,10 @@
         <a href="javascript:resume.ui.addBlock();">+ Добавить язык</a>
       </div>
     </div>
+    <select id="language-type-options" style="display:none;">
+      <option th:each="entry : ${languageTypeLabels}" th:value="${entry.key}"
+              th:text="${entry.value}">TYPE</option>
+    </select>
     <hr/>
     <div class="row">
       <div class="col-xs-12 text-center">
@@ -86,8 +92,8 @@
         <label class="col-sm-3 control-label">Тип</label>
         <div class="col-sm-9">
           <select class="form-control" name="items[{{blockIndex}}].type">
-            {{#each types}}
-            <option value="{{this}}">{{this}}</option>
+            {{#each (types)}}
+            <option value="{{this}}">{{typeLabel this}}</option>
             {{/each}}
           </select>
         </div>
@@ -99,7 +105,12 @@
   /*<![CDATA[*/
   Handlebars.registerHelper('inc', function(value) { return parseInt(value) + 1; });
   window.languageLevels = /*[[${languageLevels}]]*/ [];
-  window.languageTypes = /*[[${languageTypes}]]*/ [];
+  window.languageTypes = [];
+  window.languageTypeLabels = {};
+  $('#language-type-options option').each(function() {
+    window.languageTypes.push(this.value);
+    window.languageTypeLabels[this.value] = $(this).text();
+  });
   var toLevelLabel = function(value) {
     if (!value) {
       return '';
@@ -119,6 +130,12 @@
     return resume.ui.template;
   };
   Handlebars.registerHelper('types', function() { return window.languageTypes; });
+  Handlebars.registerHelper('typeLabel', function(value) {
+    if (window.languageTypeLabels && window.languageTypeLabels[value]) {
+      return window.languageTypeLabels[value];
+    }
+    return value;
+  });
   if (resume && typeof resume.initLevelSliders === 'function') {
     resume.initLevelSliders($('#ui-block-container'));
   }

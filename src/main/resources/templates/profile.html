@@ -50,7 +50,9 @@
                         <div th:each="language : ${profile.languages}">
                             <strong th:text="${language.name}">Language</strong>:
                             <span th:text="${language.level}">LEVEL</span>
-                            <span th:if="${language.hasLanguageType}">(<i th:text="${language.type}">TYPE</i>)</span>
+                            <span th:if="${language.hasLanguageType}">
+                                (<i th:text="${#messages.msg('language.type.' + language.type)}">TYPE</i>)
+                            </span>
                             <br/>
                         </div>
                     </div>
@@ -261,7 +263,9 @@
                         <div th:each="language : ${profile.languages}">
                             <strong th:text="${language.name}">Language</strong>:
                             <span th:text="${language.level}">LEVEL</span>
-                            <span th:if="${language.hasLanguageType}">(<i th:text="${language.type}">TYPE</i>)</span>
+                            <span th:if="${language.hasLanguageType}">
+                                (<i th:text="${#messages.msg('language.type.' + language.type)}">TYPE</i>)
+                            </span>
                             <br/>
                         </div>
                     </div>

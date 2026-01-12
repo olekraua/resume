@@ -4,10 +4,14 @@ import java.beans.PropertyEditorSupport;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
@@ -71,6 +75,7 @@ public class EditProfileController {
     private final PhotoStorageService photoStorageService;
     private final PasswordEncoder passwordEncoder;
     private final Validator validator;
+    private final MessageSource messageSource;
     private final ProfileService profileService;
     private final CurrentProfileProvider currentProfileProvider;
 
@@ -207,7 +212,7 @@ public class EditProfileController {
         binder.registerCustomEditor(LanguageType.class, new PropertyEditorSupport() {
             @Override
             public void setAsText(String text) {
-                setValue(text == null || text.isBlank() ? null : LanguageType.valueOf(text.trim()));
+                setValue(text == null || text.isBlank() ? LanguageType.ALL : LanguageType.valueOf(text.trim()));
             }
         });
         binder.registerCustomEditor(LanguageLevel.class, new PropertyEditorSupport() {
@@ -357,6 +362,7 @@ public class EditProfileController {
             model.addAttribute("form", form);
             model.addAttribute("languageTypes", staticDataService.findAllLanguageTypes());
             model.addAttribute("languageLevels", staticDataService.findAllLanguageLevels());
+            addLanguageTypeLabels(model);
             return "edit/languages";
         }
         profileService.updateLanguages(profileId, form.getItems());
@@ -557,6 +563,7 @@ public class EditProfileController {
     private String prepareLanguages(String uid, Model model) {
         model.addAttribute("languageTypes", staticDataService.findAllLanguageTypes());
         model.addAttribute("languageLevels", staticDataService.findAllLanguageLevels());
+        addLanguageTypeLabels(model);
         return prepareProfileModel(uid, model, "edit/languages", new LanguageForm());
     }
 
@@ -590,6 +597,19 @@ public class EditProfileController {
 
     private String preparePassword(String uid, Model model) {
         return prepareProfileModel(uid, model, "edit/password", new ChangePasswordForm());
+    }
+
+    private void addLanguageTypeLabels(Model model) {
+        Locale locale = LocaleContextHolder.getLocale();
+        Map<LanguageType, String> labels = new LinkedHashMap<>();
+        for (LanguageType type : LanguageType.values()) {
+            String label = messageSource.getMessage("language.type." + type.name(), null, type.name(), locale);
+            if (label == null || label.isBlank()) {
+                label = type.name();
+            }
+            labels.put(type, label);
+        }
+        model.addAttribute("languageTypeLabels", labels);
     }
 
     private boolean isPracticEmpty(Practic item) {

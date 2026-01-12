@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.context.MessageSource;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.ui.ExtendedModelMap;
@@ -89,6 +90,7 @@ class EditProfileControllerTest {
                 photoStorageService,
                 passwordEncoder,
                 validator,
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -106,6 +108,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 mock(ProfileService.class),
                 mock(CurrentProfileProvider.class));
 
@@ -125,6 +128,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -147,6 +151,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -169,6 +174,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -193,6 +199,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -251,6 +258,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 mock(ProfileService.class),
                 mock(CurrentProfileProvider.class));
 
@@ -366,6 +374,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -390,6 +399,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -426,6 +436,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -450,6 +461,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -476,6 +488,7 @@ class EditProfileControllerTest {
                 photoStorageService,
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -535,6 +548,7 @@ class EditProfileControllerTest {
                 photoStorageService,
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -580,6 +594,7 @@ class EditProfileControllerTest {
                 photoStorageService,
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -624,6 +639,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -651,6 +667,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -675,6 +692,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -701,6 +719,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -747,6 +766,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -771,6 +791,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -796,6 +817,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -821,6 +843,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -857,6 +880,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -895,6 +919,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -919,6 +944,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -944,6 +970,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -970,6 +997,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1016,6 +1044,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 validator,
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1077,6 +1106,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 validator,
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1125,6 +1155,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1149,6 +1180,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1174,6 +1206,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1201,6 +1234,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 validator,
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1248,6 +1282,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 validator,
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1309,6 +1344,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 validator,
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1353,6 +1389,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1377,6 +1414,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1402,6 +1440,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1428,6 +1467,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1471,6 +1511,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1507,6 +1548,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1531,6 +1573,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1556,6 +1599,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1582,6 +1626,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1625,6 +1670,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1663,6 +1709,7 @@ class EditProfileControllerTest {
                 photoStorageService,
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1687,6 +1734,7 @@ class EditProfileControllerTest {
                 photoStorageService,
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1712,6 +1760,7 @@ class EditProfileControllerTest {
                 photoStorageService,
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1738,6 +1787,7 @@ class EditProfileControllerTest {
                 photoStorageService,
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1771,6 +1821,7 @@ class EditProfileControllerTest {
                 photoStorageService,
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1804,6 +1855,7 @@ class EditProfileControllerTest {
                 photoStorageService,
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1836,6 +1888,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1860,6 +1913,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1885,6 +1939,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1910,6 +1965,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1946,6 +2002,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -1982,6 +2039,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2006,6 +2064,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2030,6 +2089,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2054,6 +2114,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2094,6 +2155,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2133,6 +2195,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2166,6 +2229,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2190,6 +2254,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2215,6 +2280,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2240,6 +2306,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2275,6 +2342,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2309,6 +2377,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2333,6 +2402,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2358,6 +2428,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2383,6 +2454,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2418,6 +2490,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2452,6 +2525,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2476,6 +2550,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2501,6 +2576,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2526,6 +2602,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2562,6 +2639,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 passwordEncoder,
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2603,6 +2681,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 passwordEncoder,
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2644,6 +2723,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 passwordEncoder,
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2680,6 +2760,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2710,6 +2791,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2735,6 +2817,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2762,6 +2845,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2812,6 +2896,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2842,6 +2927,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2867,6 +2953,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2894,6 +2981,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2944,6 +3032,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2974,6 +3063,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -2999,6 +3089,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3026,6 +3117,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3074,6 +3166,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3104,6 +3197,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3129,6 +3223,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3156,6 +3251,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3205,6 +3301,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3234,6 +3331,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3259,6 +3357,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3286,6 +3385,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3333,6 +3433,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3356,6 +3457,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3378,6 +3480,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3402,6 +3505,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3435,6 +3539,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3458,6 +3563,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3480,6 +3586,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3504,6 +3611,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3553,6 +3661,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3576,6 +3685,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3598,6 +3708,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3622,6 +3733,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3668,6 +3780,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3691,6 +3804,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3713,6 +3827,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3737,6 +3852,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
 
@@ -3767,6 +3883,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 mock(ProfileService.class),
                 mock(CurrentProfileProvider.class));
 
@@ -3785,6 +3902,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 mock(ProfileService.class),
                 mock(CurrentProfileProvider.class));
 
@@ -3805,6 +3923,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 mock(ProfileService.class),
                 mock(CurrentProfileProvider.class));
 
@@ -3812,7 +3931,7 @@ class EditProfileControllerTest {
         controller.initBinder(binder);
 
         assertEquals(LanguageType.SPOKEN, binder.convertIfNecessary(" SPOKEN ", LanguageType.class));
-        assertEquals(null, binder.convertIfNecessary("   ", LanguageType.class));
+        assertEquals(LanguageType.ALL, binder.convertIfNecessary("   ", LanguageType.class));
     }
 
     @Test
@@ -3823,6 +3942,7 @@ class EditProfileControllerTest {
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
                 mock(Validator.class),
+                mock(MessageSource.class),
                 mock(ProfileService.class),
                 mock(CurrentProfileProvider.class));
 

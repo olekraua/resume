@@ -32,6 +32,7 @@ import net.devstudy.resume.exception.UidAlreadyExistsException;
 import net.devstudy.resume.form.ContactsForm;
 import net.devstudy.resume.form.InfoForm;
 import net.devstudy.resume.model.CurrentProfile;
+import net.devstudy.resume.model.LanguageType;
 import net.devstudy.resume.repository.storage.CertificateRepository;
 import net.devstudy.resume.repository.storage.CourseRepository;
 import net.devstudy.resume.repository.storage.EducationRepository;
@@ -282,13 +283,57 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     public void updateLanguages(Long profileId, java.util.List<Language> items) {
         Profile profile = getProfileOrThrow(profileId);
-        languageRepository.deleteByProfileId(profileId);
+        java.util.List<Language> existing = languageRepository.findByProfileId(profileId);
+        java.util.Map<Long, Language> existingById = new java.util.HashMap<>();
+        for (Language item : existing) {
+            if (item != null && item.getId() != null) {
+                existingById.put(item.getId(), item);
+            }
+        }
+        java.util.Set<Long> incomingIds = new java.util.HashSet<>();
+        java.util.List<Language> toSave = new java.util.ArrayList<>();
         if (items != null) {
             for (Language item : items) {
-                item.setId(null);
-                item.setProfile(profile);
+                if (item == null) {
+                    continue;
+                }
+                LanguageType resolvedType = item.getType() == null ? LanguageType.ALL : item.getType();
+                Language target = item;
+                if (item.getId() != null) {
+                    Language stored = existingById.get(item.getId());
+                    if (stored != null) {
+                        stored.setName(item.getName());
+                        stored.setLevel(item.getLevel());
+                        stored.setType(resolvedType);
+                        target = stored;
+                        incomingIds.add(stored.getId());
+                    } else {
+                        item.setId(null);
+                    }
+                }
+                target.setProfile(profile);
+                if (target.getType() == null) {
+                    target.setType(LanguageType.ALL);
+                }
+                toSave.add(target);
             }
-            languageRepository.saveAll(items);
+        }
+        if (!existing.isEmpty()) {
+            java.util.List<Language> toDelete = new java.util.ArrayList<>();
+            for (Language item : existing) {
+                if (item == null || item.getId() == null) {
+                    continue;
+                }
+                if (!incomingIds.contains(item.getId())) {
+                    toDelete.add(item);
+                }
+            }
+            if (!toDelete.isEmpty()) {
+                languageRepository.deleteAll(toDelete);
+            }
+        }
+        if (!toSave.isEmpty()) {
+            languageRepository.saveAll(toSave);
         }
         requestIndexing(profileId);
     }
