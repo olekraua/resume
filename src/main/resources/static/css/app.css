@@ -495,12 +495,12 @@
 }
 
 .resume .edit-languages {
-  --language-type-width: 14%;
-  --language-name-width: 14%;
-  --language-level-width: 72%;
+  --language-type-width: minmax(115px, 120px);
+  --language-name-width: minmax(115px, 120px);
+  --language-level-width: minmax(320px, 1fr);
   --language-col-gap: 16px;
-  --language-slider-pad-left: 10px;
-  --language-slider-pad-right: 10px;
+  --language-slider-pad-left: 30px;
+  --language-slider-pad-right: 60px;
   --language-slider-top-offset: 4px;
   --language-slider-label-gap: 22px;
   --language-slider-bottom-space: 10px;
