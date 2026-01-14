@@ -4,18 +4,18 @@
 <body class="resume">
   <div th:replace="~{fragments/layout :: header}"></div>
   <div class="layout-content">
-    <div class="container" style="max-width: 520px;">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title"><i class="fa fa-user-plus"></i> Вкажіть Ваші персональні дані</h4>
+    <div class="l-container" style="max-width: 520px;">
+      <div class="c-panel c-panel--default">
+        <div class="c-panel__heading">
+          <h4 class="c-panel__title"><i class="fa fa-user-plus"></i> Вкажіть Ваші персональні дані</h4>
         </div>
-        <div class="panel-body">
+        <div class="c-panel__body">
           <form th:action="${appHost} + @{/register}" th:object="${registrationForm}" method="post">
-            <div class="form-group">
+            <div class="c-form__group">
               <label for="uid">Логін (username)</label>
-              <input id="uid" th:field="*{uid}" type="text" class="form-control" required>
-              <div th:if="${#fields.hasErrors('uid')}" class="text-danger" th:errors="*{uid}">Помилка</div>
-              <div th:if="${uidSuggestions != null and !uidSuggestions.isEmpty()}" class="text-muted"
+              <input id="uid" th:field="*{uid}" type="text" class="c-input" required>
+              <div th:if="${#fields.hasErrors('uid')}" class="u-text-danger" th:errors="*{uid}">Помилка</div>
+              <div th:if="${uidSuggestions != null and !uidSuggestions.isEmpty()}" class="u-text-muted"
                    style="margin-top: 6px;">
                 Можливі варіанти:
                 <ul style="margin: 4px 0 0 16px;">
@@ -26,31 +26,31 @@
                 </ul>
               </div>
             </div>
-            <div class="form-group">
+            <div class="c-form__group">
               <label for="firstName">Ім'я</label>
-              <input id="firstName" th:field="*{firstName}" type="text" class="form-control" required>
-              <div th:if="${#fields.hasErrors('firstName')}" class="text-danger" th:errors="*{firstName}">Помилка</div>
+              <input id="firstName" th:field="*{firstName}" type="text" class="c-input" required>
+              <div th:if="${#fields.hasErrors('firstName')}" class="u-text-danger" th:errors="*{firstName}">Помилка</div>
             </div>
-            <div class="form-group">
+            <div class="c-form__group">
               <label for="lastName">Прізвище</label>
-              <input id="lastName" th:field="*{lastName}" type="text" class="form-control" required>
-              <div th:if="${#fields.hasErrors('lastName')}" class="text-danger" th:errors="*{lastName}">Помилка</div>
+              <input id="lastName" th:field="*{lastName}" type="text" class="c-input" required>
+              <div th:if="${#fields.hasErrors('lastName')}" class="u-text-danger" th:errors="*{lastName}">Помилка</div>
             </div>
-            <div class="form-group">
+            <div class="c-form__group">
               <label for="password">Пароль</label>
-              <input id="password" th:field="*{password}" type="password" class="form-control" required>
-              <div th:if="${#fields.hasErrors('password')}" class="text-danger" th:errors="*{password}">Помилка</div>
+              <input id="password" th:field="*{password}" type="password" class="c-input" required>
+              <div th:if="${#fields.hasErrors('password')}" class="u-text-danger" th:errors="*{password}">Помилка</div>
             </div>
-            <div class="form-group">
+            <div class="c-form__group">
               <label for="confirmPassword">Повторіть пароль</label>
-              <input id="confirmPassword" th:field="*{confirmPassword}" type="password" class="form-control" required>
-              <div th:if="${#fields.hasErrors('confirmPassword')}" class="text-danger" th:errors="*{confirmPassword}">Помилка</div>
+              <input id="confirmPassword" th:field="*{confirmPassword}" type="password" class="c-input" required>
+              <div th:if="${#fields.hasErrors('confirmPassword')}" class="u-text-danger" th:errors="*{confirmPassword}">Помилка</div>
             </div>
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}" style="margin-top: 10px;"></div>
-            <button type="submit" class="btn btn-success btn-block">Зареєструватися</button>
+            <div th:if="${errorMessage}" class="c-alert c-alert--danger" th:text="${errorMessage}" style="margin-top: 10px;"></div>
+            <button type="submit" class="c-button c-button--success c-button--block">Зареєструватися</button>
           </form>
-          <div class="text-center" style="margin-top: 10px;">
+          <div class="u-text-center" style="margin-top: 10px;">
             <a th:href="${appHost} + @{/login}">Уже є акаунт? Увійти</a>
           </div>
         </div>

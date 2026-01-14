@@ -5,48 +5,48 @@
 
 <body class="resume">
     <div th:replace="~{fragments/layout :: header}"></div>
-    <div class="layout-content container" th:id="'profile-' + ${profile.id}">
-        <div class="row profile">
-            <div class="col-xs-12 col-sm-6 col-md-4">
-                <div class="panel panel-primary">
-                    <div class="panel-body">
+    <div class="layout-content l-container" th:id="'profile-' + ${profile.id}">
+        <div class="l-row profile">
+            <div class="l-col l-col--xs-12 l-col--sm-6 l-col--md-4">
+                <div class="c-panel c-panel--primary">
+                    <div class="c-panel__body">
                         <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit|}">
-                            <img alt="photo" th:src="${profile.largePhoto != null ? profile.largePhoto : '/img/profile-placeholder.png'}" class="img-responsive photo">
+                            <img alt="photo" th:src="${profile.largePhoto != null ? profile.largePhoto : '/img/profile-placeholder.png'}" class="u-img-responsive photo">
                         </a>
-                        <img th:if="${!ownProfile}" alt="photo" th:src="${profile.largePhoto != null ? profile.largePhoto : '/img/profile-placeholder.png'}" class="img-responsive photo">
-                        <h1 class="text-center">
+                        <img th:if="${!ownProfile}" alt="photo" th:src="${profile.largePhoto != null ? profile.largePhoto : '/img/profile-placeholder.png'}" class="u-img-responsive photo">
+                        <h1 class="u-text-center">
                             <span th:if="${ownProfile}">
                                 <a th:href="${appHost} + @{|/${profile.uid}/edit|}" style="color:black;" th:text="${profile.fullName}">Full Name</a>
                             </span>
                             <span th:if="${!ownProfile}" th:text="${profile.fullName}">Full Name</span>
-                            <span th:if="${!profile.completed}" class="label label-warning" style="margin-left:8px;">Незавершений</span>
+                            <span th:if="${!profile.completed}" class="c-label c-label--warning" style="margin-left:8px;">Незавершений</span>
                         </h1>
-                        <h6 class="text-center">
+                        <h6 class="u-text-center">
                             <strong th:text="${profile.city}"></strong><span th:if="${profile.city != null and profile.country != null}">, </span><strong th:text="${profile.country}"></strong>
                         </h6>
-                        <h6 class="text-center">
+                        <h6 class="u-text-center">
                             <strong>Age:</strong> <span th:text="${profile.age}">0</span>
                             <span th:if="${profile.birthDay != null}">, <strong>Birthday:</strong> <span th:text="${#temporals.format(profile.birthDay.toLocalDate(), 'MMM dd, yyyy')}"></span></span>
                         </h6>
-                        <div class="list-group contacts">
-                            <a th:if="${profile.phone != null}" th:href="'tel:' + ${profile.phone}" class="list-group-item"><i class="fa fa-phone"></i> <span th:text="${profile.phone}">phone</span></a>
-                            <a th:if="${profile.email != null}" th:href="'mailto:' + ${profile.email}" class="list-group-item"><i class="fa fa-envelope"></i> <span th:text="${profile.email}">email</span></a>
-                            <a th:if="${profile.contacts != null and profile.contacts.facebook != null}" th:href="${profile.contacts.facebook}" class="list-group-item" target="_blank"><i class="fa fa-facebook"></i> <span th:text="${profile.contacts.facebook}">facebook</span></a>
-                            <a th:if="${profile.contacts != null and profile.contacts.linkedin != null}" th:href="${profile.contacts.linkedin}" class="list-group-item" target="_blank"><i class="fa fa-linkedin"></i> <span th:text="${profile.contacts.linkedin}">linkedin</span></a>
-                            <a th:if="${profile.contacts != null and profile.contacts.github != null}" th:href="${profile.contacts.github}" class="list-group-item" target="_blank"><i class="fa fa-github"></i> <span th:text="${profile.contacts.github}">github</span></a>
-                            <a th:if="${profile.contacts != null and profile.contacts.stackoverflow != null}" th:href="${profile.contacts.stackoverflow}" class="list-group-item" target="_blank"><i class="fa fa-stack-overflow"></i> <span th:text="${profile.contacts.stackoverflow}">stackoverflow</span></a>
+                        <div class="c-list contacts">
+                            <a th:if="${profile.phone != null}" th:href="'tel:' + ${profile.phone}" class="c-list__item"><i class="fa fa-phone"></i> <span th:text="${profile.phone}">phone</span></a>
+                            <a th:if="${profile.email != null}" th:href="'mailto:' + ${profile.email}" class="c-list__item"><i class="fa fa-envelope"></i> <span th:text="${profile.email}">email</span></a>
+                            <a th:if="${profile.contacts != null and profile.contacts.facebook != null}" th:href="${profile.contacts.facebook}" class="c-list__item" target="_blank"><i class="fa fa-facebook"></i> <span th:text="${profile.contacts.facebook}">facebook</span></a>
+                            <a th:if="${profile.contacts != null and profile.contacts.linkedin != null}" th:href="${profile.contacts.linkedin}" class="c-list__item" target="_blank"><i class="fa fa-linkedin"></i> <span th:text="${profile.contacts.linkedin}">linkedin</span></a>
+                            <a th:if="${profile.contacts != null and profile.contacts.github != null}" th:href="${profile.contacts.github}" class="c-list__item" target="_blank"><i class="fa fa-github"></i> <span th:text="${profile.contacts.github}">github</span></a>
+                            <a th:if="${profile.contacts != null and profile.contacts.stackoverflow != null}" th:href="${profile.contacts.stackoverflow}" class="c-list__item" target="_blank"><i class="fa fa-stack-overflow"></i> <span th:text="${profile.contacts.stackoverflow}">stackoverflow</span></a>
                         </div>
                     </div>
                 </div>
 
-                <div th:if="${profile.languages != null and !#lists.isEmpty(profile.languages)}" class="panel panel-primary hidden-xs">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div th:if="${profile.languages != null and !#lists.isEmpty(profile.languages)}" class="c-panel c-panel--primary u-hidden-xs">
+                    <div class="c-panel__heading">
+                        <h3 class="c-panel__title">
                             <i class="fa fa-language"></i> Foreign languages
                             <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit/languages|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
-                    <div class="panel-body">
+                    <div class="c-panel__body">
                         <div th:each="language : ${profile.languages}">
                             <strong th:text="${language.name}">Language</strong>:
                             <span th:text="${language.level}">LEVEL</span>
@@ -58,16 +58,16 @@
                     </div>
                 </div>
 
-                <div th:if="${profile.hobbies != null and !#lists.isEmpty(profile.hobbies)}" class="panel panel-primary hidden-xs">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div th:if="${profile.hobbies != null and !#lists.isEmpty(profile.hobbies)}" class="c-panel c-panel--primary u-hidden-xs">
+                    <div class="c-panel__heading">
+                        <h3 class="c-panel__title">
                             <i class="fa fa-heart"></i> Хобі
                             <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit/hobbies|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
-                    <div class="panel-body">
+                    <div class="c-panel__body">
                         <div class="hobbies">
-                            <table class="table table-bordered">
+                            <table class="c-table c-table--bordered">
                                 <tr th:each="hobby : ${profile.hobbies}">
                                     <td><i class="fa" th:classappend="' hobby hobby-' + ${hobby.cssClassName}"></i></td>
                                     <td th:text="${hobby.name}">Hobby</td>
@@ -77,26 +77,26 @@
                     </div>
                 </div>
 
-                <div th:if="${profile.info != null}" class="panel panel-primary hidden-xs">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div th:if="${profile.info != null}" class="c-panel c-panel--primary u-hidden-xs">
+                    <div class="c-panel__heading">
+                        <h3 class="c-panel__title">
                             <i class="fa fa-info-circle"></i> Additional info
                             <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit/info|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
-                    <div class="panel-body text-justify" th:text="${profile.info}">Info</div>
+                    <div class="c-panel__body u-text-justify" th:text="${profile.info}">Info</div>
                 </div>
             </div>
 
-            <div class="col-xs-12 col-sm-6 col-md-8">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+            <div class="l-col l-col--xs-12 l-col--sm-6 l-col--md-8">
+                <div class="c-panel c-panel--primary">
+                    <div class="c-panel__heading">
+                        <h3 class="c-panel__title">
                             <i class="fa fa-bullseye"></i> Мета
                             <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit/profile#inputObjective|}" class="edit-block">Редагувати</a>
                         </h3>
                     </div>
-                    <div class="panel-body">
+                    <div class="c-panel__body">
                         <h4 th:text="${profile.objective}">Objective</h4>
                         <p>
                             <strong>Короткий огляд кваліфікації:</strong><br/>
@@ -105,15 +105,15 @@
                     </div>
                 </div>
 
-                <div th:if="${profile.skills != null and !#lists.isEmpty(profile.skills)}" class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div th:if="${profile.skills != null and !#lists.isEmpty(profile.skills)}" class="c-panel c-panel--primary">
+                    <div class="c-panel__heading">
+                        <h3 class="c-panel__title">
                             <i class="fa fa-code"></i> Technical Skills
                             <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit/skills|}" class="edit-block">Edit</a>
                         </h3>
                     </div>
-                    <div class="panel-body">
-                        <table class="table table-striped table-bordered">
+                    <div class="c-panel__body">
+                        <table class="c-table c-table--striped c-table--bordered">
                             <tr>
                                 <th style="width: 140px;">Category</th>
                                 <th>Frameworks and technologies</th>
@@ -126,14 +126,14 @@
                     </div>
                 </div>
 
-                <div th:if="${profile.practics != null and !#lists.isEmpty(profile.practics)}" class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div th:if="${profile.practics != null and !#lists.isEmpty(profile.practics)}" class="c-panel c-panel--primary">
+                    <div class="c-panel__heading">
+                        <h3 class="c-panel__title">
                             <i class="fa fa-briefcase"></i> Практичний досвід
                             <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit/practics|}" class="edit-block">Редагувати</a>
                         </h3>
                     </div>
-                    <div class="panel-body">
+                    <div class="c-panel__body">
                         <ul class="timeline">
                             <li th:each="practic : ${profile.practics}">
                                 <div class="timeline-badge danger">
@@ -148,7 +148,7 @@
                                                 <span th:text="${practic.beginDate != null ? #temporals.format(practic.beginDate, 'MMM yyyy') : ''}"></span>
                                                 -
                                                 <span th:if="${practic.finish}" th:text="${practic.finishDate != null ? #temporals.format(practic.finishDate, 'MMM yyyy') : ''}"></span>
-                                                <strong class="label label-danger" th:if="${!practic.finish}">Current</strong>
+                                                <strong class="c-label c-label--danger" th:if="${!practic.finish}">Current</strong>
                                             </small>
                                         </p>
                                     </div>
@@ -170,31 +170,31 @@
                     </div>
                 </div>
 
-                <div th:if="${profile.certificates != null and !#lists.isEmpty(profile.certificates)}" class="panel panel-primary certificates">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div th:if="${profile.certificates != null and !#lists.isEmpty(profile.certificates)}" class="c-panel c-panel--primary certificates">
+                    <div class="c-panel__heading">
+                        <h3 class="c-panel__title">
                             <i class="fa fa-certificate"></i> Сертифікати
                             <a th:if="${ownProfile}" th:href="${appHost} + @{/edit/certificates}" class="edit-block">Редагувати</a>
                         </h3>
                     </div>
-                    <div class="panel-body">
-                        <a class="thumbnail certificate-link" href="#"
+                    <div class="c-panel__body">
+                        <a class="c-thumbnail certificate-link" href="#"
                            th:each="certificate : ${profile.certificates}"
                            th:attr="data-title=${certificate.name},data-url=${certificate.largeUrl}">
-                            <img class="img-responsive" th:src="${certificate.smallUrl}" th:alt="${certificate.name}">
+                            <img class="u-img-responsive" th:src="${certificate.smallUrl}" th:alt="${certificate.name}">
                             <span th:text="${certificate.name}">Certificate</span>
                         </a>
                     </div>
                 </div>
 
-                <div th:if="${profile.courses != null and !#lists.isEmpty(profile.courses)}" class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div th:if="${profile.courses != null and !#lists.isEmpty(profile.courses)}" class="c-panel c-panel--primary">
+                    <div class="c-panel__heading">
+                        <h3 class="c-panel__title">
                             <i class="fa fa-book"></i> Courses
                             <a th:if="${ownProfile}" th:href="${appHost} + @{/edit/courses}" class="edit-block">Edit</a>
                         </h3>
                     </div>
-                    <div class="panel-body">
+                    <div class="c-panel__body">
                         <ul class="timeline">
                             <li th:each="course : ${profile.courses}">
                                 <div class="timeline-badge success">
@@ -207,7 +207,7 @@
                                             <small class="dates"><i class="fa fa-calendar"></i>
                                                 <strong>Finish Date:</strong>
                                                 <span th:if="${course.finish}" th:text="${course.finishDate != null ? #temporals.format(course.finishDate, 'MMM yyyy') : ''}"></span>
-                                                <strong class="label label-danger" th:if="${!course.finish}">Not finished yet</strong>
+                                                <strong class="c-label c-label--danger" th:if="${!course.finish}">Not finished yet</strong>
                                             </small>
                                         </p>
                                     </div>
@@ -217,14 +217,14 @@
                     </div>
                 </div>
 
-                <div th:if="${profile.educations != null and !#lists.isEmpty(profile.educations)}" class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div th:if="${profile.educations != null and !#lists.isEmpty(profile.educations)}" class="c-panel c-panel--primary">
+                    <div class="c-panel__heading">
+                        <h3 class="c-panel__title">
                             <i class="fa fa-graduation-cap"></i> Education
                             <a th:if="${ownProfile}" th:href="${appHost} + @{/edit/education}" class="edit-block">Edit</a>
                         </h3>
                     </div>
-                    <div class="panel-body">
+                    <div class="c-panel__body">
                         <ul class="timeline">
                             <li th:each="education : ${profile.educations}">
                                 <div class="timeline-badge warning">
@@ -237,7 +237,7 @@
                                             <small class="dates"><i class="fa fa-calendar"></i>
                                                 <span th:text="${education.beginYear}"></span> -
                                                 <span th:if="${education.finish}" th:text="${education.finishYear}"></span>
-                                                <strong class="label label-danger" th:if="${!education.finish}">Current</strong>
+                                                <strong class="c-label c-label--danger" th:if="${!education.finish}">Current</strong>
                                             </small>
                                         </p>
                                     </div>
@@ -251,15 +251,15 @@
                 </div>
             </div>
 
-            <div class="col-xs-12 visible-xs">
-                <div th:if="${profile.languages != null and !#lists.isEmpty(profile.languages)}" class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+            <div class="l-col l-col--xs-12 u-visible-xs">
+                <div th:if="${profile.languages != null and !#lists.isEmpty(profile.languages)}" class="c-panel c-panel--primary">
+                    <div class="c-panel__heading">
+                        <h3 class="c-panel__title">
                             <i class="fa fa-language"></i> Foreign languages
                             <a th:if="${ownProfile}" th:href="${appHost} + @{/account/login}" class="edit-block">Edit</a>
                         </h3>
                     </div>
-                    <div class="panel-body">
+                    <div class="c-panel__body">
                         <div th:each="language : ${profile.languages}">
                             <strong th:text="${language.name}">Language</strong>:
                             <span th:text="${language.level}">LEVEL</span>
@@ -271,16 +271,16 @@
                     </div>
                 </div>
 
-                <div th:if="${profile.hobbies != null and !#lists.isEmpty(profile.hobbies)}" class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div th:if="${profile.hobbies != null and !#lists.isEmpty(profile.hobbies)}" class="c-panel c-panel--primary">
+                    <div class="c-panel__heading">
+                        <h3 class="c-panel__title">
                             <i class="fa fa-heart"></i> Хобі
                             <a th:if="${ownProfile}" th:href="${appHost} + @{/account/login}" class="edit-block">Edit</a>
                         </h3>
                     </div>
-                    <div class="panel-body">
+                    <div class="c-panel__body">
                         <div class="hobbies">
-                            <table class="table table-bordered">
+                            <table class="c-table c-table--bordered">
                                 <tr th:each="hobby : ${profile.hobbies}">
                                     <td><i class="fa" th:classappend="' hobby hobby-' + ${hobby.cssClassName}"></i></td>
                                     <td th:text="${hobby.name}">Hobby</td>
@@ -290,14 +290,14 @@
                     </div>
                 </div>
 
-                <div th:if="${profile.info != null}" class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div th:if="${profile.info != null}" class="c-panel c-panel--primary">
+                    <div class="c-panel__heading">
+                        <h3 class="c-panel__title">
                             <i class="fa fa-info-circle"></i> Additional info
                             <a th:if="${ownProfile}" th:href="${appHost} + @{/account/login}" class="edit-block">Edit</a>
                         </h3>
                     </div>
-                    <div class="panel-body text-justify" th:text="${profile.info}">Info</div>
+                    <div class="c-panel__body u-text-justify" th:text="${profile.info}">Info</div>
                 </div>
             </div>
         </div>
@@ -306,15 +306,15 @@
 <div th:replace="~{fragments/layout :: footer}"></div>
 <th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
 
-    <div id="certificateViewer" class="modal fade" role="dialog">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Перегляд сертифікату</h4>
+    <div id="certificateViewer" class="c-modal is-fade" role="dialog">
+        <div class="c-modal__dialog c-modal__dialog--lg">
+            <div class="c-modal__content">
+                <div class="c-modal__header">
+                    <button type="button" class="c-close" data-ui-dismiss="modal">&times;</button>
+                    <h4 class="c-modal__title">Перегляд сертифікату</h4>
                 </div>
-                <div class="modal-body">
-                    <img class="img-responsive" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Certificate image">
+                <div class="c-modal__body">
+                    <img class="u-img-responsive" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Certificate image">
                 </div>
             </div>
         </div>

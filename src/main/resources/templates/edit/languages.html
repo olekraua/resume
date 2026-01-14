@@ -3,12 +3,12 @@
 <head th:replace="~{fragments/layout :: head('Edit Languages')}"></head>
 <body class="resume">
 <div th:replace="~{fragments/layout :: header}"></div>
-<div class="layout-content container edit-languages">
+<div class="layout-content l-container edit-languages">
   <h2>Иностранные языки</h2>
   <div th:replace="~{edit/_nav :: nav}"></div>
 
   <form th:action="${appHost} + @{|/${profile.uid}/edit/languages|}" method="post" th:object="${form}">
-    <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+    <div th:if="${#fields.hasErrors('*')}" class="c-alert c-alert--danger">
       <ul>
         <li th:each="err : ${#fields.errors('*')}" th:text="${err}">Error</li>
       </ul>
@@ -16,45 +16,48 @@
 
     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
     <div id="ui-block-container">
-      <div th:each="item,iter : *{items}" class="panel panel-default ui-item language-item" th:id="|ui-item-${iter.index}|">
-        <div class="panel-heading">Язык <span th:text="${iter.index + 1}"></span>
-          <button type="button" class="close pull-right" th:onclick="|$('#ui-item-${iter.index}').remove();|"><span aria-hidden="true">&times;</span></button>
+      <div th:each="item,iter : *{items}" class="c-panel c-panel--default ui-item language-item" th:id="|ui-item-${iter.index}|">
+        <div class="c-panel__heading">Язык <span th:text="${iter.index + 1}"></span>
+          <button type="button" class="c-close u-pull-right" th:onclick="|$('#ui-item-${iter.index}').remove();|"><span aria-hidden="true">&times;</span></button>
         </div>
-        <div class="panel-body">
+        <div class="c-panel__body">
           <input type="hidden" th:field="*{items[__${iter.index}__].id}"/>
           <div class="language-grid">
-            <div class="col-xs-12 language-col language-col-type">
-              <div class="form-group">
-                <label class="control-label">Тип</label>
-                <select class="form-control" th:field="*{items[__${iter.index}__].type}">
+            <div class="l-col l-col--xs-12 language-col language-col-type">
+              <div class="c-form__group">
+                <label class="c-form__label">Тип</label>
+                <select class="c-input" th:field="*{items[__${iter.index}__].type}">
                   <option th:each="entry : ${languageTypeLabels}" th:value="${entry.key}"
                           th:text="${entry.value}">TYPE</option>
                 </select>
-                <div class="help-block"><small>Тип: розмовна/письмова тощо.</small></div>
+                <div class="c-form__help"><small>Тип: розмовна/письмова тощо.</small></div>
               </div>
             </div>
-            <div class="col-xs-12 language-col language-col-name">
-              <div class="form-group">
-                <label class="control-label">Мова</label>
-                <input class="form-control" type="text" th:field="*{items[__${iter.index}__].name}"/>
-                <div class="help-block"><small>Наприклад: English, Deutsch, Français.</small></div>
+            <div class="l-col l-col--xs-12 language-col language-col-name">
+              <div class="c-form__group">
+                <label class="c-form__label">Мова</label>
+                <input class="c-input" type="text" th:field="*{items[__${iter.index}__].name}"/>
+                <div class="c-form__help"><small>Наприклад: English, Deutsch, Français.</small></div>
               </div>
             </div>
-            <div class="col-xs-12 language-col language-col-level">
-              <div class="form-group">
-                <label class="control-label">Рівень</label>
-                <input class="level-slider" type="text" style="width: 100%;"
-                       th:attr="name=|items[${iter.index}].level|,id=|items${iter.index}level|,data-slider-value=${item.level != null ? item.level.sliderIntValue : 4},data-slider-min=0,data-slider-max=${languageLevels.size() - 1}"
-                       data-slider-step="1" data-slider-tooltip="hide" data-slider-handle="square">
-                <div class="help-block"><small>Оберіть рівень володіння мовою.</small></div>
+            <div class="l-col l-col--xs-12 language-col language-col-level">
+              <div class="c-form__group">
+                <label class="c-form__label">Рівень</label>
+                <div class="c-slider" data-slider>
+                  <input class="c-slider__input" type="range" style="width: 100%;"
+                         th:attr="name=|items[${iter.index}].level|,id=|items${iter.index}level|,value=${item.level != null ? item.level.sliderIntValue : 4},min=0,max=${languageLevels.size() - 1}"
+                         step="1">
+                  <div class="c-slider__labels" data-slider-labels></div>
+                </div>
+                <div class="c-form__help"><small>Оберіть рівень володіння мовою.</small></div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-xs-12">
+    <div class="l-row">
+      <div class="l-col l-col--xs-12">
         <a href="javascript:resume.ui.addBlock();">+ Добавить язык</a>
       </div>
     </div>
@@ -63,9 +66,9 @@
               th:text="${entry.value}">TYPE</option>
     </select>
     <hr/>
-    <div class="row">
-      <div class="col-xs-12 text-center">
-        <input type="submit" class="btn btn-primary" value="Сохранить">
+    <div class="l-row">
+      <div class="l-col l-col--xs-12 u-text-center">
+        <input type="submit" class="c-button c-button--primary" value="Сохранить">
       </div>
     </div>
   </form>
@@ -74,38 +77,40 @@
 <th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
 <th:block th:replace="~{fragments/layout :: scripts-edit}"></th:block>
 <script id="ui-block-template" type="text/x-handlebars-template">
-  <div class="panel panel-default ui-item language-item" id="ui-item-{{blockIndex}}">
-    <div class="panel-heading">Язык {{inc blockIndex}}
-      <button type="button" class="close pull-right" onclick="$('#ui-item-{{blockIndex}}').remove();"><span aria-hidden="true">&times;</span></button>
+  <div class="c-panel c-panel--default ui-item language-item" id="ui-item-{{blockIndex}}">
+    <div class="c-panel__heading">Язык {{inc blockIndex}}
+      <button type="button" class="c-close u-pull-right" onclick="$('#ui-item-{{blockIndex}}').remove();"><span aria-hidden="true">&times;</span></button>
     </div>
-    <div class="panel-body">
+    <div class="c-panel__body">
       <div class="language-grid">
-        <div class="col-xs-12 language-col language-col-type">
-          <div class="form-group">
-            <label class="control-label">Тип</label>
-            <select class="form-control" name="items[{{blockIndex}}].type">
+        <div class="l-col l-col--xs-12 language-col language-col-type">
+          <div class="c-form__group">
+            <label class="c-form__label">Тип</label>
+            <select class="c-input" name="items[{{blockIndex}}].type">
               {{#each (types)}}
               <option value="{{this}}">{{typeLabel this}}</option>
               {{/each}}
             </select>
-            <div class="help-block"><small>Тип: розмовна/письмова тощо.</small></div>
+            <div class="c-form__help"><small>Тип: розмовна/письмова тощо.</small></div>
           </div>
         </div>
-        <div class="col-xs-12 language-col language-col-name">
-          <div class="form-group">
-            <label class="control-label">Мова</label>
-            <input class="form-control" type="text" name="items[{{blockIndex}}].name"/>
-            <div class="help-block"><small>Наприклад: English, Deutsch, Français.</small></div>
+        <div class="l-col l-col--xs-12 language-col language-col-name">
+          <div class="c-form__group">
+            <label class="c-form__label">Мова</label>
+            <input class="c-input" type="text" name="items[{{blockIndex}}].name"/>
+            <div class="c-form__help"><small>Наприклад: English, Deutsch, Français.</small></div>
           </div>
         </div>
-        <div class="col-xs-12 language-col language-col-level">
-          <div class="form-group">
-            <label class="control-label">Рівень</label>
-            <input class="level-slider" type="text" style="width: 100%;"
-                   name="items[{{blockIndex}}].level" id="items{{blockIndex}}level"
-                   data-slider-value="{{levelDefault}}" data-slider-min="0" data-slider-max="{{levelMax}}"
-                   data-slider-step="1" data-slider-tooltip="hide" data-slider-handle="square">
-            <div class="help-block"><small>Оберіть рівень володіння мовою.</small></div>
+        <div class="l-col l-col--xs-12 language-col language-col-level">
+          <div class="c-form__group">
+            <label class="c-form__label">Рівень</label>
+            <div class="c-slider" data-slider>
+              <input class="c-slider__input" type="range" style="width: 100%;"
+                     name="items[{{blockIndex}}].level" id="items{{blockIndex}}level"
+                     value="{{levelDefault}}" min="0" max="{{levelMax}}" step="1">
+              <div class="c-slider__labels" data-slider-labels></div>
+            </div>
+            <div class="c-form__help"><small>Оберіть рівень володіння мовою.</small></div>
           </div>
         </div>
       </div>

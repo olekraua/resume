@@ -4,12 +4,12 @@
 <body class="resume">
   <div th:replace="~{fragments/layout :: header}"></div>
   <div class="layout-content">
-    <div class="container" style="max-width: 520px;">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title"><i class="fa fa-thumbs-up"></i> Запит оброблено</h4>
+    <div class="l-container" style="max-width: 520px;">
+      <div class="c-panel c-panel--default">
+        <div class="c-panel__heading">
+          <h4 class="c-panel__title"><i class="fa fa-thumbs-up"></i> Запит оброблено</h4>
         </div>
-        <div class="panel-body">
+        <div class="c-panel__body">
           <p>Якщо профіль існує, ви отримаєте посилання для відновлення доступу.</p>
           <div th:if="${showRestoreLink and !#strings.isEmpty(restoreLink)}" style="margin-top: 10px;">
             <a th:href="${restoreLink}" th:text="${restoreLink}">restore link</a>

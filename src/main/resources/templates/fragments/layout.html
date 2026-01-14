@@ -4,12 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title th:text="${pageTitle} ?: 'My Resume'">My Resume</title>
-  <link rel="stylesheet" th:href="${appHost} + @{/css/bootstrap-custom.css(v=${cssCommonVersion})}" />
+  <link rel="stylesheet" th:href="${appHost} + @{/css/ui.css(v=${cssCommonVersion})}" />
   <link rel="stylesheet" th:href="${appHost} + @{/css/font-awesome-4.5.0.css(v=${cssCommonVersion})}" />
   <link rel="stylesheet" th:href="${appHost} + @{/css/timeline.css(v=${cssCommonVersion})}" />
-  <link rel="stylesheet" th:href="${appHost} + @{/css/bootstrap-slider-6.1.6.css(v=${cssExVersion})}" />
   <link rel="stylesheet" th:href="${appHost} + @{/css/flatpickr-4.6.13.css(v=${cssExVersion})}" />
-  <link rel="stylesheet" th:href="${appHost} + @{/css/fileinput-4.3.2.css(v=${cssExVersion})}" />
   <link rel="stylesheet" th:href="${appHost} + @{/css/app.css(v=${cssCommonVersion})}" />
   <style>
     body.resume { background-color: #eae8e7; }
@@ -32,54 +30,54 @@
       margin-right: 4px;
     }
     .nav-logout-form { margin: 0; padding: 6px 20px; }
-    .nav-logout-form .btn-link { padding: 0; color: #333; }
+    .nav-logout-form .c-button--link { padding: 0; color: #333; }
   </style>
 </head>
 <body class="resume">
 <header th:fragment="header">
-  <nav class="navbar navbar-default"
+  <nav class="c-navbar c-navbar--default"
        th:with="CURRENT_PROFILE=${#authentication?.principal}">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#main-nav" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
+    <div class="l-container l-container--fluid">
+      <div class="c-navbar__header">
+        <button type="button" class="c-navbar__toggle is-collapsed" data-ui-toggle="collapse" data-ui-target="#main-nav" aria-expanded="false">
+          <span class="u-sr-only">Toggle navigation</span>
+          <span class="c-navbar__toggle-line"></span>
+          <span class="c-navbar__toggle-line"></span>
+          <span class="c-navbar__toggle-line"></span>
         </button>
-        <a class="navbar-brand" th:href="${appHost} + @{/welcome}">My Resume</a>
+        <a class="c-navbar__brand" th:href="${appHost} + @{/welcome}">My Resume</a>
       </div>
-      <div class="collapse navbar-collapse" id="main-nav">
-        <ul class="nav navbar-nav navbar-right">
+      <div class="c-collapse c-navbar__collapse" id="main-nav">
+        <ul class="c-nav c-navbar__nav c-navbar__nav--right">
           <li sec:authorize="!isAuthenticated()"><a th:href="${appHost} + @{/login}">Увійти</a></li>
           <li sec:authorize="!isAuthenticated()"><a th:href="${appHost} + @{/register}">Реєстрація</a></li>
-          <li class="dropdown nav-user" sec:authorize="isAuthenticated()">
-            <a href="#" class="dropdown-toggle nav-user-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+          <li class="c-dropdown nav-user" sec:authorize="isAuthenticated()">
+            <a href="#" class="c-dropdown__toggle nav-user-toggle" data-ui-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
               <span class="nav-user-avatar"><i class="fa fa-user"></i></span>
               <span class="nav-user-name" th:text="${CURRENT_PROFILE != null ? CURRENT_PROFILE.fullName : 'Профіль'}">Профіль</span>
-              <span class="caret"></span>
+              <span class="c-caret"></span>
             </a>
-            <ul class="dropdown-menu">
+            <ul class="c-dropdown__menu">
               <li><a th:href="${appHost} + @{/{u}(u=${CURRENT_PROFILE != null ? CURRENT_PROFILE.username : ''})}"><i class="fa fa-eye"></i> Мій профіль</a></li>
               <li><a th:href="${appHost} + @{/{u}/edit/profile(u=${CURRENT_PROFILE != null ? CURRENT_PROFILE.username : ''})}"><i class="fa fa-pencil"></i> Редагувати</a></li>
               <li><a th:href="${appHost} + @{/account/password}"><i class="fa fa-unlock-alt"></i> Пароль</a></li>
               <li><a th:href="${appHost} + @{/account/remove}"><i class="fa fa-trash-o"></i> Видалити акаунт</a></li>
-              <li role="separator" class="divider"></li>
+              <li role="separator" class="c-dropdown__divider"></li>
               <li>
                 <form th:action="${appHost} + @{/logout}" method="post" class="nav-logout-form">
                   <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                  <button type="submit" class="btn btn-link"><i class="fa fa-sign-out"></i> Вийти</button>
+                  <button type="submit" class="c-button c-button--link"><i class="fa fa-sign-out"></i> Вийти</button>
                 </form>
               </li>
             </ul>
           </li>
         </ul>
-        <form class="navbar-form navbar-center" role="search" th:action="${appHost} + @{/search}" method="get" id="nav-search-form">
-          <div class="form-group" style="position: relative;">
-            <input type="text" class="form-control" placeholder="Search" name="q" id="nav-search-input" autocomplete="off">
-            <ul class="suggest-list dropdown-menu" id="nav-search-suggest" style="display:none;"></ul>
+        <form class="c-navbar__form c-navbar__center" role="search" th:action="${appHost} + @{/search}" method="get" id="nav-search-form">
+          <div class="c-form__group" style="position: relative;">
+            <input type="text" class="c-input" placeholder="Search" name="q" id="nav-search-input" autocomplete="off">
+            <ul class="suggest-list c-dropdown__menu" id="nav-search-suggest" style="display:none;"></ul>
           </div>
-          <button type="submit" class="btn btn-primary">Найти</button>
+          <button type="submit" class="c-button c-button--primary">Найти</button>
         </form>
       </div>
     </div>
@@ -94,15 +92,12 @@
 
 <th:block th:fragment="scripts-base">
   <script th:src="${appHost} + @{/js/jquery-2.2.2.js(v=${jsCommonVersion})}"></script>
-  <script th:src="${appHost} + @{/js/bootstrap-3.3.6.js(v=${jsCommonVersion})}"></script>
   <script th:src="${appHost} + @{/js/messages.js(v=${jsMessagesVersion})}"></script>
   <script th:src="${appHost} + @{/js/app.js(v=${jsCommonVersion})}"></script>
 </th:block>
 <th:block th:fragment="scripts-edit">
-  <script th:src="${appHost} + @{/js/bootstrap-slider-6.1.6.js(v=${jsExVersion})}"></script>
   <script th:src="${appHost} + @{/js/handlebars-4.0.5.js(v=${jsExVersion})}"></script>
   <script th:src="${appHost} + @{/js/flatpickr-4.6.13.js(v=${jsExVersion})}"></script>
-  <script th:src="${appHost} + @{/js/fileinput-4.3.2.js(v=${jsExVersion})}"></script>
 </th:block>
 </body>
 </html>

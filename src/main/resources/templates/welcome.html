@@ -6,24 +6,24 @@
 <body class="resume">
   <div th:replace="~{fragments/layout :: header}"></div>
   <div class="layout-content">
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <h1 class="text-center caption">
+    <div class="c-panel c-panel--default">
+      <div class="c-panel__body">
+        <h1 class="u-text-center caption">
           Web система 'My Resume' - створіть Ваше резюме у 10 кліків
         </h1>
       </div>
     </div>
-    <div class="row profiles">
-      <div id="profileContainer" class="col-xs-12"
+    <div class="l-row profiles">
+      <div id="profileContainer" class="l-col l-col--xs-12"
            th:attr="data-profile-total=${page.totalPages},data-profile-number=${page.number}">
         <div th:replace="~{profiles :: items(${profiles})}"></div>
       </div>
-      <div id="loadMoreContainer" class="col-xs-12 text-center"
+      <div id="loadMoreContainer" class="l-col l-col--xs-12 u-text-center"
            th:if="${page.number < page.totalPages - 1}">
-        <a class="btn btn-primary"
+        <a class="c-button c-button--primary"
            th:attr="href=|javascript:resume.moreProfiles('${query}')|">Загрузить еще</a>
       </div>
-      <div id="loadMoreIndicator" class="col-xs-12 text-center" style="display:none;"
+      <div id="loadMoreIndicator" class="l-col l-col--xs-12 u-text-center" style="display:none;"
            th:if="${page.number < page.totalPages - 1}">
         <img th:src="@{/img/large-loading.gif}" alt="loading...">
       </div>

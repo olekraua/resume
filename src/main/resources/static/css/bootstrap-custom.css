@@ -847,13 +847,15 @@ fieldset[disabled] .btn-link {
   line-height: 20px;
 }
 .navbar-form {
+  margin-top: 8px;
   margin-right: -15px;
+  margin-bottom: 8px;
   margin-left: -15px;
   padding: 10px 15px;
   border-top: 1px solid transparent;
   border-bottom: 1px solid transparent;
-  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1);
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 0 rgba(255, 255, 255, .1);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 1px 0 rgba(255, 255, 255, .1);
 }
 .navbar-right {
   float: right !important;
@@ -928,9 +930,21 @@ fieldset[disabled] .btn-link {
     padding-top: 15px;
     padding-bottom: 15px;
   }
+  .navbar-form .form-group {
+    display: inline-block;
+    margin-bottom: 0;
+    vertical-align: middle;
+  }
+  .navbar-form .form-control {
+    display: inline-block;
+    width: auto;
+    vertical-align: middle;
+  }
   .navbar-form {
     margin-right: 0;
+    margin-top: 0;
     margin-left: 0;
+    margin-bottom: 0;
     border: 0;
     -webkit-box-shadow: none;
             box-shadow: none;
@@ -939,6 +953,12 @@ fieldset[disabled] .btn-link {
   }
 }
 @media (max-width: 767px) {
+  .navbar-form .form-group {
+    margin-bottom: 5px;
+  }
+  .navbar-form .form-group:last-child {
+    margin-bottom: 0;
+  }
   .navbar-nav .open .dropdown-menu {
     position: static;
     float: none;
