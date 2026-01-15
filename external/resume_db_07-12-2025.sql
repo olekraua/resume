@@ -517,6 +517,13 @@ ALTER TABLE ONLY public.hobby
 ALTER TABLE ONLY public.language
     ADD CONSTRAINT language_pkey PRIMARY KEY (id);
 
+--
+-- Name: language language_profile_name_type_key; Type: CONSTRAINT; Schema: public; Owner: resume
+--
+
+ALTER TABLE ONLY public.language
+    ADD CONSTRAINT language_profile_name_type_key UNIQUE (id_profile, name, type);
+
 
 --
 -- Name: persistent_logins persistent_logins_pkey; Type: CONSTRAINT; Schema: public; Owner: resume
@@ -760,4 +767,3 @@ GRANT ALL ON SCHEMA public TO postgres;
 --
 -- PostgreSQL database dump complete
 --
-

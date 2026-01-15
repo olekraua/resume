@@ -16,11 +16,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.UniqueConstraint;
 import net.devstudy.resume.model.LanguageLevel;
 import net.devstudy.resume.model.LanguageType;
 
 @Entity
-@Table(name = "language")
+@Table(name = "language", uniqueConstraints = {
+        @UniqueConstraint(name = "language_profile_name_type_key", columnNames = {"id_profile", "name", "type"})
+})
 public class Language extends AbstractEntity<Long> implements ProfileEntity {
 
     @Serial
