@@ -593,6 +593,7 @@
 }
 .c-slider__input {
   -webkit-appearance: none;
+          appearance: none;
   width: 100%;
   height: 10px;
   border-radius: 4px;
@@ -611,6 +612,7 @@
 
 .c-slider__input::-webkit-slider-thumb {
   -webkit-appearance: none;
+          appearance: none;
   width: 20px;
   height: 20px;
   border-radius: 0;
