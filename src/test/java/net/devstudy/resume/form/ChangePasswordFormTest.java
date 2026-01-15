@@ -1,12 +1,11 @@
 package net.devstudy.resume.form;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -23,12 +22,14 @@ class ChangePasswordFormTest {
     private static ValidatorFactory factory;
     private static Validator validator;
 
+    @SuppressWarnings("unused")
     @BeforeAll
     static void setUpValidator() {
         factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
 
+    @SuppressWarnings("unused")
     @AfterAll
     static void tearDownValidator() {
         factory.close();
