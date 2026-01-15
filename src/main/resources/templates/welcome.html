@@ -6,13 +6,6 @@
 <body class="resume">
   <div th:replace="~{fragments/layout :: header}"></div>
   <div class="layout-content">
-    <div class="c-panel c-panel--default">
-      <div class="c-panel__body">
-        <h1 class="u-text-center caption">
-          Web система 'My Resume' - створіть Ваше резюме у 10 кліків
-        </h1>
-      </div>
-    </div>
     <div class="l-row profiles">
       <div id="profileContainer" class="l-col l-col--xs-12"
            th:attr="data-profile-total=${page.totalPages},data-profile-number=${page.number}">
