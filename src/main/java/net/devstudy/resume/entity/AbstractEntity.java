@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import jakarta.persistence.MappedSuperclass;
-import net.devstudy.resume.model.AbstractModel;
+import net.devstudy.resume.shared.model.AbstractModel;
 
 @MappedSuperclass
 public abstract class AbstractEntity<T> extends AbstractModel implements Serializable {

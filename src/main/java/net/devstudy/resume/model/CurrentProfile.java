@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 
-import net.devstudy.resume.Constants;
+import net.devstudy.resume.shared.constants.Constants;
 import net.devstudy.resume.entity.Profile;
 
 public final class CurrentProfile extends User {

@@ -277,3 +277,94 @@ sequenceDiagram
 - Зовнішні модулі не звертаються напряму до репозиторіїв іншого модуля.
 - Доступ між модулями лише через інтерфейси сервісів або події.
 - `search` і `notification` оперують лише даними, переданими у подіях/DTO.
+
+## Package mapping (target)
+
+### app
+| Пакет | Класи |
+| --- | --- |
+| `net.devstudy.resume.app` | `ResumeApplication` |
+| `net.devstudy.resume.app.config` | `AppInfoConfig`, `RepositoryConfig` |
+
+### web
+| Пакет | Класи |
+| --- | --- |
+| `net.devstudy.resume.web.controller.auth` | `AuthController`, `AccountController`, `RestoreAccessController` |
+| `net.devstudy.resume.web.controller.profile` | `EditProfileController`, `EditShortcutController` |
+| `net.devstudy.resume.web.controller.public` | `PublicDataController` |
+| `net.devstudy.resume.web.controller.search` | `SuggestController` |
+| `net.devstudy.resume.web.advice` | `GlobalExceptionHandler` |
+| `net.devstudy.resume.web.config` | `UiProperties`, `UiModelAttributes`, `UploadResourceConfig` |
+| `net.devstudy.resume.web.filter` | `AbstractFilter` |
+
+### profile
+| Пакет | Класи |
+| --- | --- |
+| `net.devstudy.resume.profile.entity` | `AbstractEntity`, `AbstractFinishDateEntity`, `Profile`, `Contacts`, `Skill`, `Practic`, `Education`, `Course`, `Language`, `Certificate`, `ProfileEntity`, `ProfileCollectionField` |
+| `net.devstudy.resume.profile.repository` | `ProfileRepository`, `SkillRepository`, `PracticRepository`, `EducationRepository`, `CourseRepository`, `LanguageRepository`, `CertificateRepository` |
+| `net.devstudy.resume.profile.service` | `ProfileService`, `ProfileServiceImpl` |
+| `net.devstudy.resume.profile.form` | `ProfileMainForm`, `InfoForm`, `ContactsForm`, `SkillForm`, `PracticForm`, `EducationForm`, `CourseForm`, `LanguageForm`, `CertificateForm`, `HobbyForm` |
+| `net.devstudy.resume.profile.model` | `LanguageType`, `LanguageLevel` |
+| `net.devstudy.resume.profile.annotation` | `ProfileInfoField`, `ProfileDataFieldGroup` |
+| `net.devstudy.resume.profile.exception` | `UidAlreadyExistsException` |
+
+### staticdata
+| Пакет | Класи |
+| --- | --- |
+| `net.devstudy.resume.staticdata.entity` | `SkillCategory`, `Hobby` |
+| `net.devstudy.resume.staticdata.repository` | `SkillCategoryRepository`, `HobbyRepository` |
+| `net.devstudy.resume.staticdata.service` | `StaticDataService`, `StaticDataServiceImpl` |
+
+### auth
+| Пакет | Класи |
+| --- | --- |
+| `net.devstudy.resume.auth.config` | `SecurityConfig` |
+| `net.devstudy.resume.auth.security` | `CurrentProfileProvider`, `SecurityContextCurrentProfileProvider`, `AccessDeniedHandlerImpl`, `CurrentProfileDetailsService` |
+| `net.devstudy.resume.auth.entity` | `ProfileRestore`, `RememberMeToken` |
+| `net.devstudy.resume.auth.repository` | `ProfileRestoreRepository`, `RememberMeTokenRepository` |
+| `net.devstudy.resume.auth.service` | `RestoreAccessService`, `RestoreAccessServiceImpl`, `UidSuggestionService`, `UidSuggestionServiceImpl`, `RememberMeService` |
+| `net.devstudy.resume.auth.model` | `CurrentProfile`, `CurrentProfileImpl` |
+| `net.devstudy.resume.auth.form` | `RegistrationForm`, `ChangeLoginForm`, `ChangePasswordForm`, `RestoreAccessForm`, `RestorePasswordForm`, `PasswordForm`, `SignUpForm` |
+| `net.devstudy.resume.auth.util` | `SecurityUtil` |
+
+### search
+| Пакет | Класи |
+| --- | --- |
+| `net.devstudy.resume.search.document` | `ProfileSearchDocument` |
+| `net.devstudy.resume.search.repository` | `ProfileSearchRepository` |
+| `net.devstudy.resume.search.service` | `ProfileSearchService`, `ProfileSearchServiceImpl`, `ProfileSearchServiceNoOp` |
+| `net.devstudy.resume.search.mapper` | `ProfileSearchMapper`, `ProfileSearchMapperImpl` |
+| `net.devstudy.resume.search.listener` | `ProfileSearchIndexingListener` |
+| `net.devstudy.resume.search.event` | `ProfileIndexingRequestedEvent` |
+| `net.devstudy.resume.search.config` | `ElasticsearchIndexConfig`, `ElasticsearchRepositoryConfig` |
+
+### media
+| Пакет | Класи |
+| --- | --- |
+| `net.devstudy.resume.media.model` | `UploadTempPath`, `UploadCertificateResult` |
+| `net.devstudy.resume.media.annotation` | `EnableUploadImageTempStorage` |
+| `net.devstudy.resume.media.component` | `ImageResizer`, `ImageOptimizator`, `ImageFormatConverter`, `UploadTempPathFactory`, `PhotoFileStorage`, `CertificateFileStorage` |
+| `net.devstudy.resume.media.component.impl` | `ThumbnailsImageResizer`, `JpegTranImageOptimizator`, `PngToJpegImageFormatConverter`, `DefaultUploadTempPathFactory`, `UploadImageTempStorage`, `UploadCertificateLinkTempStorage` |
+| `net.devstudy.resume.media.service` | `PhotoStorageService`, `PhotoStorageServiceImpl`, `CertificateStorageService`, `CertificateStorageServiceImpl` |
+| `net.devstudy.resume.media.config` | `PhotoUploadProperties`, `CertificateUploadProperties` |
+
+### notification
+| Пакет | Класи |
+| --- | --- |
+| `net.devstudy.resume.notification.event` | `RestoreAccessMailRequestedEvent` |
+| `net.devstudy.resume.notification.listener` | `RestoreAccessMailListener` |
+| `net.devstudy.resume.notification.service` | `RestoreAccessMailService`, `RestoreAccessMailServiceImpl`, `RestoreAccessMailServiceNoOp` |
+| `net.devstudy.resume.notification.template` | `TemplateResolver`, `FreemarkerTemplateResolver` |
+| `net.devstudy.resume.notification.config` | `RestoreMailTemplateProperties` |
+
+### shared
+| Пакет | Класи |
+| --- | --- |
+| `net.devstudy.resume.shared.constants` | `Constants` |
+| `net.devstudy.resume.shared.model` | `AbstractModel` |
+| `net.devstudy.resume.shared.util` | `BeanCopyUtil`, `DataUtil`, `SanitizationUtils` |
+| `net.devstudy.resume.shared.component` | `DataBuilder`, `TranslitConverter`, `FormErrorConverter` |
+| `net.devstudy.resume.shared.component.impl` | `DataBuilderImpl`, `SimpleTranslitConverter`, `JunidecodeTranslitConverter` |
+| `net.devstudy.resume.shared.annotation` | `EnableFormErrorConversion` |
+| `net.devstudy.resume.shared.validation.annotation` | `Adulthood`, `EnglishLanguage`, `FieldMatch`, `FirstFieldLessThanSecond`, `MinDigitCount`, `MinLowerCharCount`, `MinSpecCharCount`, `MinUpperCharCount`, `PasswordStrength`, `PasswordsMatch`, `Phone`, `RestoreIdentifier` |
+| `net.devstudy.resume.shared.validation.validator` | `AdulthoodConstraintValidator`, `EnglishLanguageConstraintValidator`, `FieldMatchConstraintValidator`, `FirstFieldLessThanSecondConstraintValidator`, `MinDigitCountConstraintValidator`, `MinLowerCharCountConstraintValidator`, `MinSpecCharCountConstraintValidator`, `MinUpperCharCountConstraintValidator`, `PasswordsMatchValidator`, `PhoneConstraintValidator`, `RestoreIdentifierConstraintValidator`, `HtmlSanitized`, `HtmlSanitizedValidator` |

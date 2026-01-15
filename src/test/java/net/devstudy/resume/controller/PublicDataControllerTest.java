@@ -1,6 +1,6 @@
 package net.devstudy.resume.controller;
 
-import static net.devstudy.resume.Constants.UI.MAX_PROFILES_PER_PAGE;
+import static net.devstudy.resume.shared.constants.Constants.UI.MAX_PROFILES_PER_PAGE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;

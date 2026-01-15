@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import net.devstudy.resume.annotation.constraints.Adulthood;
+import net.devstudy.resume.shared.validation.annotation.Adulthood;
 
 @Getter
 @Setter

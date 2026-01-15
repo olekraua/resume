@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import net.devstudy.resume.Constants;
+import net.devstudy.resume.shared.constants.Constants;
 import net.devstudy.resume.entity.Profile;
 
 class CurrentProfileTest {

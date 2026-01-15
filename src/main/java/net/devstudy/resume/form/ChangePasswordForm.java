@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import net.devstudy.resume.annotation.constraints.FieldMatch;
+import net.devstudy.resume.shared.validation.annotation.FieldMatch;
 
 @Getter
 @Setter

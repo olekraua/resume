@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import net.devstudy.resume.shared.model.AbstractModel;
+
 public class UploadTempPath extends AbstractModel {
 
     private final Path largeImagePath;
@@ -22,4 +24,3 @@ public class UploadTempPath extends AbstractModel {
         return smallImagePath;
     }
 }
-

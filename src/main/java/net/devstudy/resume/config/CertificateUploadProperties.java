@@ -2,7 +2,7 @@ package net.devstudy.resume.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import net.devstudy.resume.Constants;
+import net.devstudy.resume.shared.constants.Constants;
 
 @ConfigurationProperties(prefix = "upload.certificates")
 public class CertificateUploadProperties {

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import lombok.RequiredArgsConstructor;
 
-import static net.devstudy.resume.Constants.UI.MAX_PROFILES_PER_PAGE;
+import static net.devstudy.resume.shared.constants.Constants.UI.MAX_PROFILES_PER_PAGE;
 
 import java.util.Optional;
 

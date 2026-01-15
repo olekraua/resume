@@ -16,7 +16,7 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import net.devstudy.resume.annotation.constraints.FieldMatch;
+import net.devstudy.resume.shared.validation.annotation.FieldMatch;
 
 class ChangePasswordFormTest {
 
