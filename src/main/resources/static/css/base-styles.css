@@ -138,11 +138,19 @@ button,
 select {
   text-transform: none;
 }
+select,
+textarea {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+}
 button,
 html input[type="button"],
 input[type="reset"],
 input[type="submit"] {
-  -webkit-appearance: button;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   cursor: pointer;
 }
 button[disabled],
@@ -159,24 +167,112 @@ input {
 }
 input[type="checkbox"],
 input[type="radio"] {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #777;
+  border-radius: 2px;
+  background-color: #fff;
+  vertical-align: middle;
+  position: relative;
+  cursor: pointer;
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
   padding: 0;
 }
+input[type="checkbox"]:checked,
+input[type="radio"]:checked {
+  border-color: #337ab7;
+}
+input[type="checkbox"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid #337ab7;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+input[type="radio"] {
+  border-radius: 50%;
+}
+input[type="radio"]:checked::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #337ab7;
+}
+input[type="checkbox"]:focus,
+input[type="radio"]:focus {
+  outline: 2px solid #66afe9;
+  outline-offset: 2px;
+}
+input[type="number"] {
+  -webkit-appearance: none;
+     -moz-appearance: textfield;
+          appearance: none;
+}
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+          appearance: none;
+  margin: 0;
   height: auto;
+}
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"] {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+}
+input[type="date"]::-webkit-inner-spin-button,
+input[type="time"]::-webkit-inner-spin-button,
+input[type="datetime-local"]::-webkit-inner-spin-button,
+input[type="month"]::-webkit-inner-spin-button,
+input[type="week"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+          appearance: none;
+  margin: 0;
+}
+input[type="date"]::-webkit-clear-button,
+input[type="time"]::-webkit-clear-button,
+input[type="datetime-local"]::-webkit-clear-button,
+input[type="month"]::-webkit-clear-button,
+input[type="week"]::-webkit-clear-button {
+  display: none;
+}
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="month"]::-webkit-calendar-picker-indicator,
+input[type="week"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  cursor: pointer;
 }
 input[type="search"] {
   -webkit-box-sizing: content-box;
      -moz-box-sizing: content-box;
           box-sizing: content-box;
-  -webkit-appearance: textfield;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
 }
 input[type="search"]::-webkit-search-cancel-button,
 input[type="search"]::-webkit-search-decoration {
   -webkit-appearance: none;
+          appearance: none;
 }
 textarea {
   overflow: auto;
@@ -457,6 +553,9 @@ blockquote .small:before {
   color: #555;
   background-color: #fff;
   background-image: none;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
   border: 1px solid #ccc;
   border-radius: 4px;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
@@ -486,6 +585,19 @@ fieldset[disabled] .form-control {
 }
 textarea.form-control {
   height: auto;
+}
+select:not([multiple]):not([size]) {
+  background-image: linear-gradient(45deg, transparent 50%, #555 50%),
+    linear-gradient(135deg, #555 50%, transparent 50%),
+    linear-gradient(to right, #ccc, #ccc);
+  background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%,
+    calc(100% - 2.3em) 50%;
+  background-size: 5px 5px, 5px 5px, 1px 1.6em;
+  background-repeat: no-repeat;
+  padding-right: 2.5em;
+}
+select::-ms-expand {
+  display: none;
 }
 .form-group {
   margin-bottom: 15px;
@@ -1315,6 +1427,8 @@ button.close {
   background: transparent;
   border: 0;
   -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
 }
 
 .progress {
