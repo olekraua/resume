@@ -1,4 +1,4 @@
-package net.devstudy.resume.component;
+package net.devstudy.resume.shared.component;
 
 import org.springframework.lang.NonNull;
 

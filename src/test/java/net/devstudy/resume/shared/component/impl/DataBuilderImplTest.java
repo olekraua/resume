@@ -1,11 +1,11 @@
-package net.devstudy.resume.component.impl;
+package net.devstudy.resume.shared.component.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import net.devstudy.resume.component.TranslitConverter;
+import net.devstudy.resume.shared.component.TranslitConverter;
 
 class DataBuilderImplTest {
 

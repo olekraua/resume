@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import net.devstudy.resume.component.DataBuilder;
+import net.devstudy.resume.shared.component.DataBuilder;
 import net.devstudy.resume.entity.Profile;
 import net.devstudy.resume.entity.ProfileRestore;
 import net.devstudy.resume.event.RestoreAccessMailRequestedEvent;

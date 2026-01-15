@@ -1,4 +1,4 @@
-package net.devstudy.resume.component.impl;
+package net.devstudy.resume.shared.component.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

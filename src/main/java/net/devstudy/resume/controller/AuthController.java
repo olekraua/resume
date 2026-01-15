@@ -15,7 +15,7 @@ import net.devstudy.resume.security.CurrentProfileProvider;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.form.RegistrationForm;
 import net.devstudy.resume.exception.UidAlreadyExistsException;
-import net.devstudy.resume.component.DataBuilder;
+import net.devstudy.resume.shared.component.DataBuilder;
 import net.devstudy.resume.service.ProfileService;
 import net.devstudy.resume.service.UidSuggestionService;
 import jakarta.validation.Valid;

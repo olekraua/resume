@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.annotation.EnableUploadImageTempStorage;
-import net.devstudy.resume.component.DataBuilder;
+import net.devstudy.resume.shared.component.DataBuilder;
 import net.devstudy.resume.component.ImageFormatConverter;
 import net.devstudy.resume.component.ImageOptimizator;
 import net.devstudy.resume.component.ImageResizer;

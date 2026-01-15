@@ -1,12 +1,12 @@
-package net.devstudy.resume.component.impl;
+package net.devstudy.resume.shared.component.impl;
 
 import java.security.SecureRandom;
 import java.util.Locale;
 
 import org.springframework.stereotype.Component;
 
-import net.devstudy.resume.component.DataBuilder;
-import net.devstudy.resume.component.TranslitConverter;
+import net.devstudy.resume.shared.component.DataBuilder;
+import net.devstudy.resume.shared.component.TranslitConverter;
 
 @Component
 public class DataBuilderImpl implements DataBuilder {

@@ -31,7 +31,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-import net.devstudy.resume.component.DataBuilder;
+import net.devstudy.resume.shared.component.DataBuilder;
 import net.devstudy.resume.config.SecurityConfig;
 import net.devstudy.resume.config.UiModelAttributes;
 import net.devstudy.resume.config.UiProperties;

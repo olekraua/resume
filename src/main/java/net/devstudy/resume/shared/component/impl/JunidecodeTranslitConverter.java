@@ -1,9 +1,9 @@
-package net.devstudy.resume.component.impl;
+package net.devstudy.resume.shared.component.impl;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-import net.devstudy.resume.component.TranslitConverter;
+import net.devstudy.resume.shared.component.TranslitConverter;
 import net.sf.junidecode.Junidecode;
 
 @Component
