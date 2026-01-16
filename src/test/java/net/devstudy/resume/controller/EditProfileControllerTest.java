@@ -39,13 +39,13 @@ import jakarta.validation.Path;
 import jakarta.validation.Validator;
 import net.devstudy.resume.entity.Contacts;
 import net.devstudy.resume.entity.Profile;
-import net.devstudy.resume.entity.SkillCategory;
+import net.devstudy.resume.staticdata.entity.SkillCategory;
 import net.devstudy.resume.entity.Skill;
 import net.devstudy.resume.entity.Practic;
 import net.devstudy.resume.entity.Education;
 import net.devstudy.resume.entity.Course;
 import net.devstudy.resume.entity.Language;
-import net.devstudy.resume.entity.Hobby;
+import net.devstudy.resume.staticdata.entity.Hobby;
 import net.devstudy.resume.entity.Certificate;
 import net.devstudy.resume.form.ContactsForm;
 import net.devstudy.resume.form.CourseForm;
@@ -65,7 +65,7 @@ import net.devstudy.resume.security.CurrentProfileProvider;
 import net.devstudy.resume.service.CertificateStorageService;
 import net.devstudy.resume.service.PhotoStorageService;
 import net.devstudy.resume.service.ProfileService;
-import net.devstudy.resume.service.StaticDataService;
+import net.devstudy.resume.staticdata.service.StaticDataService;
 
 class EditProfileControllerTest {
 

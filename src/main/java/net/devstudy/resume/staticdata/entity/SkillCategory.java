@@ -1,4 +1,4 @@
-package net.devstudy.resume.entity;
+package net.devstudy.resume.staticdata.entity;
 
 import java.io.Serial;
 
@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import net.devstudy.resume.entity.AbstractEntity;
 
 @Entity
 @Table(name = "skill_category")

@@ -1,4 +1,4 @@
-package net.devstudy.resume.service.impl;
+package net.devstudy.resume.staticdata.service.impl;
 
 import java.time.Year;
 import java.time.format.TextStyle;
@@ -13,13 +13,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import net.devstudy.resume.entity.Hobby;
-import net.devstudy.resume.entity.SkillCategory;
+import net.devstudy.resume.staticdata.entity.Hobby;
+import net.devstudy.resume.staticdata.entity.SkillCategory;
 import net.devstudy.resume.model.LanguageLevel;
 import net.devstudy.resume.model.LanguageType;
-import net.devstudy.resume.repository.storage.HobbyRepository;
-import net.devstudy.resume.repository.storage.SkillCategoryRepository;
-import net.devstudy.resume.service.StaticDataService;
+import net.devstudy.resume.staticdata.repository.HobbyRepository;
+import net.devstudy.resume.staticdata.repository.SkillCategoryRepository;
+import net.devstudy.resume.staticdata.service.StaticDataService;
 
 @Service
 @RequiredArgsConstructor

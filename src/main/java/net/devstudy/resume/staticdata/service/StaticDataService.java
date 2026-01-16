@@ -1,10 +1,10 @@
-package net.devstudy.resume.service;
+package net.devstudy.resume.staticdata.service;
 
 import java.util.List;
 import java.util.Map;
 
-import net.devstudy.resume.entity.Hobby;
-import net.devstudy.resume.entity.SkillCategory;
+import net.devstudy.resume.staticdata.entity.Hobby;
+import net.devstudy.resume.staticdata.entity.SkillCategory;
 import net.devstudy.resume.model.LanguageLevel;
 import net.devstudy.resume.model.LanguageType;
 

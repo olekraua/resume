@@ -1,8 +1,8 @@
-package net.devstudy.resume.repository.storage;
+package net.devstudy.resume.staticdata.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import net.devstudy.resume.entity.Hobby;
+import net.devstudy.resume.staticdata.entity.Hobby;
 
 public interface HobbyRepository extends JpaRepository<Hobby, Long> {
 }

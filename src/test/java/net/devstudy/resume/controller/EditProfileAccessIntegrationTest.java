@@ -17,10 +17,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.Mockito.when;
 
 import net.devstudy.resume.entity.Profile;
-import net.devstudy.resume.entity.SkillCategory;
+import net.devstudy.resume.staticdata.entity.SkillCategory;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.repository.storage.ProfileRepository;
-import net.devstudy.resume.service.StaticDataService;
+import net.devstudy.resume.staticdata.service.StaticDataService;
 import net.devstudy.resume.testcontainers.PostgresIntegrationTest;
 
 @AutoConfigureMockMvc

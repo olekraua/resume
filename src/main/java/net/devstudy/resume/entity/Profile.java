@@ -8,6 +8,7 @@ import java.time.Period;
 import java.util.List;
 
 import net.devstudy.resume.annotation.ProfileInfoField;
+import net.devstudy.resume.staticdata.entity.Hobby;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

@@ -1,4 +1,4 @@
-package net.devstudy.resume.repository.storage;
+package net.devstudy.resume.staticdata.repository;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.NonNull;
 
-import net.devstudy.resume.entity.SkillCategory;
+import net.devstudy.resume.staticdata.entity.SkillCategory;
 
 public interface SkillCategoryRepository extends JpaRepository<SkillCategory, Long> {
 

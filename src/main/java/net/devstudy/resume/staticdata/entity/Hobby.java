@@ -1,4 +1,4 @@
-package net.devstudy.resume.entity;
+package net.devstudy.resume.staticdata.entity;
 
 import java.io.Serial;
 import java.util.Objects;
@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import net.devstudy.resume.entity.AbstractEntity;
 
 @Entity
 @Table(name = "hobby")
