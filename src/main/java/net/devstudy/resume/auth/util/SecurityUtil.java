@@ -1,4 +1,4 @@
-package net.devstudy.resume.util;
+package net.devstudy.resume.auth.util;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

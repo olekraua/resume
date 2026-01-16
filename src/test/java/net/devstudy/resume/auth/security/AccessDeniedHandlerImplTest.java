@@ -1,4 +1,4 @@
-package net.devstudy.resume.component.impl;
+package net.devstudy.resume.auth.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
