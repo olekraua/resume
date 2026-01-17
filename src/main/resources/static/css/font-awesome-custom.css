@@ -1,4 +1,14 @@
 /*
+ * Custom Font Awesome theme for My Resume.
+ * Defaults mirror Font Awesome 4.5.0 to preserve UI/UX.
+ * Adjust tokens below to tweak colors without touching rules.
+ */
+.resume {
+  --resume-fa-inverse: #ffffff;
+  --resume-fa-border: #eeeeee;
+}
+
+/*
  *  Font Awesome 4.5.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
@@ -61,7 +71,7 @@
 }
 .fa-border {
   padding: .2em .25em .15em;
-  border: solid 0.08em #eeeeee;
+  border: solid 0.08em var(--resume-fa-border, #eeeeee);
   border-radius: .1em;
 }
 .fa-pull-left {
@@ -176,7 +186,7 @@
   font-size: 2em;
 }
 .fa-inverse {
-  color: #ffffff;
+  color: var(--resume-fa-inverse, #ffffff);
 }
 /* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen
    readers do not read off random characters that represent icons */
