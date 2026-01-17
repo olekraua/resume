@@ -95,6 +95,7 @@
 <th:block th:fragment="scripts-base">
   <script th:src="${appHost} + @{/js/messages.js(v=${jsMessagesVersion})}"></script>
   <script th:src="${appHost} + @{/js/app.js(v=${jsCommonVersion})}"></script>
+  <script th:src="${appHost} + @{/js/ui-slider.js(v=${jsCommonVersion})}"></script>
 </th:block>
 <th:block th:fragment="scripts-edit">
   <script th:src="${appHost} + @{/js/handlebars-4.0.5.js(v=${jsExVersion})}"></script>

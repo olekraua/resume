@@ -167,31 +167,6 @@
       });
     },
 
-    initLevelSliders(container) {
-      if (!Array.isArray(win.languageLevelLabels)) return;
-      const inputs = collectMatching('.c-slider__input', container);
-      if (!inputs.length) return;
-      inputs.forEach((input) => {
-        if (input.dataset.uiSlider === 'true') return;
-        input.dataset.uiSlider = 'true';
-        resume.interactions.updateSliderProgress(input);
-        const update = () => resume.interactions.updateSliderProgress(input);
-        input.addEventListener('input', update);
-        input.addEventListener('change', update);
-        const slider = input.closest('.c-slider');
-        const labels = slider ? slider.querySelector('[data-slider-labels]') : null;
-        if (labels && labels.dataset.uiLabels !== 'true') {
-          win.languageLevelLabels.forEach((label) => {
-            const span = doc.createElement('span');
-            span.className = 'c-slider__label';
-            span.textContent = label;
-            labels.appendChild(span);
-          });
-          labels.dataset.uiLabels = 'true';
-        }
-      });
-    },
-
     createPhotoUploader() {
       const input = doc.getElementById('profilePhoto');
       if (!input) return;
@@ -487,19 +462,6 @@
             }
           }
         }, config.modalCloseDelayMs);
-      },
-
-      updateSliderProgress(input) {
-        if (!input) return;
-        const min = parseFloat(input.min || 0);
-        const max = parseFloat(input.max || 0);
-        const value = parseFloat(input.value || 0);
-        if (max <= min) {
-          input.style.setProperty('--c-slider-progress', '0%');
-          return;
-        }
-        const percent = ((value - min) / (max - min)) * 100;
-        input.style.setProperty('--c-slider-progress', `${percent}%`);
       },
 
       initFileInputs(container) {
