@@ -76,7 +76,7 @@
 <div th:replace="~{fragments/layout :: footer}"></div>
 <th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
 <th:block th:replace="~{fragments/layout :: scripts-edit}"></th:block>
-<script id="ui-block-template" type="text/x-handlebars-template">
+<script id="ui-block-template" type="text/x-resume-template">
   <div class="c-panel c-panel--default ui-item language-item" id="ui-item-{{blockIndex}}">
     <div class="c-panel__heading">Язык {{inc blockIndex}}
       <button type="button" class="c-close u-pull-right" data-ui-remove><span aria-hidden="true">&times;</span></button>
@@ -119,7 +119,7 @@
 </script>
 <script th:inline="javascript">
   /*<![CDATA[*/
-  Handlebars.registerHelper('inc', function(value) { return parseInt(value, 10) + 1; });
+  ResumeTemplate.registerHelper('inc', function(value) { return parseInt(value, 10) + 1; });
   window.languageLevels = /*[[${languageLevels}]]*/ [];
   window.languageTypes = [];
   window.languageTypeLabels = {};
@@ -141,12 +141,12 @@
   resume.ui.getTemplate = function() {
     if (resume.ui.template == null) {
       var source = document.getElementById('ui-block-template');
-      resume.ui.template = source ? Handlebars.compile(source.innerHTML) : null;
+      resume.ui.template = source ? ResumeTemplate.compile(source.innerHTML) : null;
     }
     return resume.ui.template;
   };
-  Handlebars.registerHelper('types', function() { return window.languageTypes; });
-  Handlebars.registerHelper('typeLabel', function(value) {
+  ResumeTemplate.registerHelper('types', function() { return window.languageTypes; });
+  ResumeTemplate.registerHelper('typeLabel', function(value) {
     if (window.languageTypeLabels && window.languageTypeLabels[value]) {
       return window.languageTypeLabels[value];
     }
@@ -155,6 +155,13 @@
   if (resume && typeof resume.initLevelSliders === 'function') {
     resume.initLevelSliders(document.getElementById('ui-block-container'));
   }
+  (function() {
+    var form = document.querySelector('form');
+    if (!form || !resume || !resume.ui || typeof resume.ui.normalizeListIndices !== 'function') return;
+    form.addEventListener('submit', function() {
+      resume.ui.normalizeListIndices('#ui-block-container', 'items');
+    });
+  })();
   /*]]>*/
 </script>
 </body>

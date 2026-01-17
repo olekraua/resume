@@ -15,6 +15,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -357,6 +358,7 @@ public class EditProfileController {
         if (profile == null)
             return "redirect:/login";
         Long profileId = profile.getId();
+        addDuplicateLanguageErrors(form, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("profile", profile);
             model.addAttribute("form", form);
@@ -365,7 +367,24 @@ public class EditProfileController {
             addLanguageTypeLabels(model);
             return "edit/languages";
         }
-        profileService.updateLanguages(profileId, form.getItems());
+        try {
+            profileService.updateLanguages(profileId, form.getItems());
+        } catch (DataIntegrityViolationException ex) {
+            Locale locale = LocaleContextHolder.getLocale();
+            String message = messageSource.getMessage(
+                    "language.duplicate",
+                    null,
+                    "Language with the same name and type already exists.",
+                    locale
+            );
+            bindingResult.reject("language.duplicate", message);
+            model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
+            model.addAttribute("languageTypes", staticDataService.findAllLanguageTypes());
+            model.addAttribute("languageLevels", staticDataService.findAllLanguageLevels());
+            addLanguageTypeLabels(model);
+            return "edit/languages";
+        }
         return "redirect:/" + uid + "/edit/languages?success";
     }
 
@@ -612,6 +631,46 @@ public class EditProfileController {
             labels.put(type, label);
         }
         model.addAttribute("languageTypeLabels", labels);
+    }
+
+    private void addDuplicateLanguageErrors(LanguageForm form, BindingResult bindingResult) {
+        if (form == null || form.getItems() == null || form.getItems().isEmpty()) {
+            return;
+        }
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage(
+                "language.duplicate",
+                null,
+                "Language with the same name and type already exists.",
+                locale
+        );
+        Map<String, Integer> seen = new LinkedHashMap<>();
+        java.util.Set<Integer> flagged = new java.util.HashSet<>();
+        List<net.devstudy.resume.entity.Language> items = form.getItems();
+        for (int i = 0; i < items.size(); i++) {
+            net.devstudy.resume.entity.Language item = items.get(i);
+            if (item == null) {
+                continue;
+            }
+            String name = item.getName();
+            String normalized = name == null ? "" : name.trim().replaceAll("\\s+", " ");
+            if (!StringUtils.hasText(normalized)) {
+                continue;
+            }
+            LanguageType type = item.getType() == null ? LanguageType.ALL : item.getType();
+            String key = normalized.toLowerCase(Locale.ROOT) + "|" + type.name();
+            Integer firstIndex = seen.get(key);
+            if (firstIndex != null) {
+                String fieldPath = "items[" + i + "].name";
+                bindingResult.addError(new FieldError("form", fieldPath, message));
+                if (flagged.add(firstIndex)) {
+                    String firstFieldPath = "items[" + firstIndex + "].name";
+                    bindingResult.addError(new FieldError("form", firstFieldPath, message));
+                }
+            } else {
+                seen.put(key, i);
+            }
+        }
     }
 
     private boolean isPracticEmpty(Practic item) {

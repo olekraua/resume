@@ -68,7 +68,7 @@
 <th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
 <th:block th:replace="~{fragments/layout :: scripts-edit}"></th:block>
 
-<script id="ui-block-template" type="text/x-handlebars-template">
+<script id="ui-block-template" type="text/x-resume-template">
   <div class="l-row ui-item skill-item" id="ui-item-{{blockIndex}}">
     <div class="l-col l-col--xs-5 l-col--sm-4 l-col--md-2 c-form__group">
       <select name="items[{{blockIndex}}].category" class="c-input" required="required">
@@ -87,7 +87,7 @@
 </script>
 <script th:inline="javascript">
   /*<![CDATA[*/
-  // прокидуємо категорії у Handlebars як глобал
+  // expose categories to the template runtime
   window.skillCategories = /*[[${skillCategories.![category]}]]*/ [];
   resume.onReady(function() {
     if (!window.skillCategories || window.skillCategories.length === 0) {
@@ -98,11 +98,11 @@
     resume.ui.getTemplate = function() {
       if (resume.ui.template == null) {
         var source = document.getElementById('ui-block-template');
-        resume.ui.template = source ? Handlebars.compile(source.innerHTML) : null;
+        resume.ui.template = source ? ResumeTemplate.compile(source.innerHTML) : null;
       }
       return resume.ui.template;
     };
-    Handlebars.registerHelper('categories', function() {
+    ResumeTemplate.registerHelper('categories', function() {
       return window.skillCategories;
     });
   });

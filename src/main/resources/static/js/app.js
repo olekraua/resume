@@ -597,17 +597,58 @@
       getTemplate() {
         if (resume.ui.template == null) {
           const source = doc.getElementById('ui-block-template');
-          if (!source || !win.Handlebars) return null;
-          resume.ui.template = win.Handlebars.compile(source.innerHTML);
+          if (!source || !win.ResumeTemplate) return null;
+          resume.ui.template = win.ResumeTemplate.compile(source.innerHTML);
         }
         return resume.ui.template;
+      },
+
+      nextBlockIndex(container) {
+        if (!container || !container.querySelectorAll) return 0;
+        const items = container.querySelectorAll('.ui-item');
+        let maxIndex = -1;
+        items.forEach((item) => {
+          const id = item.getAttribute('id') || '';
+          const idMatch = id.match(/^ui-item-(\d+)$/);
+          if (idMatch) {
+            maxIndex = Math.max(maxIndex, parseInt(idMatch[1], 10));
+            return;
+          }
+          const field = item.querySelector('[name^="items["]');
+          if (!field) return;
+          const name = field.getAttribute('name') || '';
+          const nameMatch = name.match(/^items\[(\d+)\]/);
+          if (nameMatch) {
+            maxIndex = Math.max(maxIndex, parseInt(nameMatch[1], 10));
+          }
+        });
+        return maxIndex >= 0 ? maxIndex + 1 : items.length;
+      },
+
+      normalizeListIndices(container, listName) {
+        const root = toRoot(container);
+        const prefix = listName || 'items';
+        if (!root || !root.querySelectorAll) return;
+        const items = root.querySelectorAll('.ui-item');
+        const nameRegex = new RegExp(`^${prefix}\\[(\\d+)\\]\\.(.+)$`);
+        items.forEach((item, index) => {
+          item.querySelectorAll('input[name], select[name], textarea[name]').forEach((field) => {
+            const name = field.getAttribute('name') || '';
+            const match = name.match(nameRegex);
+            if (!match) return;
+            const nextName = `${prefix}[${index}].${match[2]}`;
+            if (nextName !== name) {
+              field.setAttribute('name', nextName);
+            }
+          });
+        });
       },
 
       addBlock() {
         const template = resume.ui.getTemplate();
         const container = doc.getElementById('ui-block-container');
         if (!template || !container) return;
-        const blockIndex = container.querySelectorAll('.ui-item').length;
+        const blockIndex = resume.ui.nextBlockIndex(container);
         const context = { blockIndex };
         if (win.languageLevelDefault !== undefined) {
           context.levelDefault = win.languageLevelDefault;

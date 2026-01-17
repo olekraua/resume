@@ -69,7 +69,7 @@
 <div th:replace="~{fragments/layout :: footer}"></div>
 <th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
 <th:block th:replace="~{fragments/layout :: scripts-edit}"></th:block>
-<script id="ui-block-template" type="text/x-handlebars-template">
+<script id="ui-block-template" type="text/x-resume-template">
   <div class="c-panel c-panel--default ui-item education-item" id="ui-item-{{blockIndex}}">
     <div class="c-panel__heading">Образование {{inc blockIndex}}
       <button type="button" class="c-close u-pull-right" data-ui-remove><span aria-hidden="true">&times;</span></button>
@@ -111,16 +111,16 @@
 </script>
 <script th:inline="javascript">
   /*<![CDATA[*/
-  Handlebars.registerHelper('inc', function(value) { return parseInt(value, 10) + 1; });
+  ResumeTemplate.registerHelper('inc', function(value) { return parseInt(value, 10) + 1; });
   window.educationYears = /*[[${years}]]*/ [];
   resume.ui.getTemplate = function() {
     if (resume.ui.template == null) {
       var source = document.getElementById('ui-block-template');
-      resume.ui.template = source ? Handlebars.compile(source.innerHTML) : null;
+      resume.ui.template = source ? ResumeTemplate.compile(source.innerHTML) : null;
     }
     return resume.ui.template;
   };
-  Handlebars.registerHelper('years', function() { return window.educationYears; });
+  ResumeTemplate.registerHelper('years', function() { return window.educationYears; });
   /*]]>*/
 </script>
 </body>
