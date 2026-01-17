@@ -5,8 +5,8 @@ import java.util.Map;
 
 import net.devstudy.resume.entity.Hobby;
 import net.devstudy.resume.entity.SkillCategory;
-import net.devstudy.resume.model.LanguageLevel;
-import net.devstudy.resume.model.LanguageType;
+import net.devstudy.resume.shared.model.LanguageLevel;
+import net.devstudy.resume.shared.model.LanguageType;
 
 public interface StaticDataService {
     List<Integer> findPracticsYears();

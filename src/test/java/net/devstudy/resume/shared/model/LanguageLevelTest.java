@@ -1,4 +1,4 @@
-package net.devstudy.resume.model;
+package net.devstudy.resume.shared.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import net.devstudy.resume.shared.validation.annotation.EnglishLanguage;
+import net.devstudy.resume.shared.model.AbstractEntity;
 
 @Entity
 @Table(name = "skill")

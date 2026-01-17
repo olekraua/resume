@@ -58,8 +58,8 @@ import net.devstudy.resume.form.PracticForm;
 import net.devstudy.resume.form.LanguageForm;
 import net.devstudy.resume.form.HobbyForm;
 import net.devstudy.resume.form.CertificateForm;
-import net.devstudy.resume.model.LanguageLevel;
-import net.devstudy.resume.model.LanguageType;
+import net.devstudy.resume.shared.model.LanguageLevel;
+import net.devstudy.resume.shared.model.LanguageType;
 import net.devstudy.resume.model.CurrentProfile;
 import net.devstudy.resume.security.CurrentProfileProvider;
 import net.devstudy.resume.service.CertificateStorageService;
@@ -3308,8 +3308,6 @@ class EditProfileControllerTest {
         List<Hobby> hobbies = List.of(new Hobby("Chess"));
         when(staticDataService.findAllHobbiesWithSelected(null)).thenReturn(hobbies);
         when(currentProfileProvider.getCurrentProfile()).thenReturn(null);
-        when(profileService.loadCurrentProfileWithHobbies("john-doe"))
-                .thenReturn(Optional.of(new Profile()));
 
         ExtendedModelMap model = new ExtendedModelMap();
         String view = controller.editHobbies("john-doe", model);
@@ -3337,7 +3335,6 @@ class EditProfileControllerTest {
 
         when(staticDataService.findAllHobbiesWithSelected(null)).thenReturn(List.of());
         when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("owner-user", 1L));
-        when(profileService.loadCurrentProfileWithHobbies("other-user")).thenReturn(Optional.empty());
 
         AccessDeniedException accessDeniedException = assertThrows(AccessDeniedException.class,
                 () -> controller.editHobbies("other-user", new ExtendedModelMap()));
@@ -3363,7 +3360,6 @@ class EditProfileControllerTest {
 
         when(staticDataService.findAllHobbiesWithSelected(null)).thenReturn(List.of());
         when(currentProfileProvider.getCurrentProfile()).thenReturn(currentProfile("owner-user", 1L));
-        when(profileService.loadCurrentProfileWithHobbies("owner-user")).thenReturn(Optional.empty());
         when(profileService.findByIdWithAll(1L)).thenReturn(Optional.empty());
 
         ResponseStatusException ex = assertThrows(ResponseStatusException.class,
@@ -3391,11 +3387,6 @@ class EditProfileControllerTest {
 
         Hobby selected = new Hobby("Chess");
         selected.setId(10L);
-        Profile profileWithHobbies = new Profile();
-        profileWithHobbies.setHobbies(List.of(selected));
-        when(profileService.loadCurrentProfileWithHobbies("john-doe"))
-                .thenReturn(Optional.of(profileWithHobbies));
-
         List<Hobby> hobbies = List.of(new Hobby("Chess", true));
         when(staticDataService.findAllHobbiesWithSelected(List.of(10L))).thenReturn(hobbies);
 

@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import net.devstudy.resume.shared.model.AbstractEntity;
 
 @Entity
 @Table(name = "skill_category")

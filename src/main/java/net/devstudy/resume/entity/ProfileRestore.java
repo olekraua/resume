@@ -13,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import net.devstudy.resume.shared.model.AbstractEntity;
 
 @Entity
 @Table(name = "profile_restore",

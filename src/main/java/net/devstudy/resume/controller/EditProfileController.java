@@ -56,8 +56,8 @@ import net.devstudy.resume.form.PracticForm;
 import net.devstudy.resume.form.ProfileMainForm;
 import net.devstudy.resume.form.SkillForm;
 import net.devstudy.resume.model.CurrentProfile;
-import net.devstudy.resume.model.LanguageLevel;
-import net.devstudy.resume.model.LanguageType;
+import net.devstudy.resume.shared.model.LanguageLevel;
+import net.devstudy.resume.shared.model.LanguageType;
 import net.devstudy.resume.model.UploadCertificateResult;
 import net.devstudy.resume.security.CurrentProfileProvider;
 import net.devstudy.resume.service.CertificateStorageService;
@@ -577,14 +577,16 @@ public class EditProfileController {
 
     private String prepareHobbies(String uid, Model model) {
         HobbyForm form = new HobbyForm();
-        profileService.loadCurrentProfileWithHobbies(uid).ifPresent(profile -> {
-            if (profile.getHobbies() != null) {
-                form.setHobbyIds(profile.getHobbies().stream().map(Hobby::getId).toList());
-            }
-        });
+        Profile profile = resolveProfile(uid);
+        if (profile == null) {
+            model.addAttribute("hobbies", staticDataService.findAllHobbiesWithSelected(form.getHobbyIds()));
+            model.addAttribute("maxHobbies", maxHobbies);
+            return "redirect:/login";
+        }
+        String view = prepareProfileModel(profile, model, "edit/hobbies", form);
         model.addAttribute("hobbies", staticDataService.findAllHobbiesWithSelected(form.getHobbyIds()));
         model.addAttribute("maxHobbies", maxHobbies);
-        return prepareProfileModel(uid, model, "edit/hobbies", form);
+        return view;
     }
 
     private String prepareContacts(String uid, Model model) {
@@ -657,6 +659,10 @@ public class EditProfileController {
         if (profile == null) {
             return "redirect:/login";
         }
+        return prepareProfileModel(profile, model, viewName, form);
+    }
+
+    private String prepareProfileModel(Profile profile, Model model, String viewName, Object form) {
         model.addAttribute("profile", profile);
         model.addAttribute("form", formFromProfile(form, profile));
         return viewName;

@@ -30,6 +30,7 @@ import lombok.ToString;
 import lombok.EqualsAndHashCode;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import net.devstudy.resume.shared.model.AbstractEntity;
 
 /**
  * @author devstudy

@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import net.devstudy.resume.shared.model.AbstractEntity;
 
 @Entity
 @Table(name = "hobby")

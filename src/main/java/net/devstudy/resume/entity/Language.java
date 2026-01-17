@@ -17,8 +17,9 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.persistence.UniqueConstraint;
-import net.devstudy.resume.model.LanguageLevel;
-import net.devstudy.resume.model.LanguageType;
+import net.devstudy.resume.shared.model.LanguageLevel;
+import net.devstudy.resume.shared.model.LanguageType;
+import net.devstudy.resume.shared.model.AbstractEntity;
 
 @Entity
 @Table(name = "language", uniqueConstraints = {

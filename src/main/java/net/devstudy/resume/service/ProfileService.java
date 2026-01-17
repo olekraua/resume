@@ -23,8 +23,6 @@ public interface ProfileService {
 
     Optional<Profile> findByIdWithAll(Long id);
 
-    Optional<Profile> loadCurrentProfileWithHobbies(String uid);
-
     Page<Profile> findAll(Pageable pageable);
 
     Iterable<Profile> findAllForIndexing();

@@ -1,4 +1,4 @@
-package net.devstudy.resume.model;
+package net.devstudy.resume.shared.model;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
@@ -38,5 +38,4 @@ public enum LanguageLevel {
         }
     }
 }
-
 

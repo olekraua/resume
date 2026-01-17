@@ -31,8 +31,7 @@ import net.devstudy.resume.event.ProfileIndexingRequestedEvent;
 import net.devstudy.resume.exception.UidAlreadyExistsException;
 import net.devstudy.resume.form.ContactsForm;
 import net.devstudy.resume.form.InfoForm;
-import net.devstudy.resume.model.CurrentProfile;
-import net.devstudy.resume.model.LanguageType;
+import net.devstudy.resume.shared.model.LanguageType;
 import net.devstudy.resume.repository.storage.CertificateRepository;
 import net.devstudy.resume.repository.storage.CourseRepository;
 import net.devstudy.resume.repository.storage.EducationRepository;
@@ -40,9 +39,7 @@ import net.devstudy.resume.repository.storage.HobbyRepository;
 import net.devstudy.resume.repository.storage.LanguageRepository;
 import net.devstudy.resume.repository.storage.PracticRepository;
 import net.devstudy.resume.repository.storage.ProfileRepository;
-import net.devstudy.resume.repository.storage.ProfileRestoreRepository;
 import net.devstudy.resume.repository.storage.SkillRepository;
-import net.devstudy.resume.security.CurrentProfileProvider;
 import net.devstudy.resume.service.ProfileSearchService;
 import net.devstudy.resume.service.ProfileService;
 
@@ -62,10 +59,8 @@ public class ProfileServiceImpl implements ProfileService {
     private final CertificateFileStorage certificateFileStorage;
     private final PhotoFileStorage photoFileStorage;
     private final UploadCertificateLinkTempStorage uploadCertificateLinkTempStorage;
-    private final ProfileRestoreRepository profileRestoreRepository;
     private final PasswordEncoder passwordEncoder;
     private final ProfileSearchService profileSearchService;
-    private final CurrentProfileProvider currentProfileProvider;
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
@@ -85,20 +80,6 @@ public class ProfileServiceImpl implements ProfileService {
         Optional<Profile> opt = profileRepository.findById(id);
         opt.ifPresent(this::initializeCollections);
         return opt;
-    }
-
-    @Override
-    public Optional<Profile> loadCurrentProfileWithHobbies(String uid) {
-        CurrentProfile current = currentProfileProvider.getCurrentProfile();
-        if (current == null || !current.getUsername().equals(uid)) {
-            return Optional.empty();
-        }
-        return findByIdWithAll(current.getId()).map(profile -> {
-            if (profile.getHobbies() != null) {
-                profile.getHobbies().size();
-            }
-            return profile;
-        });
     }
 
     @Override
@@ -162,7 +143,6 @@ public class ProfileServiceImpl implements ProfileService {
         }
         java.util.List<String> photoUrls = collectProfilePhotoUrls(profile);
         java.util.List<String> certificateUrls = collectProfileCertificateUrls(profileId);
-        profileRestoreRepository.deleteByProfileId(profileId);
         profileRepository.delete(profile);
         registerProfileCleanup(profileId, photoUrls, certificateUrls);
     }

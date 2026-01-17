@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import net.devstudy.resume.model.LanguageType;
+import net.devstudy.resume.shared.model.LanguageType;
 
 class LanguageTest {
 

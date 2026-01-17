@@ -8,6 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Transient;
+import net.devstudy.resume.shared.model.AbstractEntity;
 
 @MappedSuperclass
 public abstract class AbstractFinishDateEntity<T> extends AbstractEntity<T> {

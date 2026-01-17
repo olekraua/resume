@@ -14,6 +14,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import net.devstudy.resume.shared.model.AbstractEntity;
 
 /**
  * @author devstudy
