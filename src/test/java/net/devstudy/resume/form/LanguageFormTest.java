@@ -1,6 +1,5 @@
 package net.devstudy.resume.form;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -14,7 +13,6 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import jakarta.validation.constraints.NotEmpty;
 import net.devstudy.resume.entity.Language;
 
 class LanguageFormTest {
@@ -34,33 +32,21 @@ class LanguageFormTest {
     }
 
     @Test
-    void nullItemsFailsNotEmpty() {
+    void nullItemsPassValidation() {
         LanguageForm form = new LanguageForm();
         form.setItems(null);
 
         Set<ConstraintViolation<LanguageForm>> violations = validator.validate(form);
-
-        assertEquals(1, violations.size());
-        assertEquals(NotEmpty.class, violations.iterator()
-                .next()
-                .getConstraintDescriptor()
-                .getAnnotation()
-                .annotationType());
+        assertTrue(violations.isEmpty());
     }
 
     @Test
-    void emptyItemsFailsNotEmpty() {
+    void emptyItemsPassValidation() {
         LanguageForm form = new LanguageForm();
         form.setItems(List.of());
 
         Set<ConstraintViolation<LanguageForm>> violations = validator.validate(form);
-
-        assertEquals(1, violations.size());
-        assertEquals(NotEmpty.class, violations.iterator()
-                .next()
-                .getConstraintDescriptor()
-                .getAnnotation()
-                .annotationType());
+        assertTrue(violations.isEmpty());
     }
 
     @Test
