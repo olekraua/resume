@@ -378,10 +378,6 @@
 	margin: 1px 0;
 }
 
-.resume .well p {
-	margin: 0;
-}
-
 .resume .data-form img.edit-photo {
 	width: 100%;
 	max-width: 300px;
@@ -441,17 +437,6 @@
 	color: white;
 }
 
-.resume .skill-delim {
-	padding-bottom: 5px;
-	margin-bottom: 5px;
-	margin-top: 5px;
-	border-bottom: 1px solid #eee;
-}
-
-.resume .skill-delim .c-alert {
-	margin-bottom: 0;
-}
-
 .resume .skill-item textarea {
 	margin-right: 20px;
 }
@@ -473,10 +458,6 @@
 	text-decoration: underline;
 }
 
-.resume a.certificate:hover, .resume a.certificate:hover span {
-	text-decoration: none;
-}
-
 .resume #loadMoreContainer {
 	margin-bottom: 15px;
 }
@@ -484,32 +465,6 @@
 .resume #loadMoreIndicator img {
 	width: 30px;
 	height: 30px;
-}
-
-.resume .small-center-block {
-	width: 440px;
-	margin: 0 auto;
-}
-
-.resume .profile-menu a {
-	position: relative;
-}
-
-.resume .profile-menu a i {
-	display: block;
-	float: left;
-	width: 22px;
-	font-size: 1.2em;
-	text-align: center;
-	padding-top: 2px;
-}
-
-.resume .c-input-feedback {
-	right: 15px;
-}
-
-.resume .edit-languages .c-input-feedback {
-	right: 5px;
 }
 
 .resume .edit-languages {
@@ -719,10 +674,6 @@
 	color: #777;
 }
 
-.resume .edit-password .c-input-feedback {
-	right: 0px;
-}
-
 .resume h1 {
 	margin-bottom: 15px;
 	margin-top: 10px;
@@ -760,15 +711,6 @@ html {
 body {
 	/* Padding bottom by footer height */
 	padding-bottom: 60px; 
-}
-
-.footer {
-	position: absolute;
-	bottom: 0;
-	width: 100%;
-	/* Set the fixed height of the footer here */
-	height: 60px;
-	background-color: #f5f5f5;
 }
 
 /* Suggest dropdown */
