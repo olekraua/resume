@@ -20,7 +20,7 @@
           <div th:each="cert,iter : *{items}" class="c-thumbnail ui-item" th:id="|ui-item-${iter.index}|">
             <input type="hidden" th:field="*{items[__${iter.index}__].smallUrl}"/>
             <input type="hidden" th:field="*{items[__${iter.index}__].largeUrl}"/>
-            <button type="button" class="c-close" th:onclick="|$('#ui-item-${iter.index}').remove();|">
+            <button type="button" class="c-close" data-ui-remove>
               <span aria-hidden="true">&times;</span>
             </button>
             <a class="certificate-link" href="#"
@@ -60,7 +60,7 @@
   <div class="c-thumbnail ui-item" id="ui-item-{{blockIndex}}">
     <input type="hidden" name="items[{{blockIndex}}].smallUrl" value="{{smallUrl}}"/>
     <input type="hidden" name="items[{{blockIndex}}].largeUrl" value="{{largeUrl}}"/>
-    <button type="button" class="c-close" onclick="$('#ui-item-{{blockIndex}}').remove();">
+    <button type="button" class="c-close" data-ui-remove>
       <span aria-hidden="true">&times;</span>
     </button>
     <a class="certificate-link" href="#" data-title="{{name}}" data-url="{{largeUrl}}">
@@ -136,7 +136,7 @@
 <th:block th:replace="~{fragments/layout :: scripts-edit}"></th:block>
 <script th:inline="javascript">
   /*<![CDATA[*/
-  $(document).ready(function () {
+  resume.onReady(function () {
     resume.initCertificateViewer();
     var uploadUrl = /*[[@{|/${profile.uid}/edit/certificates/upload|}]]*/'';
     resume.createCertificateUploader(/*[[${_csrf.token}]]*/'', uploadUrl);

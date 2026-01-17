@@ -42,7 +42,7 @@
           </select>
         </div>
         <div class="l-col l-col--xs-7 l-col--sm-8 l-col--md-10 value-container">
-          <button type="button" class="c-close" th:onclick="|$('#ui-item-${iter.index}').remove();|">
+          <button type="button" class="c-close" data-ui-remove>
             <span aria-hidden="true">&times;</span>
           </button>
           <textarea class="c-input u-pull-right" rows="2"
@@ -78,7 +78,7 @@
       </select>
     </div>
     <div class="l-col l-col--xs-7 l-col--sm-8 l-col--md-10 value-container">
-      <button type="button" class="c-close" onclick="$('#ui-item-{{blockIndex}}').remove();">
+      <button type="button" class="c-close" data-ui-remove>
         <span aria-hidden="true">&times;</span>
       </button>
       <textarea name="items[{{blockIndex}}].value" class="c-input u-pull-right" rows="2" required="required"></textarea>
@@ -89,7 +89,7 @@
   /*<![CDATA[*/
   // прокидуємо категорії у Handlebars як глобал
   window.skillCategories = /*[[${skillCategories.![category]}]]*/ [];
-  $(document).ready(function() {
+  resume.onReady(function() {
     if (!window.skillCategories || window.skillCategories.length === 0) {
       window.skillCategories = ["Languages", "DBMS", "Web", "Java", "IDE", "CVS",
         "Web Servers", "Build system", "Cloud", "Frameworks", "Tools", "Testing", "Other"];
@@ -97,8 +97,8 @@
     // замінимо шаблон компіляції, щоб резюме.ui.addBlock бачило categories
     resume.ui.getTemplate = function() {
       if (resume.ui.template == null) {
-        var source = $("#ui-block-template").html();
-        resume.ui.template = Handlebars.compile(source);
+        var source = document.getElementById('ui-block-template');
+        resume.ui.template = source ? Handlebars.compile(source.innerHTML) : null;
       }
       return resume.ui.template;
     };

@@ -17,7 +17,7 @@
     <div id="ui-block-container">
       <div th:each="item,iter : *{items}" class="c-panel c-panel--default ui-item education-item" th:id="|ui-item-${iter.index}|">
         <div class="c-panel__heading">Образование <span th:text="${iter.index + 1}"></span>
-          <button type="button" class="c-close u-pull-right" th:onclick="|$('#ui-item-${iter.index}').remove();|"><span aria-hidden="true">&times;</span></button>
+          <button type="button" class="c-close u-pull-right" data-ui-remove><span aria-hidden="true">&times;</span></button>
         </div>
         <div class="c-panel__body">
           <div class="c-form__group">
@@ -72,7 +72,7 @@
 <script id="ui-block-template" type="text/x-handlebars-template">
   <div class="c-panel c-panel--default ui-item education-item" id="ui-item-{{blockIndex}}">
     <div class="c-panel__heading">Образование {{inc blockIndex}}
-      <button type="button" class="c-close u-pull-right" onclick="$('#ui-item-{{blockIndex}}').remove();"><span aria-hidden="true">&times;</span></button>
+      <button type="button" class="c-close u-pull-right" data-ui-remove><span aria-hidden="true">&times;</span></button>
     </div>
     <div class="c-panel__body">
       <div class="c-form__group">
@@ -111,12 +111,12 @@
 </script>
 <script th:inline="javascript">
   /*<![CDATA[*/
-  Handlebars.registerHelper('inc', function(value) { return parseInt(value) + 1; });
+  Handlebars.registerHelper('inc', function(value) { return parseInt(value, 10) + 1; });
   window.educationYears = /*[[${years}]]*/ [];
   resume.ui.getTemplate = function() {
     if (resume.ui.template == null) {
-      var source = $("#ui-block-template").html();
-      resume.ui.template = Handlebars.compile(source);
+      var source = document.getElementById('ui-block-template');
+      resume.ui.template = source ? Handlebars.compile(source.innerHTML) : null;
     }
     return resume.ui.template;
   };

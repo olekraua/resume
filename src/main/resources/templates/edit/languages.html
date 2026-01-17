@@ -18,7 +18,7 @@
     <div id="ui-block-container">
       <div th:each="item,iter : *{items}" class="c-panel c-panel--default ui-item language-item" th:id="|ui-item-${iter.index}|">
         <div class="c-panel__heading">Язык <span th:text="${iter.index + 1}"></span>
-          <button type="button" class="c-close u-pull-right" th:onclick="|$('#ui-item-${iter.index}').remove();|"><span aria-hidden="true">&times;</span></button>
+          <button type="button" class="c-close u-pull-right" data-ui-remove><span aria-hidden="true">&times;</span></button>
         </div>
         <div class="c-panel__body">
           <input type="hidden" th:field="*{items[__${iter.index}__].id}"/>
@@ -79,7 +79,7 @@
 <script id="ui-block-template" type="text/x-handlebars-template">
   <div class="c-panel c-panel--default ui-item language-item" id="ui-item-{{blockIndex}}">
     <div class="c-panel__heading">Язык {{inc blockIndex}}
-      <button type="button" class="c-close u-pull-right" onclick="$('#ui-item-{{blockIndex}}').remove();"><span aria-hidden="true">&times;</span></button>
+      <button type="button" class="c-close u-pull-right" data-ui-remove><span aria-hidden="true">&times;</span></button>
     </div>
     <div class="c-panel__body">
       <div class="language-grid">
@@ -119,13 +119,13 @@
 </script>
 <script th:inline="javascript">
   /*<![CDATA[*/
-  Handlebars.registerHelper('inc', function(value) { return parseInt(value) + 1; });
+  Handlebars.registerHelper('inc', function(value) { return parseInt(value, 10) + 1; });
   window.languageLevels = /*[[${languageLevels}]]*/ [];
   window.languageTypes = [];
   window.languageTypeLabels = {};
-  $('#language-type-options option').each(function() {
-    window.languageTypes.push(this.value);
-    window.languageTypeLabels[this.value] = $(this).text();
+  document.querySelectorAll('#language-type-options option').forEach(function(option) {
+    window.languageTypes.push(option.value);
+    window.languageTypeLabels[option.value] = option.textContent || '';
   });
   var toLevelLabel = function(value) {
     if (!value) {
@@ -140,8 +140,8 @@
   window.languageLevelDefault = Math.min(4, window.languageLevelMax);
   resume.ui.getTemplate = function() {
     if (resume.ui.template == null) {
-      var source = $("#ui-block-template").html();
-      resume.ui.template = Handlebars.compile(source);
+      var source = document.getElementById('ui-block-template');
+      resume.ui.template = source ? Handlebars.compile(source.innerHTML) : null;
     }
     return resume.ui.template;
   };
@@ -153,7 +153,7 @@
     return value;
   });
   if (resume && typeof resume.initLevelSliders === 'function') {
-    resume.initLevelSliders($('#ui-block-container'));
+    resume.initLevelSliders(document.getElementById('ui-block-container'));
   }
   /*]]>*/
 </script>

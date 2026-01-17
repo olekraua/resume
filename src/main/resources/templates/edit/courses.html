@@ -18,7 +18,7 @@
     <div id="ui-block-container">
       <div th:each="item,iter : *{items}" class="c-panel c-panel--default ui-item course-item" th:id="|ui-item-${iter.index}|">
         <div class="c-panel__heading">Курс <span th:text="${iter.index + 1}"></span>
-          <button type="button" class="c-close u-pull-right" th:onclick="|$('#ui-item-${iter.index}').remove();|"><span aria-hidden="true">&times;</span></button>
+          <button type="button" class="c-close u-pull-right" data-ui-remove><span aria-hidden="true">&times;</span></button>
         </div>
         <div class="c-panel__body">
           <div class="c-form__group">
@@ -59,7 +59,7 @@
 <script id="ui-block-template" type="text/x-handlebars-template">
   <div class="c-panel c-panel--default ui-item course-item" id="ui-item-{{blockIndex}}">
     <div class="c-panel__heading">Курс {{inc blockIndex}}
-      <button type="button" class="c-close u-pull-right" onclick="$('#ui-item-{{blockIndex}}').remove();"><span aria-hidden="true">&times;</span></button>
+      <button type="button" class="c-close u-pull-right" data-ui-remove><span aria-hidden="true">&times;</span></button>
     </div>
     <div class="c-panel__body">
       <div class="c-form__group">

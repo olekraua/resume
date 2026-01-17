@@ -24,7 +24,7 @@
             <div class="c-panel__body">
               <div class="l-row">
                 <div class="l-col l-col--xs-12">
-                  <button type="button" class="c-close" th:onclick="|$('#ui-item-${iter.index}').remove();|">
+                  <button type="button" class="c-close" data-ui-remove>
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
@@ -87,7 +87,7 @@
 <script id="ui-block-template" type="text/x-handlebars-template">
   <div class="c-panel c-panel--default ui-item practic-item" id="ui-item-{{blockIndex}}">
     <div class="c-panel__heading">Позиция {{inc blockIndex}}
-      <button type="button" class="c-close u-pull-right" onclick="$('#ui-item-{{blockIndex}}').remove();"><span aria-hidden="true">&times;</span></button>
+      <button type="button" class="c-close u-pull-right" data-ui-remove><span aria-hidden="true">&times;</span></button>
     </div>
     <div class="c-panel__body">
       <div class="c-form__group">

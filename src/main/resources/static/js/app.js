@@ -4,14 +4,26 @@
   const doc = document;
   const win = window;
 
-  const COLLAPSE_DURATION_MS = 350;
-  const MODAL_OPEN_DELAY_MS = 10;
-  const MODAL_CLOSE_DELAY_MS = 300;
-  const FADE_DURATION_MS = 600;
-  const HOBBY_ALERT_TIMEOUT_MS = 5000;
-  const SEARCH_DEBOUNCE_MS = 200;
-  const SEARCH_MIN_CHARS = 2;
-  const SEARCH_LIMIT = 5;
+  const config = {
+    collapseDurationMs: 350,
+    modalOpenDelayMs: 10,
+    modalCloseDelayMs: 300,
+    fadeDurationMs: 600,
+    hobbyAlertTimeoutMs: 5000,
+    searchDebounceMs: 200,
+    searchMinChars: 2,
+    searchLimit: 5
+  };
+
+  const state = {
+    navbarBound: false,
+    dropdownsBound: false,
+    modalsBound: false,
+    fileInputsBound: false,
+    hobbyButtonsBound: false,
+    certificateViewerBound: false,
+    removeButtonsBound: false
+  };
 
   const isElement = (value) => value && value.nodeType === 1;
 
@@ -34,6 +46,8 @@
     return doc;
   };
 
+  const trim = (value) => (value || '').trim();
+
   const msg = (key, fallback) => {
     const messages = win.messages || {};
     if (Object.prototype.hasOwnProperty.call(messages, key)) {
@@ -42,17 +56,20 @@
     return fallback;
   };
 
-  const trim = (value) => (value || '').trim();
-
   const rememberDisplay = (element) => {
     if (!element || element.dataset.uiDisplay) return;
     const display = win.getComputedStyle(element).display;
     element.dataset.uiDisplay = display === 'none' ? 'block' : display;
   };
 
+  const cancelAnimations = (element) => {
+    if (typeof element.getAnimations !== 'function') return;
+    element.getAnimations().forEach((animation) => animation.cancel());
+  };
+
   const fade = (element, show, duration) => {
     if (!element) return;
-    const time = typeof duration === 'number' ? duration : FADE_DURATION_MS;
+    const time = typeof duration === 'number' ? duration : config.fadeDurationMs;
     rememberDisplay(element);
     if (show) {
       element.style.display = element.dataset.uiDisplay || 'block';
@@ -61,9 +78,7 @@
       if (!show) element.style.display = 'none';
       return;
     }
-    if (typeof element.getAnimations === 'function') {
-      element.getAnimations().forEach((animation) => animation.cancel());
-    }
+    cancelAnimations(element);
     const from = show ? 0 : 1;
     const to = show ? 1 : 0;
     element.style.opacity = String(from);
@@ -100,17 +115,28 @@
     }
   };
 
-  let navbarBound = false;
-  let dropdownsBound = false;
-  let modalsBound = false;
-  let fileInputsBound = false;
-  let hobbyButtonsBound = false;
-  let certificateViewerBound = false;
+  const onReady = (callback) => {
+    if (typeof callback !== 'function') return;
+    if (doc.readyState === 'loading') {
+      doc.addEventListener('DOMContentLoaded', callback);
+    } else {
+      callback();
+    }
+  };
 
   const resume = {
+    onReady,
+
+    init() {
+      if (resume && resume.interactions && typeof resume.interactions.init === 'function') {
+        resume.interactions.init();
+      }
+      initSearchSuggestions();
+    },
+
     initCertificateViewer() {
-      if (certificateViewerBound) return;
-      certificateViewerBound = true;
+      if (state.certificateViewerBound) return;
+      state.certificateViewerBound = true;
       doc.addEventListener('click', (event) => {
         if (!isElement(event.target)) return;
         const link = event.target.closest('a.certificate-link');
@@ -265,11 +291,12 @@
         resume.interactions.initModals();
         resume.interactions.initFileInputs();
         resume.interactions.initHobbyButtons();
+        resume.interactions.initRemoveButtons();
       },
 
       initNavbar() {
-        if (navbarBound) return;
-        navbarBound = true;
+        if (state.navbarBound) return;
+        state.navbarBound = true;
         doc.addEventListener('click', (event) => {
           if (!isElement(event.target)) return;
           const trigger = event.target.closest('[data-ui-toggle="collapse"]');
@@ -292,7 +319,7 @@
               collapse.classList.remove('collapsing');
               collapse.style.height = '';
               collapse.style.display = '';
-            }, COLLAPSE_DURATION_MS);
+            }, config.collapseDurationMs);
           } else {
             collapse.classList.add('collapsing');
             collapse.style.display = 'block';
@@ -305,7 +332,7 @@
               collapse.classList.add('is-open');
               collapse.style.height = '';
               collapse.style.display = '';
-            }, COLLAPSE_DURATION_MS);
+            }, config.collapseDurationMs);
           }
 
           trigger.classList.toggle('is-collapsed', isOpen);
@@ -314,8 +341,8 @@
       },
 
       initDropdowns() {
-        if (dropdownsBound) return;
-        dropdownsBound = true;
+        if (state.dropdownsBound) return;
+        state.dropdownsBound = true;
 
         const closeAll = () => {
           doc.querySelectorAll('.c-dropdown.is-open').forEach((dropdown) => {
@@ -364,8 +391,8 @@
       },
 
       initModals() {
-        if (modalsBound) return;
-        modalsBound = true;
+        if (state.modalsBound) return;
+        state.modalsBound = true;
 
         doc.addEventListener('click', (event) => {
           if (!isElement(event.target)) return;
@@ -383,6 +410,25 @@
           if (!openModals.length) return;
           const last = openModals[openModals.length - 1];
           resume.interactions.hideModal(last);
+        });
+      },
+
+      initRemoveButtons() {
+        if (state.removeButtonsBound) return;
+        state.removeButtonsBound = true;
+
+        doc.addEventListener('click', (event) => {
+          if (!isElement(event.target)) return;
+          const trigger = event.target.closest('[data-ui-remove]');
+          if (!trigger) return;
+          event.preventDefault();
+          const target = trim(trigger.getAttribute('data-ui-remove'));
+          if (target) {
+            resume.ui.removeBlock(target);
+            return;
+          }
+          const item = trigger.closest('.ui-item');
+          if (item) item.remove();
         });
       },
 
@@ -415,7 +461,7 @@
           modalEl.classList.add('is-open');
           backdrop.classList.add('is-open');
           modalEl.focus();
-        }, MODAL_OPEN_DELAY_MS);
+        }, config.modalOpenDelayMs);
 
         backdrop.addEventListener('click', () => resume.interactions.hideModal(modalEl), { once: true });
       },
@@ -440,7 +486,7 @@
               delete body.dataset.uiScrollbarWidth;
             }
           }
-        }, MODAL_CLOSE_DELAY_MS);
+        }, config.modalCloseDelayMs);
       },
 
       updateSliderProgress(input) {
@@ -457,8 +503,8 @@
       },
 
       initFileInputs(container) {
-        if (!fileInputsBound) {
-          fileInputsBound = true;
+        if (!state.fileInputsBound) {
+          state.fileInputsBound = true;
 
           doc.addEventListener('change', (event) => {
             if (!isElement(event.target)) return;
@@ -500,8 +546,8 @@
       },
 
       initHobbyButtons() {
-        if (hobbyButtonsBound) return;
-        hobbyButtonsBound = true;
+        if (state.hobbyButtonsBound) return;
+        state.hobbyButtonsBound = true;
         doc.addEventListener('change', (event) => {
           const input = event.target;
           if (!(input instanceof HTMLInputElement) || input.type !== 'checkbox') return;
@@ -629,6 +675,21 @@
           const ref = doc.getElementById(refId);
           if (ref) ref.value = '';
         }
+      },
+
+      removeBlock(target) {
+        let element = null;
+        if (typeof target === 'string') {
+          const value = trim(target);
+          if (value) {
+            element = doc.getElementById(value) || doc.querySelector(value);
+          }
+        } else {
+          element = toElement(target);
+        }
+        if (element) {
+          element.remove();
+        }
       }
     },
 
@@ -708,7 +769,7 @@
             closeButton.onclick = closeFunction;
           }
           fade(errorAlert, true);
-          resume.hobbies.errorTimeout = win.setTimeout(closeFunction, HOBBY_ALERT_TIMEOUT_MS);
+          resume.hobbies.errorTimeout = win.setTimeout(closeFunction, config.hobbyAlertTimeoutMs);
           return;
         }
 
@@ -765,7 +826,7 @@
       const currentRequest = ++requestId;
       const url = new URL('/api/suggest', win.location.origin);
       url.searchParams.set('q', query);
-      url.searchParams.set('limit', String(SEARCH_LIMIT));
+      url.searchParams.set('limit', String(config.searchLimit));
 
       fetch(url.toString(), {
         credentials: 'same-origin',
@@ -790,7 +851,7 @@
 
     input.addEventListener('input', () => {
       const query = trim(input.value);
-      if (query.length < SEARCH_MIN_CHARS) {
+      if (query.length < config.searchMinChars) {
         hide();
         return;
       }
@@ -799,11 +860,11 @@
       }
       timer = win.setTimeout(() => {
         fetchSuggestions(query);
-      }, SEARCH_DEBOUNCE_MS);
+      }, config.searchDebounceMs);
     });
 
     input.addEventListener('blur', () => {
-      win.setTimeout(hide, SEARCH_DEBOUNCE_MS);
+      win.setTimeout(hide, config.searchDebounceMs);
     });
 
     const form = doc.getElementById('nav-search-form');
@@ -814,16 +875,7 @@
 
   win.resume = resume;
 
-  const onReady = () => {
-    if (resume && resume.interactions && typeof resume.interactions.init === 'function') {
-      resume.interactions.init();
-    }
-    initSearchSuggestions();
-  };
-
-  if (doc.readyState === 'loading') {
-    doc.addEventListener('DOMContentLoaded', onReady);
-  } else {
-    onReady();
-  }
+  onReady(() => {
+    resume.init();
+  });
 })();
