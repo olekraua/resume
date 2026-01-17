@@ -1,0 +1,23 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Доступ заборонено')}"></head>
+<body class="resume">
+<div th:replace="~{fragments/layout :: header}"></div>
+<div class="layout-content l-container">
+  <div class="c-panel c-panel--default">
+    <div class="c-panel__heading">
+      <h4 class="c-panel__title"><i class="fa fa-lock"></i> Доступ заборонено</h4>
+    </div>
+    <div class="c-panel__body">
+      <p>Схоже, ваша сесія завершилась або у вас немає доступу до цієї дії.</p>
+      <p>Спробуйте увійти знову або повернутись на головну сторінку.</p>
+      <div style="margin-top: 12px;">
+        <a class="c-button c-button--primary" th:href="${appHost} + @{/login}">Увійти</a>
+        <a class="c-button c-button--secondary" th:href="${appHost} + @{/}">На головну</a>
+      </div>
+    </div>
+  </div>
+</div>
+<div th:replace="~{fragments/layout :: footer}"></div>
+</body>
+</html>

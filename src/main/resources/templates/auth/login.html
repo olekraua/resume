@@ -31,6 +31,9 @@
               </label>
             </div>
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <div th:if="${param.expired}" class="c-alert c-alert--warning" style="margin-top: 10px;">
+              Сесія завершилась. Увійдіть знову.
+            </div>
             <div th:if="${param.error}" class="c-alert c-alert--danger" style="margin-top: 10px;">
               Невірний логін або пароль
             </div>
