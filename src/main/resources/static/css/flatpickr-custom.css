@@ -1,3 +1,19 @@
+/*
+ * Custom flatpickr theme for My Resume.
+ * Defaults mirror flatpickr 4.6.13 to preserve UI/UX.
+ * Adjust tokens below to tweak colors without touching rules.
+ */
+.resume {
+  --resume-flatpickr-surface: #fff;
+  --resume-flatpickr-on-accent: #fff;
+  --resume-flatpickr-border: #e6e6e6;
+  --resume-flatpickr-text: #393939;
+  --resume-flatpickr-accent: #569ff7;
+  --resume-flatpickr-muted: #959ea9;
+  --resume-flatpickr-hover-bg: #eee;
+  --resume-flatpickr-danger: #f64747;
+}
+
 .flatpickr-calendar {
       background: transparent;
       opacity: 0;
@@ -18,9 +34,9 @@
       box-sizing: border-box;
       -ms-touch-action: manipulation;
       touch-action: manipulation;
-      background: #fff;
-      -webkit-box-shadow: 1px 0 0 #e6e6e6, -1px 0 0 #e6e6e6, 0 1px 0 #e6e6e6, 0 -1px 0 #e6e6e6, 0 3px 13px rgba(0, 0, 0, 0.08);
-      box-shadow: 1px 0 0 #e6e6e6, -1px 0 0 #e6e6e6, 0 1px 0 #e6e6e6, 0 -1px 0 #e6e6e6, 0 3px 13px rgba(0, 0, 0, 0.08)
+      background: var(--resume-flatpickr-surface, #fff);
+      -webkit-box-shadow: 1px 0 0 var(--resume-flatpickr-border, #e6e6e6), -1px 0 0 var(--resume-flatpickr-border, #e6e6e6), 0 1px 0 var(--resume-flatpickr-border, #e6e6e6), 0 -1px 0 var(--resume-flatpickr-border, #e6e6e6), 0 3px 13px rgba(0, 0, 0, 0.08);
+      box-shadow: 1px 0 0 var(--resume-flatpickr-border, #e6e6e6), -1px 0 0 var(--resume-flatpickr-border, #e6e6e6), 0 1px 0 var(--resume-flatpickr-border, #e6e6e6), 0 -1px 0 var(--resume-flatpickr-border, #e6e6e6), 0 3px 13px rgba(0, 0, 0, 0.08)
 }
 
 .flatpickr-calendar.open,
@@ -62,8 +78,8 @@
 }
 
 .flatpickr-calendar.multiMonth .flatpickr-days .dayContainer:nth-child(n+2) .flatpickr-day.inRange:nth-child(7n+1) {
-      -webkit-box-shadow: -2px 0 0 #e6e6e6, 5px 0 0 #e6e6e6;
-      box-shadow: -2px 0 0 #e6e6e6, 5px 0 0 #e6e6e6
+      -webkit-box-shadow: -2px 0 0 var(--resume-flatpickr-border, #e6e6e6), 5px 0 0 var(--resume-flatpickr-border, #e6e6e6);
+      box-shadow: -2px 0 0 var(--resume-flatpickr-border, #e6e6e6), 5px 0 0 var(--resume-flatpickr-border, #e6e6e6)
 }
 
 .flatpickr-calendar .hasWeeks .dayContainer,
@@ -79,7 +95,7 @@
 
 .flatpickr-calendar.hasTime .flatpickr-time {
       height: 40px;
-      border-top: 1px solid #e6e6e6
+      border-top: 1px solid var(--resume-flatpickr-border, #e6e6e6)
 }
 
 .flatpickr-calendar.noCalendar.hasTime .flatpickr-time {
@@ -128,11 +144,11 @@
 }
 
 .flatpickr-calendar.arrowTop:before {
-      border-bottom-color: #e6e6e6
+      border-bottom-color: var(--resume-flatpickr-border, #e6e6e6)
 }
 
 .flatpickr-calendar.arrowTop:after {
-      border-bottom-color: #fff
+      border-bottom-color: var(--resume-flatpickr-surface, #fff)
 }
 
 .flatpickr-calendar.arrowBottom:before,
@@ -141,11 +157,11 @@
 }
 
 .flatpickr-calendar.arrowBottom:before {
-      border-top-color: #e6e6e6
+      border-top-color: var(--resume-flatpickr-border, #e6e6e6)
 }
 
 .flatpickr-calendar.arrowBottom:after {
-      border-top-color: #fff
+      border-top-color: var(--resume-flatpickr-surface, #fff)
 }
 
 .flatpickr-calendar:focus {
@@ -238,12 +254,12 @@
       /*rtl:end:ignore*/
 .flatpickr-months .flatpickr-prev-month:hover,
 .flatpickr-months .flatpickr-next-month:hover {
-      color: #959ea9
+      color: var(--resume-flatpickr-muted, #959ea9)
 }
 
 .flatpickr-months .flatpickr-prev-month:hover svg,
 .flatpickr-months .flatpickr-next-month:hover svg {
-      fill: #f64747
+      fill: var(--resume-flatpickr-danger, #f64747)
 }
 
 .flatpickr-months .flatpickr-prev-month svg,
@@ -560,8 +576,8 @@ span.flatpickr-weekday {
 }
 
 .dayContainer+.dayContainer {
-      -webkit-box-shadow: -1px 0 0 #e6e6e6;
-      box-shadow: -1px 0 0 #e6e6e6
+      -webkit-box-shadow: -1px 0 0 var(--resume-flatpickr-border, #e6e6e6);
+      box-shadow: -1px 0 0 var(--resume-flatpickr-border, #e6e6e6)
 }
 
 .flatpickr-day {
@@ -570,7 +586,7 @@ span.flatpickr-weekday {
       border-radius: 150px;
       -webkit-box-sizing: border-box;
       box-sizing: border-box;
-      color: #393939;
+      color: var(--resume-flatpickr-text, #393939);
       cursor: pointer;
       font-weight: 400;
       width: 14.2857143%;
@@ -604,19 +620,19 @@ span.flatpickr-weekday {
 .flatpickr-day.nextMonthDay:focus {
       cursor: pointer;
       outline: 0;
-      background: #e6e6e6;
-      border-color: #e6e6e6
+      background: var(--resume-flatpickr-border, #e6e6e6);
+      border-color: var(--resume-flatpickr-border, #e6e6e6)
 }
 
 .flatpickr-day.today {
-      border-color: #959ea9
+      border-color: var(--resume-flatpickr-muted, #959ea9)
 }
 
 .flatpickr-day.today:hover,
 .flatpickr-day.today:focus {
-      border-color: #959ea9;
-      background: #959ea9;
-      color: #fff
+      border-color: var(--resume-flatpickr-muted, #959ea9);
+      background: var(--resume-flatpickr-muted, #959ea9);
+      color: var(--resume-flatpickr-on-accent, #fff)
 }
 
 .flatpickr-day.selected,
@@ -637,11 +653,11 @@ span.flatpickr-weekday {
 .flatpickr-day.selected.nextMonthDay,
 .flatpickr-day.startRange.nextMonthDay,
 .flatpickr-day.endRange.nextMonthDay {
-      background: #569ff7;
+      background: var(--resume-flatpickr-accent, #569ff7);
       -webkit-box-shadow: none;
       box-shadow: none;
-      color: #fff;
-      border-color: #569ff7
+      color: var(--resume-flatpickr-on-accent, #fff);
+      border-color: var(--resume-flatpickr-accent, #569ff7)
 }
 
 .flatpickr-day.selected.startRange,
@@ -659,8 +675,8 @@ span.flatpickr-weekday {
 .flatpickr-day.selected.startRange+.endRange:not(:nth-child(7n+1)),
 .flatpickr-day.startRange.startRange+.endRange:not(:nth-child(7n+1)),
 .flatpickr-day.endRange.startRange+.endRange:not(:nth-child(7n+1)) {
-      -webkit-box-shadow: -10px 0 0 #569ff7;
-      box-shadow: -10px 0 0 #569ff7
+      -webkit-box-shadow: -10px 0 0 var(--resume-flatpickr-accent, #569ff7);
+      box-shadow: -10px 0 0 var(--resume-flatpickr-accent, #569ff7)
 }
 
 .flatpickr-day.selected.startRange.endRange,
@@ -671,8 +687,8 @@ span.flatpickr-weekday {
 
 .flatpickr-day.inRange {
       border-radius: 0;
-      -webkit-box-shadow: -5px 0 0 #e6e6e6, 5px 0 0 #e6e6e6;
-      box-shadow: -5px 0 0 #e6e6e6, 5px 0 0 #e6e6e6
+      -webkit-box-shadow: -5px 0 0 var(--resume-flatpickr-border, #e6e6e6), 5px 0 0 var(--resume-flatpickr-border, #e6e6e6);
+      box-shadow: -5px 0 0 var(--resume-flatpickr-border, #e6e6e6), 5px 0 0 var(--resume-flatpickr-border, #e6e6e6)
 }
 
 .flatpickr-day.flatpickr-disabled,
@@ -696,8 +712,8 @@ span.flatpickr-weekday {
 
 .flatpickr-day.week.selected {
       border-radius: 0;
-      -webkit-box-shadow: -5px 0 0 #569ff7, 5px 0 0 #569ff7;
-      box-shadow: -5px 0 0 #569ff7, 5px 0 0 #569ff7
+      -webkit-box-shadow: -5px 0 0 var(--resume-flatpickr-accent, #569ff7), 5px 0 0 var(--resume-flatpickr-accent, #569ff7);
+      box-shadow: -5px 0 0 var(--resume-flatpickr-accent, #569ff7), 5px 0 0 var(--resume-flatpickr-accent, #569ff7)
 }
 
 .flatpickr-day.hidden {
@@ -714,8 +730,8 @@ span.flatpickr-weekday {
 
 .flatpickr-weekwrapper .flatpickr-weeks {
       padding: 0 12px;
-      -webkit-box-shadow: 1px 0 0 #e6e6e6;
-      box-shadow: 1px 0 0 #e6e6e6
+      -webkit-box-shadow: 1px 0 0 var(--resume-flatpickr-border, #e6e6e6);
+      box-shadow: 1px 0 0 var(--resume-flatpickr-border, #e6e6e6)
 }
 
 .flatpickr-weekwrapper .flatpickr-weekday {
@@ -786,11 +802,11 @@ span.flatpickr-weekday {
 }
 
 .flatpickr-time .numInputWrapper span.arrowUp:after {
-      border-bottom-color: #393939
+      border-bottom-color: var(--resume-flatpickr-text, #393939)
 }
 
 .flatpickr-time .numInputWrapper span.arrowDown:after {
-      border-top-color: #393939
+      border-top-color: var(--resume-flatpickr-text, #393939)
 }
 
 .flatpickr-time.hasSeconds .numInputWrapper {
@@ -812,7 +828,7 @@ span.flatpickr-weekday {
       padding: 0;
       height: inherit;
       line-height: inherit;
-      color: #393939;
+      color: var(--resume-flatpickr-text, #393939);
       font-size: 14px;
       position: relative;
       -webkit-box-sizing: border-box;
@@ -841,7 +857,7 @@ span.flatpickr-weekday {
       height: inherit;
       float: left;
       line-height: inherit;
-      color: #393939;
+      color: var(--resume-flatpickr-text, #393939);
       font-weight: bold;
       width: 2%;
       -webkit-user-select: none;
@@ -865,7 +881,7 @@ span.flatpickr-weekday {
 .flatpickr-time .flatpickr-am-pm:hover,
 .flatpickr-time input:focus,
 .flatpickr-time .flatpickr-am-pm:focus {
-      background: #eee
+      background: var(--resume-flatpickr-hover-bg, #eee)
 }
 
 .flatpickr-input[readonly] {
