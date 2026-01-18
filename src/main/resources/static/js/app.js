@@ -115,6 +115,12 @@
     }
   };
 
+  const supportsDateInput = (() => {
+    const input = doc.createElement('input');
+    input.setAttribute('type', 'date');
+    return input.type === 'date';
+  })();
+
   const onReady = (callback) => {
     if (typeof callback !== 'function') return;
     if (doc.readyState === 'loading') {
@@ -155,15 +161,19 @@
     },
 
     createDatePicker() {
-      if (typeof win.flatpickr !== 'function') return;
       const elements = doc.querySelectorAll('.datepicker');
       if (!elements.length) return;
       elements.forEach((element) => {
-        if (element._flatpickr) return;
-        win.flatpickr(element, {
-          dateFormat: 'Y-m-d',
-          allowInput: true
-        });
+        if (!isElement(element)) return;
+        if (element.dataset.uiDatepicker === 'true') return;
+        element.dataset.uiDatepicker = 'true';
+        if (supportsDateInput) {
+          element.type = 'date';
+          return;
+        }
+        element.type = 'text';
+        element.setAttribute('inputmode', 'numeric');
+        element.setAttribute('pattern', '\\d{4}-\\d{2}-\\d{2}');
       });
     },
 
