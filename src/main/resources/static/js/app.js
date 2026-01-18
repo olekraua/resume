@@ -439,10 +439,16 @@
           const target = trim(trigger.getAttribute('data-ui-remove'));
           if (target) {
             resume.ui.removeBlock(target);
-            return;
+          } else {
+            const item = trigger.closest('.ui-item');
+            if (item) item.remove();
           }
-          const item = trigger.closest('.ui-item');
-          if (item) item.remove();
+          if (resume.ui && typeof resume.ui.normalizeListIndices === 'function') {
+            const container = trigger.closest('#ui-block-container') || doc.getElementById('ui-block-container');
+            if (container) {
+              resume.ui.normalizeListIndices(container, 'items');
+            }
+          }
         });
       },
 
