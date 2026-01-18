@@ -115,6 +115,35 @@
     }
   };
 
+  const updateFileAction = (wrapper, file) => {
+    if (!wrapper) return;
+    const action = wrapper.querySelector('[data-file-action]');
+    if (!action) return;
+    const label = action.querySelector('[data-file-action-label]');
+    const icon = action.querySelector('[data-file-action-icon]');
+    const clear = wrapper.querySelector('[data-file-clear]');
+    const hasFile = Boolean(file);
+    const idleLabel = action.dataset.labelIdle || 'Upload';
+    const readyLabel = action.dataset.labelReady || 'Save';
+    const idleIcon = action.dataset.iconIdle || 'fa-folder-open';
+    const readyIcon = action.dataset.iconReady || 'fa-save';
+    const nextLabel = hasFile ? readyLabel : idleLabel;
+    const nextIcon = hasFile ? readyIcon : idleIcon;
+    if (label) {
+      label.textContent = nextLabel;
+    } else {
+      action.textContent = nextLabel;
+    }
+    if (icon) {
+      icon.className = `fa ${nextIcon}`;
+    }
+    action.setAttribute('aria-label', nextLabel);
+    wrapper.classList.toggle('is-ready', hasFile);
+    if (clear) {
+      clear.disabled = !hasFile;
+    }
+  };
+
   const supportsDateInput = (() => {
     const input = doc.createElement('input');
     input.setAttribute('type', 'date');
@@ -489,9 +518,11 @@
             const fileName = input.files && input.files[0] ? input.files[0].name : '';
             if (caption) {
               caption.textContent = fileName || defaultCaption;
+              caption.title = fileName || defaultCaption;
             }
             const status = wrapper ? wrapper.querySelector('[data-file-status]') : null;
             if (status) status.textContent = '';
+            updateFileAction(wrapper, input.files && input.files[0] ? input.files[0] : null);
           });
 
           doc.addEventListener('click', (event) => {
@@ -503,10 +534,34 @@
             const input = wrapper ? wrapper.querySelector('.c-file__input') : null;
             if (input) resume.interactions.clearFileInput(input);
           });
+
+          doc.addEventListener('click', (event) => {
+            if (!isElement(event.target)) return;
+            const action = event.target.closest('[data-file-action]');
+            if (!action) return;
+            const wrapper = action.closest('.c-file');
+            const input = wrapper ? wrapper.querySelector('.c-file__input') : null;
+            if (!input) return;
+            const file = input.files && input.files[0] ? input.files[0] : null;
+            event.preventDefault();
+            if (!file) {
+              input.click();
+              return;
+            }
+            const form = input.form || action.closest('form');
+            if (!form) return;
+            if (typeof form.requestSubmit === 'function') {
+              form.requestSubmit();
+            } else {
+              form.submit();
+            }
+          });
         }
 
         collectMatching('.c-file', container).forEach((wrapper) => {
           ensureFileWrapperDefaults(wrapper);
+          const input = wrapper.querySelector('.c-file__input');
+          updateFileAction(wrapper, input && input.files && input.files[0] ? input.files[0] : null);
         });
       },
 

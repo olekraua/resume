@@ -695,6 +695,63 @@
   font-size: 12px;
   color: #777;
 }
+
+.c-file--photo .c-file__caption {
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.c-file--photo .c-file__clear,
+.c-file--photo .c-file__action {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 auto;
+          flex: 0 0 auto;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.c-file--photo .c-file__action {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c-file--photo .c-file__clear {
+  display: none;
+}
+
+.c-file--photo.is-ready .c-file__clear {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c-file--photo .c-file__clear {
+  min-width: 34px;
+  padding: 6px 10px;
+  margin-left: 6px;
+}
+
+.c-file--photo .c-file__action {
+  min-width: 110px;
+  padding: 6px 12px;
+  margin-left: 6px;
+}
+
+.c-file--photo .c-file__action .fa {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+.c-file--photo.is-ready .c-file__caption {
+  border-color: #2e6da4;
+  box-shadow: 0 0 0 1px rgba(51, 122, 183, 0.12);
+}
 .resume h1 {
   margin-bottom: 15px;
   margin-top: 10px;

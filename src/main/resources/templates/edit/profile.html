@@ -22,12 +22,24 @@
           <label for="profilePhoto" class="l-col l-col--sm-2 c-form__label">Фото <span class="u-text-muted">(опційно)</span></label>
           <div class="l-col l-col--sm-5">
             <img id="currentPhoto" th:src="${profile.largePhoto != null ? profile.largePhoto : '/img/profile-placeholder.png'}" class="edit-photo u-img-responsive" alt="photo"/><br/>
-            <div class="c-file" data-file-input>
+            <div class="c-file c-file--photo" data-file-input>
               <input type="file" th:field="*{profilePhoto}" id="profilePhoto" class="c-file__input" accept="image/*"/>
               <div class="c-file__group">
-                <label class="c-button c-button--secondary c-file__button" for="profilePhoto">Обрати файл</label>
-                <div class="c-file__caption" data-file-caption>Файл не обрано</div>
-                <button type="button" class="c-button c-button--secondary c-file__clear" data-file-clear>Очистити</button>
+                <div class="c-file__caption" data-file-caption aria-live="polite">Файл не обрано</div>
+                <button type="button" class="c-button c-button--secondary c-file__clear" data-file-clear aria-label="Очистити вибір" disabled>
+                  <i class="fa fa-times" aria-hidden="true"></i>
+                  <span class="u-sr-only">Очистити</span>
+                </button>
+                <button type="button"
+                        class="c-button c-button--primary c-file__action"
+                        data-file-action
+                        data-label-idle="Завантажити"
+                        data-label-ready="Зберегти"
+                        data-icon-idle="fa-folder-open"
+                        data-icon-ready="fa-save">
+                  <i class="fa fa-folder-open" data-file-action-icon aria-hidden="true"></i>
+                  <span data-file-action-label>Завантажити</span>
+                </button>
               </div>
             </div>
             <div th:if="${#fields.hasErrors('profilePhoto')}" class="c-form__help" th:errors="*{profilePhoto}">Invalid</div>
