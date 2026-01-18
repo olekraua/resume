@@ -458,6 +458,7 @@ public class EditProfileController {
                 }
             }
         }
+        addDuplicateCertificateErrors(form, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("profile", profile);
             model.addAttribute("form", form);
@@ -699,6 +700,45 @@ public class EditProfileController {
         }
     }
 
+    private void addDuplicateCertificateErrors(CertificateForm form, BindingResult bindingResult) {
+        if (form == null || form.getItems() == null || form.getItems().isEmpty()) {
+            return;
+        }
+        Locale locale = LocaleContextHolder.getLocale();
+        String message = messageSource.getMessage(
+                "certificate.duplicate",
+                null,
+                "Certificate with the same name and issuer already exists.",
+                locale
+        );
+        Map<String, Integer> seen = new LinkedHashMap<>();
+        java.util.Set<Integer> flagged = new java.util.HashSet<>();
+        List<Certificate> items = form.getItems();
+        for (int i = 0; i < items.size(); i++) {
+            Certificate item = items.get(i);
+            if (item == null) {
+                continue;
+            }
+            String nameKey = normalizeCertificateKeyPart(item.getName());
+            String issuerKey = normalizeCertificateKeyPart(item.getIssuer());
+            if (!StringUtils.hasText(nameKey) || !StringUtils.hasText(issuerKey)) {
+                continue;
+            }
+            String key = nameKey + "|" + issuerKey;
+            Integer firstIndex = seen.get(key);
+            if (firstIndex != null) {
+                String fieldPath = "items[" + i + "].name";
+                bindingResult.addError(new FieldError("form", fieldPath, message));
+                if (flagged.add(firstIndex)) {
+                    String firstFieldPath = "items[" + firstIndex + "].name";
+                    bindingResult.addError(new FieldError("form", firstFieldPath, message));
+                }
+            } else {
+                seen.put(key, i);
+            }
+        }
+    }
+
     private boolean isPracticEmpty(Practic item) {
         if (item == null) {
             return true;
@@ -729,6 +769,14 @@ public class EditProfileController {
         boolean hasSmallUrl = StringUtils.hasText(item.getSmallUrl());
         boolean hasLargeUrl = StringUtils.hasText(item.getLargeUrl());
         return !(hasName || hasIssuer || hasSmallUrl || hasLargeUrl);
+    }
+
+    private String normalizeCertificateKeyPart(String value) {
+        if (!StringUtils.hasText(value)) {
+            return "";
+        }
+        String normalized = value.trim().replaceAll("\\s+", " ");
+        return normalized.toLowerCase(Locale.ROOT);
     }
 
     private String prepareProfileMain(String uid, Model model) {
