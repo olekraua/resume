@@ -1994,6 +1994,7 @@ class EditProfileControllerTest {
     void saveCertificatesUpdatesAndRedirectsOnSuccess() {
         CurrentProfileProvider currentProfileProvider = mock(CurrentProfileProvider.class);
         ProfileService profileService = mock(ProfileService.class);
+        Validator validator = mock(Validator.class);
         BindingResult bindingResult = mock(BindingResult.class);
 
         EditProfileController controller = new EditProfileController(
@@ -2001,7 +2002,7 @@ class EditProfileControllerTest {
                 mock(CertificateStorageService.class),
                 mock(PhotoStorageService.class),
                 mock(PasswordEncoder.class),
-                mock(Validator.class),
+                validator,
                 mock(MessageSource.class),
                 profileService,
                 currentProfileProvider);
@@ -2015,6 +2016,7 @@ class EditProfileControllerTest {
         profile.setLastName("Doe");
         when(profileService.findByIdWithAll(1L)).thenReturn(Optional.of(profile));
         when(bindingResult.hasErrors()).thenReturn(false);
+        when(validator.validate(any(Certificate.class))).thenReturn(Set.of());
 
         Certificate certificate = new Certificate();
         certificate.setName("Certificate");

@@ -775,7 +775,7 @@
         const template = resume.ui.getTemplate();
         const container = doc.getElementById('ui-block-container');
         if (!template || !container) return;
-        const blockIndex = container.querySelectorAll('.ui-item').length;
+        const blockIndex = resume.ui.nextBlockIndex(container);
         const issuerInput = doc.getElementById('certificateIssuer');
         const context = {
           blockIndex,

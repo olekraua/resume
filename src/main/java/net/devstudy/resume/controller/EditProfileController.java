@@ -40,6 +40,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
+import net.devstudy.resume.entity.Certificate;
 import net.devstudy.resume.entity.Hobby;
 import net.devstudy.resume.entity.Education;
 import net.devstudy.resume.entity.Practic;
@@ -426,18 +427,43 @@ public class EditProfileController {
 
     @PostMapping("/certificates")
     public String saveCertificates(@PathVariable String uid,
-            @Valid @ModelAttribute("form") net.devstudy.resume.form.CertificateForm form,
+            @ModelAttribute("form") net.devstudy.resume.form.CertificateForm form,
             BindingResult bindingResult, Model model) {
         Profile profile = resolveProfile(uid);
         if (profile == null)
             return "redirect:/login";
         Long profileId = profile.getId();
+        List<Certificate> items = form.getItems();
+        if (items == null) {
+            items = new ArrayList<>();
+        }
+        List<Certificate> filtered = new ArrayList<>();
+        for (Certificate item : items) {
+            if (!isCertificateEmpty(item)) {
+                filtered.add(item);
+            }
+        }
+        form.setItems(filtered);
         if (bindingResult.hasErrors()) {
             model.addAttribute("profile", profile);
             model.addAttribute("form", form);
             return "edit/certificates";
         }
-        profileService.updateCertificates(profileId, form.getItems());
+        if (!filtered.isEmpty()) {
+            for (int i = 0; i < filtered.size(); i++) {
+                Set<ConstraintViolation<Certificate>> violations = validator.validate(filtered.get(i));
+                for (ConstraintViolation<Certificate> violation : violations) {
+                    String fieldPath = "items[" + i + "]." + violation.getPropertyPath();
+                    bindingResult.addError(new FieldError("form", fieldPath, violation.getMessage()));
+                }
+            }
+        }
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("profile", profile);
+            model.addAttribute("form", form);
+            return "edit/certificates";
+        }
+        profileService.updateCertificates(profileId, filtered);
         return "redirect:/" + uid + "/edit/certificates?success";
     }
 
@@ -692,6 +718,17 @@ public class EditProfileController {
         boolean hasFaculty = StringUtils.hasText(item.getFaculty());
         boolean hasSummary = StringUtils.hasText(item.getSummary());
         return !(hasUniversity || hasFaculty || hasSummary);
+    }
+
+    private boolean isCertificateEmpty(Certificate item) {
+        if (item == null) {
+            return true;
+        }
+        boolean hasName = StringUtils.hasText(item.getName());
+        boolean hasIssuer = StringUtils.hasText(item.getIssuer());
+        boolean hasSmallUrl = StringUtils.hasText(item.getSmallUrl());
+        boolean hasLargeUrl = StringUtils.hasText(item.getLargeUrl());
+        return !(hasName || hasIssuer || hasSmallUrl || hasLargeUrl);
     }
 
     private String prepareProfileMain(String uid, Model model) {

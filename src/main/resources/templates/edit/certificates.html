@@ -141,6 +141,13 @@
     var uploadUrl = /*[[@{|/${profile.uid}/edit/certificates/upload|}]]*/'';
     resume.createCertificateUploader(/*[[${_csrf.token}]]*/'', uploadUrl);
   });
+  (function() {
+    var form = document.querySelector('form');
+    if (!form || !resume || !resume.ui || typeof resume.ui.normalizeListIndices !== 'function') return;
+    form.addEventListener('submit', function() {
+      resume.ui.normalizeListIndices('#ui-block-container', 'items');
+    });
+  })();
   /*]]>*/
 </script>
 </body>
