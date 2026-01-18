@@ -552,10 +552,6 @@
       form.submit();
     },
 
-    logout(csrfToken) {
-      resume.post('/logout', { _csrf: csrfToken });
-    },
-
     moreProfiles(searchQuery) {
       const container = doc.getElementById('profileContainer');
       if (!container) return;
@@ -669,25 +665,6 @@
         container.insertAdjacentHTML('beforeend', template(context));
         resume.createDatePicker();
         resume.initLevelSliders(container);
-      },
-
-      updateSelect(thisObj) {
-        let value = '';
-        let refId = '';
-        if (thisObj && typeof thisObj.val === 'function') {
-          value = thisObj.val();
-          refId = thisObj.attr ? thisObj.attr('data-ref-select') : '';
-        } else {
-          const element = toElement(thisObj);
-          if (element) {
-            value = element.value;
-            refId = element.getAttribute('data-ref-select');
-          }
-        }
-        if (!value && refId) {
-          const ref = doc.getElementById(refId);
-          if (ref) ref.value = '';
-        }
       },
 
       removeBlock(target) {
