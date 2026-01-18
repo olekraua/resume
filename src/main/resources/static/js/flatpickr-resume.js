@@ -1,45 +1,8 @@
-/* flatpickr v4.6.13, @license MIT */
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-    typeof define === 'function' && define.amd ? define(factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.flatpickr = factory());
-}(this, (function () { 'use strict';
+/* Resume Flatpickr v4.6.13 (custom build), @license MIT */
+(() => {
+    'use strict';
 
-    /*! *****************************************************************************
-    Copyright (c) Microsoft Corporation.
-
-    Permission to use, copy, modify, and/or distribute this software for any
-    purpose with or without fee is hereby granted.
-
-    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-    PERFORMANCE OF THIS SOFTWARE.
-    ***************************************************************************** */
-
-    var __assign = function() {
-        __assign = Object.assign || function __assign(t) {
-            for (var s, i = 1, n = arguments.length; i < n; i++) {
-                s = arguments[i];
-                for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-            }
-            return t;
-        };
-        return __assign.apply(this, arguments);
-    };
-
-    function __spreadArrays() {
-        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-        for (var r = Array(s), k = 0, i = 0; i < il; i++)
-            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-                r[k] = a[j];
-        return r;
-    }
-
-    var HOOKS = [
+    const HOOKS = [
         "onChange",
         "onClose",
         "onDayCreate",
@@ -53,7 +16,7 @@
         "onYearChange",
         "onPreCalendarPosition",
     ];
-    var defaults = {
+    const defaults = {
         _disable: [],
         allowInput: false,
         allowInvalidPreload: false,
@@ -126,7 +89,7 @@
         wrap: false,
     };
 
-    var english = {
+    const english = {
         weekdays: {
             shorthand: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
             longhand: [
@@ -198,11 +161,11 @@
         time_24hr: false,
     };
 
-    var pad = function (number, length) {
+    const pad = function (number, length) {
         if (length === void 0) { length = 2; }
         return ("000" + number).slice(length * -1);
     };
-    var int = function (bool) { return (bool === true ? 1 : 0); };
+    const int = function (bool) { return (bool === true ? 1 : 0); };
     /* istanbul ignore next */
     function debounce(fn, wait) {
         var t;
@@ -213,7 +176,7 @@
             t = setTimeout(function () { return fn.apply(_this, args); }, wait);
         };
     }
-    var arrayify = function (obj) {
+    const arrayify = function (obj) {
         return obj instanceof Array ? obj : [obj];
     };
 
@@ -272,9 +235,9 @@
         }
     }
 
-    var doNothing = function () { return undefined; };
-    var monthToStr = function (monthNumber, shorthand, locale) { return locale.months[shorthand ? "shorthand" : "longhand"][monthNumber]; };
-    var revFormat = {
+    const doNothing = function () { return undefined; };
+    const monthToStr = function (monthNumber, shorthand, locale) { return locale.months[shorthand ? "shorthand" : "longhand"][monthNumber]; };
+    const revFormat = {
         D: doNothing,
         F: function (dateObj, monthName, locale) {
             dateObj.setMonth(locale.months.longhand.indexOf(monthName));
@@ -339,7 +302,7 @@
             dateObj.setFullYear(2000 + parseFloat(year));
         },
     };
-    var tokenRegex = {
+    const tokenRegex = {
         D: "",
         F: "",
         G: "(\\d\\d|\\d)",
@@ -364,7 +327,7 @@
         w: "(\\d\\d|\\d)",
         y: "(\\d{2})",
     };
-    var formats = {
+    const formats = {
         // get the date in UTC
         Z: function (date) { return date.toISOString(); },
         // weekday name, short, e.g. Thu
@@ -428,7 +391,7 @@
         y: function (date) { return String(date.getFullYear()).substring(2); },
     };
 
-    var createDateFormatter = function (_a) {
+    const createDateFormatter = function (_a) {
         var _b = _a.config, config = _b === void 0 ? defaults : _b, _c = _a.l10n, l10n = _c === void 0 ? english : _c, _d = _a.isMobile, isMobile = _d === void 0 ? false : _d;
         return function (dateObj, frmt, overrideLocale) {
             var locale = overrideLocale || l10n;
@@ -447,7 +410,7 @@
                 .join("");
         };
     };
-    var createDateParser = function (_a) {
+    const createDateParser = function (_a) {
         var _b = _a.config, config = _b === void 0 ? defaults : _b, _c = _a.l10n, l10n = _c === void 0 ? english : _c;
         return function (date, givenFormat, timeless, customLocale) {
             if (date !== 0 && !date)
@@ -529,17 +492,17 @@
         }
         return date1.getTime() - date2.getTime();
     }
-    var isBetween = function (ts, ts1, ts2) {
+    const isBetween = function (ts, ts1, ts2) {
         return ts > Math.min(ts1, ts2) && ts < Math.max(ts1, ts2);
     };
-    var calculateSecondsSinceMidnight = function (hours, minutes, seconds) {
+    const calculateSecondsSinceMidnight = function (hours, minutes, seconds) {
         return hours * 3600 + minutes * 60 + seconds;
     };
-    var parseSeconds = function (secondsSinceMidnight) {
+    const parseSeconds = function (secondsSinceMidnight) {
         var hours = Math.floor(secondsSinceMidnight / 3600), minutes = (secondsSinceMidnight - hours * 3600) / 60;
         return [hours, minutes, secondsSinceMidnight - hours * 3600 - minutes * 60];
     };
-    var duration = {
+    const duration = {
         DAY: 86400000,
     };
     function getDefaultHours(config) {
@@ -571,32 +534,10 @@
         return { hours: hours, minutes: minutes, seconds: seconds };
     }
 
-    if (typeof Object.assign !== "function") {
-        Object.assign = function (target) {
-            var args = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                args[_i - 1] = arguments[_i];
-            }
-            if (!target) {
-                throw TypeError("Cannot convert undefined or null to object");
-            }
-            var _loop_1 = function (source) {
-                if (source) {
-                    Object.keys(source).forEach(function (key) { return (target[key] = source[key]); });
-                }
-            };
-            for (var _a = 0, args_1 = args; _a < args_1.length; _a++) {
-                var source = args_1[_a];
-                _loop_1(source);
-            }
-            return target;
-        };
-    }
-
-    var DEBOUNCED_CHANGE_MS = 300;
+    const DEBOUNCED_CHANGE_MS = 300;
     function FlatpickrInstance(element, instanceConfig) {
         var self = {
-            config: __assign(__assign({}, defaults), flatpickr.defaultConfig),
+            config: { ...defaults, ...flatpickr.defaultConfig },
             l10n: english,
         };
         self.parseDate = createDateParser({ config: self.config, l10n: self.l10n });
@@ -1394,9 +1335,9 @@
                 return;
             }
             var firstDayOfWeek = self.l10n.firstDayOfWeek;
-            var weekdays = __spreadArrays(self.l10n.weekdays.shorthand);
+            var weekdays = self.l10n.weekdays.shorthand.slice();
             if (firstDayOfWeek > 0 && firstDayOfWeek < weekdays.length) {
-                weekdays = __spreadArrays(weekdays.splice(firstDayOfWeek, weekdays.length), weekdays.splice(0, firstDayOfWeek));
+                weekdays = weekdays.slice(firstDayOfWeek).concat(weekdays.slice(0, firstDayOfWeek));
             }
             for (var i = self.config.showMonths; i--;) {
                 self.weekdayContainer.children[i].innerHTML = "\n      <span class='flatpickr-weekday'>\n        " + weekdays.join("</span><span class='flatpickr-weekday'>") + "\n      </span>\n      ";
@@ -1958,7 +1899,7 @@
                 "enableSeconds",
                 "disableMobile",
             ];
-            var userConfig = __assign(__assign({}, JSON.parse(JSON.stringify(element.dataset || {}))), instanceConfig);
+            var userConfig = { ...JSON.parse(JSON.stringify(element.dataset || {})), ...instanceConfig };
             var formats = {};
             self.config.parseDate = userConfig.parseDate;
             self.config.formatDate = userConfig.formatDate;
@@ -2058,17 +1999,18 @@
             if (typeof self.config.locale !== "object" &&
                 typeof flatpickr.l10ns[self.config.locale] === "undefined")
                 self.config.errorHandler(new Error("flatpickr: invalid locale " + self.config.locale));
-            self.l10n = __assign(__assign({}, flatpickr.l10ns.default), (typeof self.config.locale === "object"
+            var localeConfig = typeof self.config.locale === "object"
                 ? self.config.locale
                 : self.config.locale !== "default"
                     ? flatpickr.l10ns[self.config.locale]
-                    : undefined));
+                    : undefined;
+            self.l10n = { ...flatpickr.l10ns.default, ...(localeConfig || {}) };
             tokenRegex.D = "(" + self.l10n.weekdays.shorthand.join("|") + ")";
             tokenRegex.l = "(" + self.l10n.weekdays.longhand.join("|") + ")";
             tokenRegex.M = "(" + self.l10n.months.shorthand.join("|") + ")";
             tokenRegex.F = "(" + self.l10n.months.longhand.join("|") + ")";
             tokenRegex.K = "(" + self.l10n.amPM[0] + "|" + self.l10n.amPM[1] + "|" + self.l10n.amPM[0].toLowerCase() + "|" + self.l10n.amPM[1].toLowerCase() + ")";
-            var userConfig = __assign(__assign({}, instanceConfig), JSON.parse(JSON.stringify(element.dataset || {})));
+            var userConfig = { ...instanceConfig, ...JSON.parse(JSON.stringify(element.dataset || {})) };
             if (userConfig.time_24hr === undefined &&
                 flatpickr.defaultConfig.time_24hr === undefined) {
                 self.config.time_24hr = self.l10n.time_24hr;
@@ -2689,14 +2631,14 @@
     /* istanbul ignore next */
     flatpickr.defaultConfig = {};
     flatpickr.l10ns = {
-        en: __assign({}, english),
-        default: __assign({}, english),
+        en: { ...english },
+        default: { ...english },
     };
     flatpickr.localize = function (l10n) {
-        flatpickr.l10ns.default = __assign(__assign({}, flatpickr.l10ns.default), l10n);
+        flatpickr.l10ns.default = { ...flatpickr.l10ns.default, ...l10n };
     };
     flatpickr.setDefaults = function (config) {
-        flatpickr.defaultConfig = __assign(__assign({}, flatpickr.defaultConfig), config);
+        flatpickr.defaultConfig = { ...flatpickr.defaultConfig, ...config };
     };
     flatpickr.parseDate = createDateParser({});
     flatpickr.formatDate = createDateFormatter({});
@@ -2713,7 +2655,4 @@
     if (typeof window !== "undefined") {
         window.flatpickr = flatpickr;
     }
-
-    return flatpickr;
-
-})));
+})();
