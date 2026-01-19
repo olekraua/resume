@@ -425,6 +425,16 @@ public class EditProfileController {
         }
     }
 
+    @PostMapping("/photo/remove")
+    public String removePhoto(@PathVariable String uid) {
+        Profile profile = resolveProfile(uid);
+        if (profile == null) {
+            return "redirect:/login";
+        }
+        profileService.removePhoto(profile.getId());
+        return "redirect:/" + uid + "/edit/profile";
+    }
+
     @PostMapping("/certificates")
     public String saveCertificates(@PathVariable String uid,
             @ModelAttribute("form") net.devstudy.resume.form.CertificateForm form,

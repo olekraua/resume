@@ -348,11 +348,26 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     public void updatePhoto(Long profileId, String largeUrl, String smallUrl) {
         Profile profile = getProfileOrThrow(profileId);
+        java.util.List<String> oldUrls = collectProfilePhotoUrls(profile);
         profile.setLargePhoto(largeUrl);
         profile.setSmallPhoto(smallUrl);
         profile.setCompleted(isProfileCompleted(profile));
         profileRepository.save(profile);
         requestIndexing(profileId);
+        registerPhotoCleanup(oldUrls, collectPhotoUrls(largeUrl, smallUrl));
+    }
+
+    @Override
+    @Transactional
+    public void removePhoto(Long profileId) {
+        Profile profile = getProfileOrThrow(profileId);
+        java.util.List<String> oldUrls = collectProfilePhotoUrls(profile);
+        profile.setLargePhoto(null);
+        profile.setSmallPhoto(null);
+        profile.setCompleted(isProfileCompleted(profile));
+        profileRepository.save(profile);
+        requestIndexing(profileId);
+        registerPhotoCleanup(oldUrls, java.util.Set.of());
     }
 
     private java.util.Map<Long, Language> mapExistingLanguagesById(java.util.List<Language> existing) {
@@ -455,6 +470,17 @@ public class ProfileServiceImpl implements ProfileService {
         return urls;
     }
 
+    private java.util.Set<String> collectPhotoUrls(String largeUrl, String smallUrl) {
+        java.util.Set<String> urls = new java.util.HashSet<>(2);
+        if (StringUtils.hasText(largeUrl)) {
+            urls.add(largeUrl);
+        }
+        if (StringUtils.hasText(smallUrl)) {
+            urls.add(smallUrl);
+        }
+        return urls;
+    }
+
     private java.util.List<String> collectProfileCertificateUrls(Long profileId) {
         java.util.List<Certificate> certificates = certificateRepository.findByProfileId(profileId);
         if (certificates == null || certificates.isEmpty()) {
@@ -537,6 +563,29 @@ public class ProfileServiceImpl implements ProfileService {
             }
         }
         return urls;
+    }
+
+    private void registerPhotoCleanup(java.util.List<String> oldUrls, java.util.Set<String> newUrls) {
+        if (oldUrls == null || oldUrls.isEmpty()) {
+            return;
+        }
+        java.util.Set<String> safeNewUrls = newUrls == null ? java.util.Set.of() : newUrls;
+        java.util.List<String> toRemove = oldUrls.stream()
+                .filter(url -> !safeNewUrls.contains(url))
+                .toList();
+        if (toRemove.isEmpty()) {
+            return;
+        }
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            photoFileStorage.removeAll(toRemove);
+            return;
+        }
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                photoFileStorage.removeAll(toRemove);
+            }
+        });
     }
 
     private void registerCertificateCleanup(java.util.List<String> oldUrls, java.util.Set<String> newUrls) {

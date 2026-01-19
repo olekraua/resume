@@ -58,4 +58,6 @@ public interface ProfileService {
     void updateCertificates(Long profileId, List<Certificate> items);
 
     void updatePhoto(Long profileId, String largeUrl, String smallUrl);
+
+    void removePhoto(Long profileId);
 }
