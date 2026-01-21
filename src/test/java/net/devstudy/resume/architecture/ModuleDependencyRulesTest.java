@@ -87,201 +87,37 @@ class ModuleDependencyRulesTest {
         };
     }
 
-    // Temporary mapping for the current package layout. Replace with package-based mapping
-    // after refactoring to net.devstudy.resume.<module>.* packages.
+    // Package-based mapping for net.devstudy.resume.<module>.* packages.
     private static String moduleOf(JavaClass clazz) {
         String pkg = clazz.getPackageName();
-        String name = clazz.getSimpleName();
-        String baseName = name;
-        String fullName = clazz.getFullName();
-        int dollarIndex = fullName.indexOf('$');
-        if (dollarIndex > 0) {
-            int lastDot = fullName.lastIndexOf('.', dollarIndex);
-            if (lastDot >= 0 && lastDot + 1 < dollarIndex) {
-                baseName = fullName.substring(lastDot + 1, dollarIndex);
-            }
-        }
-
-        if ("net.devstudy.resume".equals(pkg)) {
+        if ("net.devstudy.resume".equals(pkg)
+                || pkg.equals("net.devstudy.resume.app")
+                || pkg.startsWith("net.devstudy.resume.app.")) {
             return "app";
         }
-        if (pkg.startsWith("net.devstudy.resume.shared")) {
-            return "shared";
-        }
-        if (pkg.startsWith("net.devstudy.resume.util")) {
-            return "SecurityUtil".equals(baseName) ? "auth" : "shared";
-        }
-        if (pkg.startsWith("net.devstudy.resume.controller") || pkg.startsWith("net.devstudy.resume.filter")) {
+        if (pkg.equals("net.devstudy.resume.web") || pkg.startsWith("net.devstudy.resume.web.")) {
             return "web";
         }
-        if (pkg.startsWith("net.devstudy.resume.config")) {
-            if (Set.of("AppInfoConfig", "RepositoryConfig").contains(baseName)) {
-                return "app";
-            }
-            if (Set.of("UiModelAttributes", "UiProperties", "UploadResourceConfig").contains(baseName)) {
-                return "web";
-            }
-            if ("SecurityConfig".equals(baseName)) {
-                return "auth";
-            }
-            if (baseName.startsWith("Elasticsearch")) {
-                return "search";
-            }
-            if (Set.of("PhotoUploadProperties", "CertificateUploadProperties").contains(baseName)) {
-                return "media";
-            }
-            if ("RestoreMailTemplateProperties".equals(baseName)) {
-                return "notification";
-            }
-            return "app";
+        if (pkg.equals("net.devstudy.resume.profile") || pkg.startsWith("net.devstudy.resume.profile.")) {
+            return "profile";
         }
-        if (pkg.startsWith("net.devstudy.resume.search")) {
-            return "search";
+        if (pkg.equals("net.devstudy.resume.staticdata") || pkg.startsWith("net.devstudy.resume.staticdata.")) {
+            return "staticdata";
         }
-        if (pkg.startsWith("net.devstudy.resume.mail")) {
-            return "notification";
-        }
-        if (pkg.startsWith("net.devstudy.resume.event")) {
-            if (baseName.startsWith("ProfileIndexing")) {
-                return "search";
-            }
-            if (baseName.startsWith("RestoreAccessMail")) {
-                return "notification";
-            }
-            return "shared";
-        }
-        if (pkg.startsWith("net.devstudy.resume.security")) {
+        if (pkg.equals("net.devstudy.resume.auth") || pkg.startsWith("net.devstudy.resume.auth.")) {
             return "auth";
         }
-        if (pkg.startsWith("net.devstudy.resume.component")) {
-            if (Set.of("TemplateResolver", "FreemarkerTemplateResolver").contains(baseName)) {
-                return "notification";
-            }
-            if (Set.of(
-                    "PhotoFileStorage",
-                    "CertificateFileStorage",
-                    "ImageResizer",
-                    "ImageOptimizator",
-                    "ImageFormatConverter",
-                    "UploadTempPathFactory",
-                    "ThumbnailsImageResizer",
-                    "JpegTranImageOptimizator",
-                    "PngToJpegImageFormatConverter",
-                    "DefaultUploadTempPathFactory",
-                    "UploadImageTempStorage",
-                    "UploadCertificateLinkTempStorage"
-            ).contains(baseName)) {
-                return "media";
-            }
-            if ("AccessDeniedHandlerImpl".equals(baseName)) {
-                return "auth";
-            }
-            if ("FormErrorConverter".equals(baseName)) {
-                return "shared";
-            }
-            return "shared";
-        }
-        if (pkg.startsWith("net.devstudy.resume.annotation")) {
-            if ("EnableUploadImageTempStorage".equals(baseName)) {
-                return "media";
-            }
-            if (Set.of("ProfileDataFieldGroup", "ProfileInfoField").contains(baseName)) {
-                return "profile";
-            }
-            if ("EnableFormErrorConversion".equals(baseName)) {
-                return "shared";
-            }
-            return "shared";
-        }
-        if (pkg.startsWith("net.devstudy.resume.entity")) {
-            if (Set.of("SkillCategory", "Hobby").contains(baseName)) {
-                return "staticdata";
-            }
-            if (Set.of("ProfileRestore", "RememberMeToken").contains(baseName)) {
-                return "auth";
-            }
-            return "profile";
-        }
-        if (pkg.startsWith("net.devstudy.resume.repository.search")) {
+        if (pkg.equals("net.devstudy.resume.search") || pkg.startsWith("net.devstudy.resume.search.")) {
             return "search";
         }
-        if (pkg.startsWith("net.devstudy.resume.repository.storage")) {
-            if (Set.of("SkillCategoryRepository", "HobbyRepository").contains(baseName)) {
-                return "staticdata";
-            }
-            if (Set.of("ProfileRestoreRepository", "RememberMeTokenRepository").contains(baseName)) {
-                return "auth";
-            }
-            return "profile";
+        if (pkg.equals("net.devstudy.resume.media") || pkg.startsWith("net.devstudy.resume.media.")) {
+            return "media";
         }
-        if (pkg.startsWith("net.devstudy.resume.service")) {
-            if (Set.of("ProfileService", "ProfileServiceImpl", "EditProfileService").contains(baseName)) {
-                return "profile";
-            }
-            if (Set.of("StaticDataService", "StaticDataServiceImpl").contains(baseName)) {
-                return "staticdata";
-            }
-            if (Set.of(
-                    "RestoreAccessService",
-                    "RestoreAccessServiceImpl",
-                    "UidSuggestionService",
-                    "UidSuggestionServiceImpl",
-                    "CurrentProfileDetailsService",
-                    "RememberMeService"
-            ).contains(baseName)) {
-                return "auth";
-            }
-            if (Set.of(
-                    "ProfileSearchService",
-                    "ProfileSearchServiceImpl",
-                    "ProfileSearchServiceNoOp",
-                    "ProfileSearchMapper",
-                    "ProfileSearchMapperImpl"
-            ).contains(baseName)) {
-                return "search";
-            }
-            if (Set.of(
-                    "PhotoStorageService",
-                    "PhotoStorageServiceImpl",
-                    "CertificateStorageService",
-                    "CertificateStorageServiceImpl"
-            ).contains(baseName)) {
-                return "media";
-            }
-            if (Set.of(
-                    "RestoreAccessMailService",
-                    "RestoreAccessMailServiceImpl",
-                    "RestoreAccessMailServiceNoOp"
-            ).contains(baseName)) {
-                return "notification";
-            }
+        if (pkg.equals("net.devstudy.resume.notification") || pkg.startsWith("net.devstudy.resume.notification.")) {
+            return "notification";
+        }
+        if (pkg.equals("net.devstudy.resume.shared") || pkg.startsWith("net.devstudy.resume.shared.")) {
             return "shared";
-        }
-        if (pkg.startsWith("net.devstudy.resume.form")) {
-            if (Set.of(
-                    "RegistrationForm",
-                    "ChangeLoginForm",
-                    "ChangePasswordForm",
-                    "RestoreAccessForm",
-                    "RestorePasswordForm",
-                    "PasswordForm",
-                    "SignUpForm"
-            ).contains(baseName)) {
-                return "auth";
-            }
-            return "profile";
-        }
-        if (pkg.startsWith("net.devstudy.resume.model")) {
-            if (Set.of("CurrentProfile", "CurrentProfileImpl").contains(baseName)) {
-                return "auth";
-            }
-            if (Set.of("UploadTempPath", "UploadCertificateResult").contains(baseName)) {
-                return "media";
-            }
-            return "shared";
-        }
-        if (pkg.startsWith("net.devstudy.resume.exception")) {
-            return "UidAlreadyExistsException".equals(baseName) ? "profile" : "shared";
         }
         return "unknown";
     }

@@ -10,10 +10,10 @@
 ## Потоки
 
 ### Редагування профілю
-- Вхід: `GET/POST /{uid}/edit/...` через `src/main/java/net/devstudy/resume/controller/EditProfileController.java`.
-- Доступ: звірка `uid` з поточним користувачем у `src/main/java/net/devstudy/resume/security/CurrentProfileProvider.java`.
-- Валідація: форми в `src/main/java/net/devstudy/resume/form/*` + ручна валідація для `Practic`/`Education`.
-- Запис: `src/main/java/net/devstudy/resume/service/impl/ProfileServiceImpl.java` оновлює сутності, прапорець `completed`, публікує подію індексації.
+- Вхід: `GET/POST /{uid}/edit/...` через `src/main/java/net/devstudy/resume/web/controller/EditProfileController.java`.
+- Доступ: звірка `uid` з поточним користувачем у `src/main/java/net/devstudy/resume/auth/security/CurrentProfileProvider.java`.
+- Валідація: форми в `src/main/java/net/devstudy/resume/profile/form/*` + ручна валідація для `Practic`/`Education`.
+- Запис: `src/main/java/net/devstudy/resume/profile/service/impl/ProfileServiceImpl.java` оновлює сутності, прапорець `completed`, публікує подію індексації.
 
 #### Sequence diagram
 ```mermaid
@@ -52,9 +52,9 @@ sequenceDiagram
 ```
 
 ### Пошук
-- Вхід: `GET /welcome`, `GET /search` у `src/main/java/net/devstudy/resume/controller/PublicDataController.java`, `GET /api/suggest` у `src/main/java/net/devstudy/resume/controller/SuggestController.java`.
+- Вхід: `GET /welcome`, `GET /search` у `src/main/java/net/devstudy/resume/web/controller/PublicDataController.java`, `GET /api/suggest` у `src/main/java/net/devstudy/resume/web/controller/SuggestController.java`.
 - Запит: `ProfileService.search()` делегує у `ProfileSearchService`.
-- Elasticsearch: `src/main/java/net/devstudy/resume/service/impl/ProfileSearchServiceImpl.java` виконує ES‑запит і потім вантажить `Profile` по id з JPA.
+- Elasticsearch: `src/main/java/net/devstudy/resume/search/service/impl/ProfileSearchServiceImpl.java` виконує ES‑запит і потім вантажить `Profile` по id з JPA.
 - Fallback: при помилках ES повертається JPA‑пошук у `ProfileRepository`.
 - Індексація: подія `ProfileIndexingRequestedEvent` → `ProfileSearchIndexingListener` → `ProfileSearchService.indexProfiles()`.
 
@@ -89,7 +89,7 @@ sequenceDiagram
 ```
 
 ### Відновлення доступу
-- Вхід: `GET/POST /restore` та `GET/POST /restore/{token}` у `src/main/java/net/devstudy/resume/controller/RestoreAccessController.java`.
+- Вхід: `GET/POST /restore` та `GET/POST /restore/{token}` у `src/main/java/net/devstudy/resume/web/controller/RestoreAccessController.java`.
 - Запит: `RestoreAccessServiceImpl` знаходить профіль по uid/email/phone, створює токен, хешує і зберігає у `ProfileRestore`.
 - Повідомлення: `RestoreAccessMailRequestedEvent` → `RestoreAccessMailListener` → `RestoreAccessMailServiceImpl`.
 - Скидання пароля: `resetPassword()` оновлює пароль через `ProfileService`, видаляє токен.
@@ -227,16 +227,16 @@ sequenceDiagram
 ## Власники даних (Source of Truth)
 
 ### Profile domain
-- `Profile`, `Contacts`, `Skill`, `Practic`, `Education`, `Course`, `Language`, `Certificate` у `src/main/java/net/devstudy/resume/entity/*`.
-- Власник логіки оновлення: `src/main/java/net/devstudy/resume/service/impl/ProfileServiceImpl.java`.
+- `Profile`, `Contacts`, `Skill`, `Practic`, `Education`, `Course`, `Language`, `Certificate` у `src/main/java/net/devstudy/resume/profile/entity/*`.
+- Власник логіки оновлення: `src/main/java/net/devstudy/resume/profile/service/impl/ProfileServiceImpl.java`.
 
 ### StaticData domain
-- `SkillCategory`, `Hobby` у `src/main/java/net/devstudy/resume/entity/SkillCategory.java` та `src/main/java/net/devstudy/resume/entity/Hobby.java`.
-- Читання: `src/main/java/net/devstudy/resume/service/impl/StaticDataServiceImpl.java`.
+- `SkillCategory`, `Hobby` у `src/main/java/net/devstudy/resume/staticdata/entity/SkillCategory.java` та `src/main/java/net/devstudy/resume/staticdata/entity/Hobby.java`.
+- Читання: `src/main/java/net/devstudy/resume/staticdata/service/impl/StaticDataServiceImpl.java`.
 
 ### Auth domain
-- `ProfileRestore` у `src/main/java/net/devstudy/resume/entity/ProfileRestore.java`.
-- Логіка: `src/main/java/net/devstudy/resume/service/impl/RestoreAccessServiceImpl.java`.
+- `ProfileRestore` у `src/main/java/net/devstudy/resume/auth/entity/ProfileRestore.java`.
+- Логіка: `src/main/java/net/devstudy/resume/auth/service/impl/RestoreAccessServiceImpl.java`.
 
 ### Search domain (похідні дані)
 - `ProfileSearchDocument` у `src/main/java/net/devstudy/resume/search/ProfileSearchDocument.java`.

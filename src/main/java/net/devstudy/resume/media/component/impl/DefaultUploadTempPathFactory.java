@@ -1,0 +1,17 @@
+package net.devstudy.resume.media.component.impl;
+
+import java.io.IOException;
+
+import org.springframework.stereotype.Component;
+
+import net.devstudy.resume.media.component.UploadTempPathFactory;
+import net.devstudy.resume.media.model.UploadTempPath;
+
+@Component
+public class DefaultUploadTempPathFactory implements UploadTempPathFactory {
+
+    @Override
+    public UploadTempPath create() throws IOException {
+        return new UploadTempPath();
+    }
+}

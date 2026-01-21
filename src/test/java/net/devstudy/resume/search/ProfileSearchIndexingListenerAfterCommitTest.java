@@ -19,10 +19,10 @@ import org.springframework.transaction.support.AbstractPlatformTransactionManage
 import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import net.devstudy.resume.entity.Profile;
-import net.devstudy.resume.event.ProfileIndexingRequestedEvent;
-import net.devstudy.resume.repository.storage.ProfileRepository;
-import net.devstudy.resume.service.ProfileSearchService;
+import net.devstudy.resume.profile.entity.Profile;
+import net.devstudy.resume.search.event.ProfileIndexingRequestedEvent;
+import net.devstudy.resume.profile.repository.storage.ProfileRepository;
+import net.devstudy.resume.search.service.ProfileSearchService;
 
 class ProfileSearchIndexingListenerAfterCommitTest {
 
