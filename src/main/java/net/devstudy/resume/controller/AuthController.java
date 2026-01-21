@@ -42,6 +42,9 @@ public class AuthController {
 
     @GetMapping("/login")
     public String login() {
+        if (currentProfileProvider.getCurrentProfile() != null) {
+            return "redirect:/me";
+        }
         return "auth/login";
     }
 

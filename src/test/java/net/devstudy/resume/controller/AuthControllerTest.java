@@ -26,12 +26,12 @@ import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfigura
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import net.devstudy.resume.shared.component.DataBuilder;
+import net.devstudy.resume.component.impl.AccessDeniedHandlerImpl;
 import net.devstudy.resume.config.SecurityConfig;
 import net.devstudy.resume.config.UiModelAttributes;
 import net.devstudy.resume.config.UiProperties;
@@ -43,7 +43,7 @@ import net.devstudy.resume.service.ProfileService;
 import net.devstudy.resume.service.UidSuggestionService;
 
 @WebMvcTest(controllers = AuthController.class)
-@Import({UiProperties.class, UiModelAttributes.class, SecurityConfig.class})
+@Import({UiProperties.class, UiModelAttributes.class, SecurityConfig.class, AccessDeniedHandlerImpl.class})
 @ImportAutoConfiguration(MessageSourceAutoConfiguration.class)
 @TestPropertySource(properties = "spring.messages.basename=i18n.messages")
 class AuthControllerTest {
@@ -65,9 +65,6 @@ class AuthControllerTest {
 
     @MockitoBean
     private UserDetailsService userDetailsService;
-
-    @MockitoBean
-    private AccessDeniedHandler accessDeniedHandler;
 
     @Test
     void redirectsToMeWhenAlreadyLoggedIn() throws Exception {
@@ -91,8 +88,7 @@ class AuthControllerTest {
     @Test
     void returnsFormWhenBindingErrors() throws Exception {
         mockMvc.perform(post("/register")
-                        .with(csrf())
-                        .with(user(buildCurrentProfile("owner-user"))))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/register"))
                 .andExpect(model().attributeHasFieldErrors("registrationForm",
@@ -114,7 +110,6 @@ class AuthControllerTest {
 
         mockMvc.perform(post("/register")
                         .with(csrf())
-                        .with(user(buildCurrentProfile("owner-user")))
                         .param("uid", "john-doe")
                         .param("firstName", "John")
                         .param("lastName", "Doe")
@@ -136,7 +131,6 @@ class AuthControllerTest {
 
         mockMvc.perform(post("/register")
                         .with(csrf())
-                        .with(user(buildCurrentProfile("owner-user")))
                         .param("uid", "taken-uid")
                         .param("firstName", "John")
                         .param("lastName", "Doe")
@@ -157,7 +151,6 @@ class AuthControllerTest {
 
         mockMvc.perform(post("/register")
                         .with(csrf())
-                        .with(user(buildCurrentProfile("owner-user")))
                         .param("uid", "bad-uid")
                         .param("firstName", "John")
                         .param("lastName", "Doe")
@@ -227,8 +220,7 @@ class AuthControllerTest {
     void rendersRegisterFormWhenUserNotLoggedIn() throws Exception {
         when(currentProfileProvider.getCurrentProfile()).thenReturn(null);
 
-        mockMvc.perform(get("/register")
-                        .with(user(buildCurrentProfile("owner-user"))))
+        mockMvc.perform(get("/register"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/register"))
                 .andExpect(model().attributeExists("registrationForm"));
@@ -239,6 +231,16 @@ class AuthControllerTest {
         mockMvc.perform(get("/login"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("auth/login"));
+    }
+
+    @Test
+    void redirectsToMeWhenLoginFormRequestedByLoggedInUser() throws Exception {
+        when(currentProfileProvider.getCurrentProfile()).thenReturn(buildCurrentProfile("owner-user"));
+
+        mockMvc.perform(get("/login")
+                        .with(user(buildCurrentProfile("owner-user"))))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/me"));
     }
 
     private CurrentProfile buildCurrentProfile(String uid) {

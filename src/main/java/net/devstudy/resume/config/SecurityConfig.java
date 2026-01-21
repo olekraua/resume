@@ -24,9 +24,10 @@ public class SecurityConfig {
                                         .requestMatchers("/", "/welcome", "/fragment/more", "/search",
                                                         "/error/**", "/css/**", "/favicon/**",
                                                         "/fonts/**", "/img/**",
-                                                        "/js/**", "/media/**", "/uploads/**", "/favicon.ico",
-                                                        "/login", "/register", "/register/**", "/restore/**")
+                                                        "/js/**", "/media/**", "/uploads/**", "/favicon.ico")
                                         .permitAll()
+                                        .requestMatchers("/login", "/register", "/register/**", "/restore/**")
+                                        .anonymous()
                                         // профільні сторінки (GET /{uid}) публічні, але редагування/акаунт захищені
                                 .requestMatchers("/me", "/account/**", "/*/edit/**").authenticated()
                                         .requestMatchers(HttpMethod.GET, "/*").permitAll()
@@ -35,8 +36,7 @@ public class SecurityConfig {
                         .exceptionHandling(ex -> ex.accessDeniedHandler(accessDeniedHandler))
                         .formLogin(form -> form
                                         .loginPage("/login")
-                                                .defaultSuccessUrl("/me", false)
-                                                .permitAll())
+                                                .defaultSuccessUrl("/me", false))
                                 .logout(logout -> logout
                                                 .logoutUrl("/logout")
                                                 .logoutSuccessUrl("/login?logout")
