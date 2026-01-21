@@ -29,6 +29,7 @@ import net.devstudy.resume.profile.entity.Profile;
 import net.devstudy.resume.profile.entity.Skill;
 import net.devstudy.resume.search.event.ProfileIndexingRequestedEvent;
 import net.devstudy.resume.profile.exception.UidAlreadyExistsException;
+import net.devstudy.resume.profile.event.ProfilePasswordChangedEvent;
 import net.devstudy.resume.profile.form.ContactsForm;
 import net.devstudy.resume.profile.form.InfoForm;
 import net.devstudy.resume.shared.model.LanguageType;
@@ -108,6 +109,7 @@ public class ProfileServiceImpl implements ProfileService {
         Profile profile = getProfileOrThrow(profileId);
         profile.setPassword(passwordEncoder.encode(rawPassword));
         profileRepository.save(profile);
+        eventPublisher.publishEvent(new ProfilePasswordChangedEvent(profile.getId()));
     }
 
     @Override

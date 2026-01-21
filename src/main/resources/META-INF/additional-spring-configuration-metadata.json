@@ -128,6 +128,29 @@
       "type": "java.lang.Boolean",
       "defaultValue": true,
       "description": "Redact sensitive patterns from profile info before indexing."
+    },
+    {
+      "name": "app.security.remember-me.key",
+      "type": "java.lang.String",
+      "description": "Secret key used to sign remember-me cookies."
+    },
+    {
+      "name": "app.security.remember-me.token-ttl",
+      "type": "java.time.Duration",
+      "defaultValue": "PT336H",
+      "description": "Time-to-live for remember-me tokens."
+    },
+    {
+      "name": "app.security.remember-me.parameter",
+      "type": "java.lang.String",
+      "defaultValue": "remember-me",
+      "description": "Request parameter name used to trigger remember-me."
+    },
+    {
+      "name": "app.security.remember-me.cookie-name",
+      "type": "java.lang.String",
+      "defaultValue": "remember-me",
+      "description": "Cookie name used to store remember-me tokens."
     }
   ]
 }
