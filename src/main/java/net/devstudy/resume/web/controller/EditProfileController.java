@@ -624,7 +624,7 @@ public class EditProfileController {
     }
 
     private String prepareCertificates(String uid, Model model) {
-        return prepareProfileModel(uid, model, "edit/certificates", new net.devstudy.resume.profile.form.CertificateForm());
+        return prepareProfileModel(uid, model, "edit/certificates", new CertificateForm());
     }
 
     private String preparePhoto(String uid, Model model) {

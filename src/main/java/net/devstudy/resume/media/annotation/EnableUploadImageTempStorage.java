@@ -9,8 +9,8 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a method whose image-processing logic needs a temporary file storage.
- * {@link net.devstudy.resume.media.component.impl.UploadImageTempStorage} creates temp files before method execution and
- * removes them afterwards.
+ * {@link net.devstudy.resume.media.component.impl.UploadImageTempStorage} creates temp files
+ * before method execution and removes them afterwards.
  */
 @Target({ METHOD })
 @Retention(RUNTIME)
