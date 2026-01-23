@@ -14,36 +14,36 @@ import org.junit.jupiter.api.Test;
 
 import net.devstudy.resume.profile.entity.Profile;
 import net.devstudy.resume.search.event.ProfileIndexingRequestedEvent;
-import net.devstudy.resume.profile.repository.storage.ProfileRepository;
+import net.devstudy.resume.profile.service.ProfileReadService;
 import net.devstudy.resume.search.service.ProfileSearchService;
 
 class ProfileSearchIndexingListenerTest {
 
-    private final ProfileRepository profileRepository = mock(ProfileRepository.class);
+    private final ProfileReadService profileReadService = mock(ProfileReadService.class);
     private final ProfileSearchService profileSearchService = mock(ProfileSearchService.class);
 
-    private final ProfileSearchIndexingListener listener = new ProfileSearchIndexingListener(profileRepository,
+    private final ProfileSearchIndexingListener listener = new ProfileSearchIndexingListener(profileReadService,
             profileSearchService);
 
     @Test
     void ignoresNullEvent() {
         listener.onProfileIndexingRequested(null);
-        verifyNoInteractions(profileRepository, profileSearchService);
+        verifyNoInteractions(profileReadService, profileSearchService);
     }
 
     @Test
     void ignoresNullProfileId() {
         listener.onProfileIndexingRequested(new ProfileIndexingRequestedEvent(null));
-        verifyNoInteractions(profileRepository, profileSearchService);
+        verifyNoInteractions(profileReadService, profileSearchService);
     }
 
     @Test
     void doesNothingWhenProfileNotFound() {
-        when(profileRepository.findById(1L)).thenReturn(Optional.empty());
+        when(profileReadService.findById(1L)).thenReturn(Optional.empty());
 
         listener.onProfileIndexingRequested(new ProfileIndexingRequestedEvent(1L));
 
-        verify(profileRepository).findById(1L);
+        verify(profileReadService).findById(1L);
         verifyNoInteractions(profileSearchService);
     }
 
@@ -52,7 +52,7 @@ class ProfileSearchIndexingListenerTest {
         Profile profile = new Profile();
         profile.setId(1L);
         profile.setSkills(List.of());
-        when(profileRepository.findById(1L)).thenReturn(Optional.of(profile));
+        when(profileReadService.findById(1L)).thenReturn(Optional.of(profile));
 
         listener.onProfileIndexingRequested(new ProfileIndexingRequestedEvent(1L));
 
@@ -63,10 +63,9 @@ class ProfileSearchIndexingListenerTest {
     void doesNotThrowWhenIndexingFails() {
         Profile profile = new Profile();
         profile.setId(1L);
-        when(profileRepository.findById(1L)).thenReturn(Optional.of(profile));
+        when(profileReadService.findById(1L)).thenReturn(Optional.of(profile));
         doThrow(new RuntimeException("boom")).when(profileSearchService).indexProfiles(List.of(profile));
 
         assertDoesNotThrow(() -> listener.onProfileIndexingRequested(new ProfileIndexingRequestedEvent(1L)));
     }
 }
-

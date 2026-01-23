@@ -87,6 +87,14 @@ public class StaticDataServiceImpl implements StaticDataService {
         return all;
     }
 
+    @Override
+    public List<Hobby> findHobbiesByIds(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return List.of();
+        }
+        return hobbyRepository.findAllById(ids);
+    }
+
     private List<Integer> generateYears(int from, int toInclusive) {
         List<Integer> years = new ArrayList<>();
         for (int y = from; y >= toInclusive; y--) {

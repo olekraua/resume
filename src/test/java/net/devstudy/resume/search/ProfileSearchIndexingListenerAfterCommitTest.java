@@ -21,7 +21,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import net.devstudy.resume.profile.entity.Profile;
 import net.devstudy.resume.search.event.ProfileIndexingRequestedEvent;
-import net.devstudy.resume.profile.repository.storage.ProfileRepository;
+import net.devstudy.resume.profile.service.ProfileReadService;
 import net.devstudy.resume.search.service.ProfileSearchService;
 
 class ProfileSearchIndexingListenerAfterCommitTest {
@@ -50,19 +50,19 @@ class ProfileSearchIndexingListenerAfterCommitTest {
 
     @Test
     void indexesOnlyAfterCommit() {
-        ProfileRepository profileRepository = mock(ProfileRepository.class);
+        ProfileReadService profileReadService = mock(ProfileReadService.class);
         ProfileSearchService profileSearchService = mock(ProfileSearchService.class);
         Profile profile = new Profile();
         profile.setId(1L);
-        when(profileRepository.findById(1L)).thenReturn(Optional.of(profile));
+        when(profileReadService.findById(1L)).thenReturn(Optional.of(profile));
 
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-            context.registerBean(ProfileRepository.class, () -> profileRepository);
+            context.registerBean(ProfileReadService.class, () -> profileReadService);
             context.registerBean(ProfileSearchService.class, () -> profileSearchService);
             context.registerBean(PlatformTransactionManager.class, SimpleTransactionManager::new);
             context.registerBean(TransactionalEventListenerFactory.class);
             context.registerBean(ProfileSearchIndexingListener.class,
-                    () -> new ProfileSearchIndexingListener(profileRepository, profileSearchService));
+                    () -> new ProfileSearchIndexingListener(profileReadService, profileSearchService));
             context.refresh();
 
             TransactionTemplate transaction = new TransactionTemplate(context.getBean(PlatformTransactionManager.class));
@@ -77,19 +77,19 @@ class ProfileSearchIndexingListenerAfterCommitTest {
 
     @Test
     void doesNotIndexOnRollback() {
-        ProfileRepository profileRepository = mock(ProfileRepository.class);
+        ProfileReadService profileReadService = mock(ProfileReadService.class);
         ProfileSearchService profileSearchService = mock(ProfileSearchService.class);
         Profile profile = new Profile();
         profile.setId(1L);
-        when(profileRepository.findById(1L)).thenReturn(Optional.of(profile));
+        when(profileReadService.findById(1L)).thenReturn(Optional.of(profile));
 
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-            context.registerBean(ProfileRepository.class, () -> profileRepository);
+            context.registerBean(ProfileReadService.class, () -> profileReadService);
             context.registerBean(ProfileSearchService.class, () -> profileSearchService);
             context.registerBean(PlatformTransactionManager.class, SimpleTransactionManager::new);
             context.registerBean(TransactionalEventListenerFactory.class);
             context.registerBean(ProfileSearchIndexingListener.class,
-                    () -> new ProfileSearchIndexingListener(profileRepository, profileSearchService));
+                    () -> new ProfileSearchIndexingListener(profileReadService, profileSearchService));
             context.refresh();
 
             TransactionTemplate transaction = new TransactionTemplate(context.getBean(PlatformTransactionManager.class));

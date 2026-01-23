@@ -36,7 +36,7 @@ import net.devstudy.resume.shared.model.LanguageType;
 import net.devstudy.resume.profile.repository.storage.CertificateRepository;
 import net.devstudy.resume.profile.repository.storage.CourseRepository;
 import net.devstudy.resume.profile.repository.storage.EducationRepository;
-import net.devstudy.resume.staticdata.repository.storage.HobbyRepository;
+import net.devstudy.resume.staticdata.service.StaticDataService;
 import net.devstudy.resume.profile.repository.storage.LanguageRepository;
 import net.devstudy.resume.profile.repository.storage.PracticRepository;
 import net.devstudy.resume.profile.repository.storage.ProfileRepository;
@@ -55,7 +55,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final EducationRepository educationRepository;
     private final CourseRepository courseRepository;
     private final LanguageRepository languageRepository;
-    private final HobbyRepository hobbyRepository;
+    private final StaticDataService staticDataService;
     private final CertificateRepository certificateRepository;
     private final CertificateFileStorage certificateFileStorage;
     private final PhotoFileStorage photoFileStorage;
@@ -280,9 +280,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     public void updateHobbies(Long profileId, java.util.List<Long> hobbyIds) {
         Profile profile = getProfileOrThrow(profileId);
-        java.util.List<Hobby> selected = hobbyIds == null || hobbyIds.isEmpty()
-                ? java.util.List.of()
-                : hobbyRepository.findAllById(hobbyIds);
+        java.util.List<Hobby> selected = staticDataService.findHobbiesByIds(hobbyIds);
         if (profile.getHobbies() == null) {
             profile.setHobbies(new java.util.ArrayList<>());
         }

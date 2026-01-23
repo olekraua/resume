@@ -20,7 +20,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.profile.entity.Profile;
 import net.devstudy.resume.search.repository.search.ProfileSearchRepository;
-import net.devstudy.resume.profile.repository.storage.ProfileRepository;
+import net.devstudy.resume.profile.service.ProfileReadService;
 import net.devstudy.resume.search.ProfileSearchDocument;
 import net.devstudy.resume.search.service.ProfileSearchMapper;
 import net.devstudy.resume.search.service.ProfileSearchService;
@@ -32,7 +32,7 @@ public class ProfileSearchServiceImpl implements ProfileSearchService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProfileSearchServiceImpl.class);
 
-    private final ProfileRepository profileRepository;
+    private final ProfileReadService profileReadService;
     private final ProfileSearchRepository profileSearchRepository;
     private final ElasticsearchOperations elasticsearchOperations;
     private final ProfileSearchMapper profileSearchMapper;
@@ -42,7 +42,7 @@ public class ProfileSearchServiceImpl implements ProfileSearchService {
         String q = query == null ? "" : query.trim();
         if (q.length() < 2) {
             // занадто короткий запит: повертаємо всі профілі без фільтра
-            return profileRepository.findAll(pageable);
+            return profileReadService.findAll(pageable);
         }
         // multi_match по основних текстових полях
         NativeQuery esQuery = NativeQuery.builder()
@@ -67,7 +67,7 @@ public class ProfileSearchServiceImpl implements ProfileSearchService {
                 .map(ProfileSearchDocument::getId)
                 .toList();
 
-        List<Profile> profiles = profileRepository.findAllById(ids);
+        List<Profile> profiles = profileReadService.findAllById(ids);
         Map<Long, Profile> byId = profiles.stream()
                 .collect(Collectors.toMap(Profile::getId, p -> p));
 
@@ -87,7 +87,7 @@ public class ProfileSearchServiceImpl implements ProfileSearchService {
             indexOperations.delete();
         }
         indexOperations.createWithMapping();
-        List<Profile> profiles = profileRepository.findAll(Pageable.unpaged()).getContent();
+        List<Profile> profiles = profileReadService.findAllForIndexing();
         indexProfiles(profiles);
     }
 

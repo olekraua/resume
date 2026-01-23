@@ -26,4 +26,6 @@ public interface StaticDataService {
     List<Hobby> findAllHobbies();
 
     List<Hobby> findAllHobbiesWithSelected(List<Long> selectedIds);
+
+    List<Hobby> findHobbiesByIds(List<Long> ids);
 }

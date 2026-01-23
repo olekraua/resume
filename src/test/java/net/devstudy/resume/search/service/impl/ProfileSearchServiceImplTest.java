@@ -26,23 +26,23 @@ import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import net.devstudy.resume.profile.entity.Profile;
 import net.devstudy.resume.search.repository.search.ProfileSearchRepository;
-import net.devstudy.resume.profile.repository.storage.ProfileRepository;
+import net.devstudy.resume.profile.service.ProfileReadService;
 import net.devstudy.resume.search.ProfileSearchDocument;
 import net.devstudy.resume.search.service.ProfileSearchMapper;
 
 class ProfileSearchServiceImplTest {
 
-    private ProfileRepository profileRepository;
+    private ProfileReadService profileReadService;
     private ElasticsearchOperations elasticsearchOperations;
     private ProfileSearchServiceImpl service;
 
     @BeforeEach
     void setUp() {
-        profileRepository = Mockito.mock(ProfileRepository.class);
+        profileReadService = Mockito.mock(ProfileReadService.class);
         ProfileSearchRepository profileSearchRepository = Mockito.mock(ProfileSearchRepository.class);
         elasticsearchOperations = Mockito.mock(ElasticsearchOperations.class);
         ProfileSearchMapper profileSearchMapper = Mockito.mock(ProfileSearchMapper.class);
-        service = new ProfileSearchServiceImpl(profileRepository, profileSearchRepository, elasticsearchOperations,
+        service = new ProfileSearchServiceImpl(profileReadService, profileSearchRepository, elasticsearchOperations,
                 profileSearchMapper);
     }
 
@@ -50,13 +50,13 @@ class ProfileSearchServiceImplTest {
     void searchNullQueryReturnsAllProfilesFromRepository() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Profile> expected = new PageImpl<>(List.of(profile(1L), profile(2L)), pageable, 2);
-        Mockito.when(profileRepository.findAll(pageable)).thenReturn(expected);
+        Mockito.when(profileReadService.findAll(pageable)).thenReturn(expected);
 
         Page<Profile> result = service.search(null, pageable);
 
         assertEquals(expected.getContent(), result.getContent());
         assertEquals(expected.getTotalElements(), result.getTotalElements());
-        Mockito.verify(profileRepository).findAll(pageable);
+        Mockito.verify(profileReadService).findAll(pageable);
         Mockito.verifyNoInteractions(elasticsearchOperations);
     }
 
@@ -64,12 +64,12 @@ class ProfileSearchServiceImplTest {
     void searchShortQueryAfterTrimReturnsAllProfilesFromRepository() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Profile> expected = new PageImpl<>(List.of(profile(1L)), pageable, 1);
-        Mockito.when(profileRepository.findAll(pageable)).thenReturn(expected);
+        Mockito.when(profileReadService.findAll(pageable)).thenReturn(expected);
 
         Page<Profile> result = service.search(" a ", pageable);
 
         assertEquals(expected.getContent(), result.getContent());
-        Mockito.verify(profileRepository).findAll(pageable);
+        Mockito.verify(profileReadService).findAll(pageable);
         Mockito.verifyNoInteractions(elasticsearchOperations);
     }
 
@@ -85,8 +85,8 @@ class ProfileSearchServiceImplTest {
 
         assertTrue(result.isEmpty());
         Mockito.verify(elasticsearchOperations).search(any(Query.class), eq(ProfileSearchDocument.class));
-        Mockito.verify(profileRepository, never()).findAll(pageable);
-        Mockito.verify(profileRepository, never()).findAllById(any());
+        Mockito.verify(profileReadService, never()).findAll(pageable);
+        Mockito.verify(profileReadService, never()).findAllById(any());
     }
 
     @Test
@@ -142,15 +142,14 @@ class ProfileSearchServiceImplTest {
         Profile p1 = profile(1L);
         Profile p2 = profile(2L);
         Profile p3 = profile(3L);
-        Mockito.when(profileRepository.findAllById(List.of(3L, 1L, 2L))).thenReturn(List.of(p2, p3, p1));
+        Mockito.when(profileReadService.findAllById(List.of(3L, 1L, 2L))).thenReturn(List.of(p2, p3, p1));
 
         Page<Profile> result = service.search("java", pageable);
 
         assertEquals(List.of(p3, p1, p2), result.getContent());
         assertEquals(3L, result.getTotalElements());
-        Mockito.verify(profileRepository).findAllById(List.of(3L, 1L, 2L));
-        Mockito.verify(profileRepository, never()).findAll(pageable);
-        Mockito.verify(profileRepository, never()).search(Mockito.anyString(), Mockito.any(Pageable.class));
+        Mockito.verify(profileReadService).findAllById(List.of(3L, 1L, 2L));
+        Mockito.verify(profileReadService, never()).findAll(pageable);
     }
 
     private static Profile profile(long id) {

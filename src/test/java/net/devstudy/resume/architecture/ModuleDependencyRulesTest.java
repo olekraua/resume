@@ -78,6 +78,24 @@ class ModuleDependencyRulesTest {
         }
     }
 
+    @Test
+    void modulesShouldNotAccessOtherModulesRepositories() {
+        for (String source : MODULES) {
+            for (String target : MODULES) {
+                if (source.equals(target)) {
+                    continue;
+                }
+                ArchRule rule = noClasses()
+                        .that(inModule(source))
+                        .should()
+                        .accessClassesThat()
+                        .resideInAPackage("net.devstudy.resume." + target + ".repository..")
+                        .because("module " + source + " must not access repositories of " + target);
+                rule.check(CLASSES);
+            }
+        }
+    }
+
     private static DescribedPredicate<JavaClass> inModule(String module) {
         return new DescribedPredicate<>("module " + module) {
             @Override

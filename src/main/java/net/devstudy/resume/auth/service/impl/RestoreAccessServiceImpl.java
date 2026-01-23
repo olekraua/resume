@@ -17,7 +17,7 @@ import net.devstudy.resume.shared.component.DataBuilder;
 import net.devstudy.resume.profile.entity.Profile;
 import net.devstudy.resume.auth.entity.ProfileRestore;
 import net.devstudy.resume.notification.event.RestoreAccessMailRequestedEvent;
-import net.devstudy.resume.profile.repository.storage.ProfileRepository;
+import net.devstudy.resume.profile.service.ProfileReadService;
 import net.devstudy.resume.auth.repository.storage.ProfileRestoreRepository;
 import net.devstudy.resume.profile.service.ProfileService;
 import net.devstudy.resume.auth.service.RestoreAccessService;
@@ -25,20 +25,20 @@ import net.devstudy.resume.auth.service.RestoreAccessService;
 @Service
 public class RestoreAccessServiceImpl implements RestoreAccessService {
 
-    private final ProfileRepository profileRepository;
+    private final ProfileReadService profileReadService;
     private final ProfileRestoreRepository profileRestoreRepository;
     private final ProfileService profileService;
     private final DataBuilder dataBuilder;
     private final ApplicationEventPublisher eventPublisher;
     private final Duration tokenTtl;
 
-    public RestoreAccessServiceImpl(ProfileRepository profileRepository,
+    public RestoreAccessServiceImpl(ProfileReadService profileReadService,
             ProfileRestoreRepository profileRestoreRepository,
             ProfileService profileService,
             DataBuilder dataBuilder,
             ApplicationEventPublisher eventPublisher,
             @Value("${app.restore.token-ttl:PT1H}") Duration tokenTtl) {
-        this.profileRepository = profileRepository;
+        this.profileReadService = profileReadService;
         this.profileRestoreRepository = profileRestoreRepository;
         this.profileService = profileService;
         this.dataBuilder = dataBuilder;
@@ -104,15 +104,15 @@ public class RestoreAccessServiceImpl implements RestoreAccessService {
             return Optional.empty();
         }
         String lower = trimmed.toLowerCase(Locale.ENGLISH);
-        Optional<Profile> byUid = profileRepository.findByUid(lower);
+        Optional<Profile> byUid = profileReadService.findByUid(lower);
         if (byUid.isPresent()) {
             return byUid;
         }
-        Optional<Profile> byEmail = profileRepository.findByEmail(lower);
+        Optional<Profile> byEmail = profileReadService.findByEmail(lower);
         if (byEmail.isPresent()) {
             return byEmail;
         }
-        return profileRepository.findByPhone(trimmed);
+        return profileReadService.findByPhone(trimmed);
     }
 
     private String generateToken() {

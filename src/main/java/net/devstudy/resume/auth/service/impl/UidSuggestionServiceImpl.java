@@ -10,7 +10,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import net.devstudy.resume.profile.repository.storage.ProfileRepository;
+import net.devstudy.resume.profile.service.ProfileReadService;
 import net.devstudy.resume.auth.service.UidSuggestionService;
 
 @Service
@@ -19,18 +19,18 @@ public class UidSuggestionServiceImpl implements UidSuggestionService {
     private static final int MAX_UID_LENGTH = 50;
     private static final String UID_DELIMITER = "-";
 
-    private final ProfileRepository profileRepository;
+    private final ProfileReadService profileReadService;
     private final int maxTries;
     private final String alphabet;
     private final int suffixLength;
     private final SecureRandom random = new SecureRandom();
 
     public UidSuggestionServiceImpl(
-            ProfileRepository profileRepository,
+            ProfileReadService profileReadService,
             @Value("${uid.max-tries:20}") int maxTries,
             @Value("${uid.suffix.alphabet:abcdefghijklmnopqrstuvwxyz0123456789}") String alphabet,
             @Value("${uid.suffix.length:2}") int suffixLength) {
-        this.profileRepository = profileRepository;
+        this.profileReadService = profileReadService;
         this.maxTries = maxTries;
         this.alphabet = alphabet == null ? "" : alphabet;
         this.suffixLength = suffixLength;
@@ -56,7 +56,7 @@ public class UidSuggestionServiceImpl implements UidSuggestionService {
         int attempts = Math.max(0, maxTries);
         for (int i = 0; i < attempts && suggestions.size() < attempts; i++) {
             String candidate = normalized + UID_DELIMITER + randomSuffix();
-            if (profileRepository.countByUid(candidate) == 0) {
+            if (!profileReadService.uidExists(candidate)) {
                 suggestions.add(candidate);
             }
         }

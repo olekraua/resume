@@ -13,7 +13,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.profile.entity.Profile;
 import net.devstudy.resume.search.event.ProfileIndexingRequestedEvent;
-import net.devstudy.resume.profile.repository.storage.ProfileRepository;
+import net.devstudy.resume.profile.service.ProfileReadService;
 import net.devstudy.resume.search.service.ProfileSearchService;
 
 @Component
@@ -22,7 +22,7 @@ public class ProfileSearchIndexingListener {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProfileSearchIndexingListener.class);
 
-    private final ProfileRepository profileRepository;
+    private final ProfileReadService profileReadService;
     private final ProfileSearchService profileSearchService;
 
     @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
@@ -32,7 +32,7 @@ public class ProfileSearchIndexingListener {
             return;
         }
         try {
-            profileRepository.findById(event.profileId()).ifPresent(profile -> {
+            profileReadService.findById(event.profileId()).ifPresent(profile -> {
                 initializeCollections(profile);
                 profileSearchService.indexProfiles(List.of(profile));
             });
