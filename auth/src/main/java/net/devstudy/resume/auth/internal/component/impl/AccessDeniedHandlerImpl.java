@@ -25,28 +25,62 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException ex)
             throws IOException, ServletException {
         LOGGER.info("Access denied: {}", ex.getMessage(), ex);
+        String path = resolvePath(request);
+        boolean apiRequest = isApiPath(path);
         if (ex instanceof CsrfException) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             new SecurityContextLogoutHandler().logout(request, response, authentication);
+            if (apiRequest) {
+                writeJsonError(response,
+                        HttpServletResponse.SC_UNAUTHORIZED,
+                        "csrf",
+                        "CSRF token invalid or missing");
+                return;
+            }
             response.sendRedirect(request.getContextPath() + "/login?expired");
             return;
         }
-        if (isAnonymousOnlyPath(request)) {
+        if (isAnonymousOnlyPath(path)) {
             response.sendRedirect(request.getContextPath() + "/me");
+            return;
+        }
+        if (apiRequest) {
+            writeJsonError(response,
+                    HttpServletResponse.SC_FORBIDDEN,
+                    "forbidden",
+                    "Access denied");
             return;
         }
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
     }
 
-    private boolean isAnonymousOnlyPath(HttpServletRequest request) {
-        String path = request.getRequestURI();
-        String contextPath = request.getContextPath();
-        if (contextPath != null && !contextPath.isEmpty() && path.startsWith(contextPath)) {
-            path = path.substring(contextPath.length());
-        }
+    private boolean isAnonymousOnlyPath(String path) {
         if ("/login".equals(path) || "/register".equals(path) || "/restore".equals(path)) {
             return true;
         }
         return path.startsWith("/register/") || path.startsWith("/restore/");
+    }
+
+    private boolean isApiPath(String path) {
+        return path != null && path.startsWith("/api/");
+    }
+
+    private String resolvePath(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        String contextPath = request.getContextPath();
+        if (contextPath != null && !contextPath.isEmpty() && path.startsWith(contextPath)) {
+            return path.substring(contextPath.length());
+        }
+        return path;
+    }
+
+    private void writeJsonError(HttpServletResponse response, int status, String error, String message)
+            throws IOException {
+        response.setStatus(status);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"status\":" + status
+                + ",\"error\":\"" + error
+                + "\",\"message\":\"" + message + "\"}");
     }
 }
