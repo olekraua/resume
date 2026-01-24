@@ -267,8 +267,8 @@ sequenceDiagram
 - `web`: MVC‑контролери, UI‑конфіги, шаблони.
 
 ### Дозволені залежності (на рівні модулів)
-- `web` → `profile`, `staticdata`, `auth`, `search`, `media`, `notification`, `shared`
-- `profile` → `staticdata`, `search`, `media`, `shared`
+- `web` → `profile`, `staticdata`, `auth`, `media`, `notification`, `shared`
+- `profile` → `staticdata`, `shared`
 - `auth` → `profile`, `notification`, `shared`
 - `search` → `profile`, `shared`
 - `media` → `shared`
@@ -305,7 +305,7 @@ sequenceDiagram
 | Пакет | Класи |
 | --- | --- |
 | `net.devstudy.resume.profile.api.model` | `AbstractEntity`, `AbstractFinishDateEntity`, `Profile`, `Contacts`, `Skill`, `Practic`, `Education`, `Course`, `Language`, `Certificate`, `ProfileEntity`, `ProfileCollectionField` |
-| `net.devstudy.resume.profile.api.service` | `ProfileService`, `ProfileReadService`, `EditProfileService` |
+| `net.devstudy.resume.profile.api.service` | `ProfileService`, `ProfileReadService`, `EditProfileService`, `ProfileSearchService` |
 | `net.devstudy.resume.profile.api.dto` | `ProfileMainForm`, `InfoForm`, `ContactsForm`, `SkillForm`, `PracticForm`, `EducationForm`, `CourseForm`, `LanguageForm`, `CertificateForm`, `HobbyForm` |
 | `net.devstudy.resume.profile.api.annotation` | `ProfileInfoField`, `ProfileDataFieldGroup` |
 | `net.devstudy.resume.profile.api.exception` | `UidAlreadyExistsException` |
@@ -344,7 +344,6 @@ sequenceDiagram
 ### search
 | Пакет | Класи |
 | --- | --- |
-| `net.devstudy.resume.search.api.service` | `ProfileSearchService` |
 | `net.devstudy.resume.search.internal.document` | `ProfileSearchDocument` |
 | `net.devstudy.resume.search.internal.repository.search` | `ProfileSearchRepository` |
 | `net.devstudy.resume.search.internal.mapper` | `ProfileSearchMapper` |

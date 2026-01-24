@@ -8,7 +8,7 @@
   <module name="SuppressWarningsFilter"/>
   <!-- Globale Suppressions-Datei -->
   <module name="SuppressionFilter">
-    <property name="file" value="config/checkstyle/suppressions.xml"/>
+    <property name="file" value="${config_loc}/suppressions.xml"/>
   </module>
 
   <!-- Maximale Zeilenlänge -->
