@@ -13,7 +13,7 @@
 - Вхід: `GET/POST /{uid}/edit/...` через `src/main/java/net/devstudy/resume/web/controller/EditProfileController.java`.
 - Доступ: звірка `uid` з поточним користувачем у `src/main/java/net/devstudy/resume/auth/security/CurrentProfileProvider.java`.
 - Валідація: форми в `src/main/java/net/devstudy/resume/profile/form/*` + ручна валідація для `Practic`/`Education`.
-- Запис: `src/main/java/net/devstudy/resume/profile/service/impl/ProfileServiceImpl.java` оновлює сутності, прапорець `completed`, публікує подію індексації.
+- Запис: `src/main/java/net/devstudy/resume/profile/internal/service/impl/ProfileServiceImpl.java` оновлює сутності, прапорець `completed`, публікує подію індексації зі snapshot‑payload.
 
 #### Sequence diagram
 ```mermaid
@@ -40,12 +40,10 @@ sequenceDiagram
         ProfileSvc->>Repo: save(...)
         Repo-->>ProfileSvc: saved
         ProfileSvc-->>Ctrl: ok
-        ProfileSvc->>Events: publish ProfileIndexingRequestedEvent
+        ProfileSvc->>Events: publish ProfileIndexingRequestedEvent(snapshot)
         Ctrl-->>Browser: redirect ?success
         Note over Events,Indexer: after commit
-        Events-->>Indexer: ProfileIndexingRequestedEvent
-        Indexer->>Repo: findById(...)
-        Repo-->>Indexer: Profile
+        Events-->>Indexer: ProfileIndexingRequestedEvent(snapshot)
         Indexer->>SearchSvc: indexProfiles([Profile])
         SearchSvc->>ES: save document
     end
@@ -56,7 +54,7 @@ sequenceDiagram
 - Запит: `ProfileService.search()` делегує у `ProfileSearchService`.
 - Elasticsearch: `src/main/java/net/devstudy/resume/search/service/impl/ProfileSearchServiceImpl.java` виконує ES‑запит і потім вантажить `Profile` по id з JPA.
 - Fallback: при помилках ES повертається JPA‑пошук у `ProfileRepository`.
-- Індексація: подія `ProfileIndexingRequestedEvent` → `ProfileSearchIndexingListener` → `ProfileSearchService.indexProfiles()`.
+- Індексація: подія `ProfileIndexingRequestedEvent(snapshot)` → `ProfileSearchIndexingListener` → `ProfileSearchService.indexProfiles()`.
 
 #### Sequence diagram
 ```mermaid
@@ -159,7 +157,7 @@ sequenceDiagram
 - Вхід: `POST /{uid}/edit/photo` і `POST /{uid}/edit/certificates/upload` у `EditProfileController`.
 - Обробка: валідація, конвертація, ресайз, оптимізація у `PhotoStorageServiceImpl` та `CertificateStorageServiceImpl`.
 - Збереження: файли у `uploads/...`, повернення URL для збереження в профілі.
-- Очищення: `PhotoFileStorage` та `CertificateFileStorage` видаляють старі файли після коміту.
+- Очищення: `ProfileServiceImpl` публікує `ProfileMediaCleanupRequestedEvent`, після коміту `ProfileMediaCleanupListener` виконує cleanup через `MediaCleanupService`.
 
 #### Sequence diagram: photo upload
 ```mermaid
@@ -203,6 +201,8 @@ sequenceDiagram
     participant ProfileSvc as ProfileServiceImpl
     participant CertRepo as CertificateRepository
     participant FileStore as CertificateFileStorage
+    participant Events as ApplicationEventPublisher
+    participant MediaListener as ProfileMediaCleanupListener
 
     User->>Browser: Upload certificate image
     Browser->>Ctrl: POST /{uid}/edit/certificates/upload
@@ -218,9 +218,11 @@ sequenceDiagram
     Browser->>Ctrl: POST /{uid}/edit/certificates
     Ctrl->>ProfileSvc: updateCertificates(profileId, items)
     ProfileSvc->>CertRepo: delete/save
-    Note over ProfileSvc,FileStore: after commit
-    ProfileSvc->>LinkTemp: clearImageLinks()
-    ProfileSvc->>FileStore: removeAll(oldUrls)
+    ProfileSvc->>Events: publish ProfileMediaCleanupRequestedEvent(certificatesToRemove, clearTempLinks)
+    Note over Events,MediaListener: after commit
+    Events-->>MediaListener: ProfileMediaCleanupRequestedEvent
+    MediaListener->>LinkTemp: clearImageLinks()
+    MediaListener->>FileStore: removeAll(oldUrls)
     Ctrl-->>Browser: redirect ?success
 ```
 
@@ -241,6 +243,7 @@ sequenceDiagram
 ### Search domain (похідні дані)
 - `ProfileSearchDocument` у `src/main/java/net/devstudy/resume/search/ProfileSearchDocument.java`.
 - Дані індексуються з профілю, не є джерелом істини.
+- Індексація використовує snapshot‑payload з подій профілю, без прямого читання з БД у `search`.
 
 ### Media domain
 - Файли у файловій системі (`uploads/photos`, `uploads/certificates`).
@@ -277,7 +280,7 @@ sequenceDiagram
 - Зовнішні модулі не звертаються напряму до репозиторіїв іншого модуля.
 - Доступ між модулями лише через інтерфейси сервісів або події.
 - Публічний контракт модуля лежить у `net.devstudy.resume.<module>.api`, реалізація — у `net.devstudy.resume.<module>.internal`.
-- `search` і `notification` оперують лише даними, переданими у подіях/DTO.
+- `search` і `media` споживають події зі snapshot/cleanup‑payload, `notification` — DTO‑події.
 
 ## Package mapping (target)
 
@@ -306,7 +309,7 @@ sequenceDiagram
 | `net.devstudy.resume.profile.api.dto` | `ProfileMainForm`, `InfoForm`, `ContactsForm`, `SkillForm`, `PracticForm`, `EducationForm`, `CourseForm`, `LanguageForm`, `CertificateForm`, `HobbyForm` |
 | `net.devstudy.resume.profile.api.annotation` | `ProfileInfoField`, `ProfileDataFieldGroup` |
 | `net.devstudy.resume.profile.api.exception` | `UidAlreadyExistsException` |
-| `net.devstudy.resume.profile.api.event` | `ProfilePasswordChangedEvent` |
+| `net.devstudy.resume.profile.api.event` | `ProfilePasswordChangedEvent`, `ProfileIndexingRequestedEvent`, `ProfileIndexingSnapshot`, `ProfileSearchRemovalRequestedEvent` |
 | `net.devstudy.resume.profile.api.config` | `ProfileJpaConfig` |
 | `net.devstudy.resume.profile.internal.repository.storage` | `ProfileRepository`, `SkillRepository`, `PracticRepository`, `EducationRepository`, `CourseRepository`, `LanguageRepository`, `CertificateRepository` |
 | `net.devstudy.resume.profile.internal.service.impl` | `ProfileServiceImpl`, `ProfileReadServiceImpl` |
@@ -341,7 +344,6 @@ sequenceDiagram
 ### search
 | Пакет | Класи |
 | --- | --- |
-| `net.devstudy.resume.search.api.event` | `ProfileIndexingRequestedEvent` |
 | `net.devstudy.resume.search.api.service` | `ProfileSearchService` |
 | `net.devstudy.resume.search.internal.document` | `ProfileSearchDocument` |
 | `net.devstudy.resume.search.internal.repository.search` | `ProfileSearchRepository` |
@@ -360,6 +362,7 @@ sequenceDiagram
 | `net.devstudy.resume.media.internal.component` | `ImageResizer`, `ImageOptimizator`, `ImageFormatConverter`, `UploadTempPathFactory`, `PhotoFileStorage`, `CertificateFileStorage` |
 | `net.devstudy.resume.media.internal.component.impl` | `ThumbnailsImageResizer`, `JpegTranImageOptimizator`, `PngToJpegImageFormatConverter`, `DefaultUploadTempPathFactory`, `UploadImageTempStorage`, `UploadCertificateLinkTempStorage` |
 | `net.devstudy.resume.media.internal.service.impl` | `PhotoStorageServiceImpl`, `CertificateStorageServiceImpl`, `MediaCleanupServiceImpl` |
+| `net.devstudy.resume.media.internal.event` | `ProfileMediaCleanupListener` |
 | `net.devstudy.resume.media.internal.config` | `PhotoUploadProperties`, `CertificateUploadProperties` |
 
 ### notification
@@ -377,6 +380,7 @@ sequenceDiagram
 | Пакет | Класи |
 | --- | --- |
 | `net.devstudy.resume.shared.constants` | `Constants` |
+| `net.devstudy.resume.shared.event` | `ProfileMediaCleanupRequestedEvent` |
 | `net.devstudy.resume.shared.model` | `AbstractModel`, `AbstractEntity`, `LanguageType`, `LanguageLevel` |
 | `net.devstudy.resume.shared.util` | `BeanCopyUtil`, `DataUtil`, `SanitizationUtils` |
 | `net.devstudy.resume.shared.component` | `DataBuilder`, `TranslitConverter`, `FormErrorConverter` |
