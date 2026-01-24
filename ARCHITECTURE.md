@@ -7,6 +7,11 @@
 - Зберігання медіа: локальна файлова система (`uploads/...`).
 - Асинхронність: внутрішні Spring events після коміту транзакції.
 
+## Крок 3 (безпека)
+- Поточна модель: stateful session + CSRF (Spring Security за замовчуванням), `SecurityConfig` у `auth/src/main/java/net/devstudy/resume/auth/internal/config/SecurityConfig.java`.
+- Якщо SPA працює на тому ж домені (same-site), залишаємо session+CSRF і поточний `SecurityConfig` без CORS.
+- Якщо SPA окремо (інший домен), це окремий етап: JWT/OIDC для автентифікації, CORS політика для API, перегляд CSRF/сесійної моделі.
+
 ## Потоки
 
 ### Редагування профілю
