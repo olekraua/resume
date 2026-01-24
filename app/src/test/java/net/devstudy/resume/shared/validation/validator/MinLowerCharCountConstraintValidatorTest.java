@@ -9,13 +9,11 @@ import net.devstudy.resume.shared.validation.annotation.MinLowerCharCount;
 
 class MinLowerCharCountConstraintValidatorTest {
 
-    @SuppressWarnings("unused")
     private static class DefaultHolder {
         @MinLowerCharCount
         private String value;
     }
 
-    @SuppressWarnings("unused")
     private static class TwoLowerCharsHolder {
         @MinLowerCharCount(2)
         private String value;
@@ -56,4 +54,3 @@ class MinLowerCharCountConstraintValidatorTest {
         return annotation;
     }
 }
-

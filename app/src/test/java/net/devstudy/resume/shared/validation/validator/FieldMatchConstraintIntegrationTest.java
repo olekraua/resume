@@ -23,14 +23,12 @@ class FieldMatchConstraintIntegrationTest {
     private static Validator validator;
 
     @BeforeAll
-    @SuppressWarnings("unused")
     static void setUpValidator() {
         factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
 
     @AfterAll
-    @SuppressWarnings("unused")
     static void tearDownValidator() {
         if (factory != null) {
             factory.close();
@@ -38,7 +36,6 @@ class FieldMatchConstraintIntegrationTest {
     }
 
     @Test
-    @SuppressWarnings("unused")
     void rejectsWhenFieldsDoNotMatch() {
         PasswordForm form = new PasswordForm();
         form.setNewPassword("password1");
@@ -53,7 +50,6 @@ class FieldMatchConstraintIntegrationTest {
     }
 
     @Test
-    @SuppressWarnings("unused")
     void acceptsWhenFieldsMatch() {
         PasswordForm form = new PasswordForm();
         form.setNewPassword("password1");
@@ -64,16 +60,16 @@ class FieldMatchConstraintIntegrationTest {
     }
 
     @Test
-    @SuppressWarnings("unused")
     void acceptsWhenBothFieldsNull() {
         SimpleBean bean = new SimpleBean();
 
         Set<ConstraintViolation<SimpleBean>> violations = validator.validate(bean);
         assertTrue(violations.isEmpty());
+        assertEquals(null, bean.getFirst());
+        assertEquals(null, bean.getSecond());
     }
 
     @Test
-    @SuppressWarnings("unused")
     void rejectsWhenFirstNullSecondHasValue() {
         SimpleBean bean = new SimpleBean();
         bean.setSecond("x");
@@ -87,7 +83,6 @@ class FieldMatchConstraintIntegrationTest {
     }
 
     @Test
-    @SuppressWarnings("unused")
     void acceptsWhenBothFieldsEqual() {
         SimpleBean bean = new SimpleBean();
         bean.setFirst("x");
@@ -98,7 +93,6 @@ class FieldMatchConstraintIntegrationTest {
     }
 
     @Test
-    @SuppressWarnings("unused")
     void rejectsWhenFieldsDifferent() {
         SimpleBean bean = new SimpleBean();
         bean.setFirst("x");
@@ -113,10 +107,10 @@ class FieldMatchConstraintIntegrationTest {
     }
 
     @Test
-    @SuppressWarnings("unused")
     void failsFastWhenConfiguredWithUnknownProperty() {
         BrokenBean bean = new BrokenBean();
         bean.setSecond("x");
+        assertEquals("x", bean.getSecond());
 
         ValidationException ex = assertThrows(ValidationException.class, () -> validator.validate(bean));
         assertTrue(ex.getCause() != null);
@@ -127,7 +121,6 @@ class FieldMatchConstraintIntegrationTest {
         private String first;
         private String second;
 
-        @SuppressWarnings("unused")
         public String getFirst() {
             return first;
         }
@@ -136,7 +129,6 @@ class FieldMatchConstraintIntegrationTest {
             this.first = first;
         }
 
-        @SuppressWarnings("unused")
         public String getSecond() {
             return second;
         }
@@ -150,7 +142,6 @@ class FieldMatchConstraintIntegrationTest {
     private static class BrokenBean {
         private String second;
 
-        @SuppressWarnings("unused")
         public String getSecond() {
             return second;
         }

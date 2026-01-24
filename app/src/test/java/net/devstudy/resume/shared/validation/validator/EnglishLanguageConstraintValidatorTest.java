@@ -9,19 +9,16 @@ import net.devstudy.resume.shared.validation.annotation.EnglishLanguage;
 
 class EnglishLanguageConstraintValidatorTest {
 
-    @SuppressWarnings("unused")
     private static class DefaultHolder {
         @EnglishLanguage
         private String value;
     }
 
-    @SuppressWarnings("unused")
     private static class NoNumbersHolder {
         @EnglishLanguage(withNumbers = false)
         private String value;
     }
 
-    @SuppressWarnings("unused")
     private static class NoPunctuationsHolder {
         @EnglishLanguage(withPunctuations = false)
         private String value;
@@ -77,4 +74,3 @@ class EnglishLanguageConstraintValidatorTest {
         return annotation;
     }
 }
-

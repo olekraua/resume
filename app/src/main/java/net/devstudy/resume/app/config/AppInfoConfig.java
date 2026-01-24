@@ -13,7 +13,6 @@ import org.springframework.core.env.Environment;
 public class AppInfoConfig {
 
 	@Bean
-        @SuppressWarnings("unused")
 	InfoContributor appInfoContributor(Environment environment,
 			@Value("${app.search.elasticsearch.enabled:true}") boolean elasticsearchEnabled) {
 		return builder -> builder.withDetail("app", Map.of(

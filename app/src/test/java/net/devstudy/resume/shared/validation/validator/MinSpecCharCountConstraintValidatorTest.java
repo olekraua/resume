@@ -9,19 +9,16 @@ import net.devstudy.resume.shared.validation.annotation.MinSpecCharCount;
 
 class MinSpecCharCountConstraintValidatorTest {
 
-    @SuppressWarnings("unused")
     private static class DefaultHolder {
         @MinSpecCharCount
         private String value;
     }
 
-    @SuppressWarnings("unused")
     private static class TwoSpecCharsHolder {
         @MinSpecCharCount(2)
         private String value;
     }
 
-    @SuppressWarnings("unused")
     private static class CustomSymbolsHolder {
         @MinSpecCharCount(value = 2, specSymbols = "@#")
         private String value;
@@ -71,4 +68,3 @@ class MinSpecCharCountConstraintValidatorTest {
         return annotation;
     }
 }
-

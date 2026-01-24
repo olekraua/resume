@@ -9,13 +9,11 @@ import net.devstudy.resume.shared.validation.annotation.MinUpperCharCount;
 
 class MinUpperCharCountConstraintValidatorTest {
 
-    @SuppressWarnings("unused")
     private static class DefaultHolder {
         @MinUpperCharCount
         private String value;
     }
 
-    @SuppressWarnings("unused")
     private static class TwoUpperCharsHolder {
         @MinUpperCharCount(2)
         private String value;

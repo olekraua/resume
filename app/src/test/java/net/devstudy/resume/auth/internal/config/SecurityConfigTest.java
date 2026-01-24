@@ -90,7 +90,6 @@ class SecurityConfigTest {
     }
 
     @TestConfiguration
-    @SuppressWarnings("unused")
     static class SecurityTestConfig {
 
         @Bean
@@ -112,37 +111,31 @@ class SecurityConfigTest {
     public static class TestController {
 
         @GetMapping("/")
-        @SuppressWarnings("unused")
         String root() {
             return "root";
         }
 
         @GetMapping("/public")
-        @SuppressWarnings("unused")
         String publicGet() {
             return "public";
         }
 
         @PostMapping("/public")
-        @SuppressWarnings("unused")
         String publicPost() {
             return "public-post";
         }
 
         @GetMapping("/me")
-        @SuppressWarnings("unused")
         String me() {
             return "me";
         }
 
         @GetMapping("/account/test")
-        @SuppressWarnings("unused")
         String account() {
             return "account";
         }
 
         @GetMapping("/user/edit/profile")
-        @SuppressWarnings("unused")
         String editProfile() {
             return "edit";
         }

@@ -64,7 +64,6 @@ class EditProfileAccessIntegrationTest extends PostgresIntegrationTest {
     static class SecurityTestConfig {
 
         @Bean
-        @SuppressWarnings("unused")
         AccessDeniedHandler accessDeniedHandler() {
             return (request, response, ex) -> response.sendError(403);
         }

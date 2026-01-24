@@ -16,7 +16,6 @@ class ProfileServiceImplTest {
     private ProfileServiceImpl service;
 
     @BeforeEach
-    @SuppressWarnings("unused")
     void setUp() {
         ProfileRepository profileRepository = Mockito.mock(ProfileRepository.class);
         PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);

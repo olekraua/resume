@@ -12,6 +12,5 @@ import org.testcontainers.containers.PostgreSQLContainer;
 public abstract class PostgresIntegrationTest {
 
     @ServiceConnection
-    @SuppressWarnings("resource")
     static final PostgreSQLContainer<?> POSTGRES = SharedPostgresContainer.getInstance();
 }

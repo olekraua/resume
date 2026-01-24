@@ -22,14 +22,12 @@ class ChangePasswordFormTest {
     private static ValidatorFactory factory;
     private static Validator validator;
 
-    @SuppressWarnings("unused")
     @BeforeAll
     static void setUpValidator() {
         factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
 
-    @SuppressWarnings("unused")
     @AfterAll
     static void tearDownValidator() {
         factory.close();

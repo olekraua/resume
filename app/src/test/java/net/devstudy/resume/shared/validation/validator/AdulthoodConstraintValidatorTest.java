@@ -12,13 +12,11 @@ import net.devstudy.resume.shared.validation.annotation.Adulthood;
 
 class AdulthoodConstraintValidatorTest {
 
-    @SuppressWarnings("unused")
     private static class DefaultAgeHolder {
         @Adulthood
         private Date birthDay;
     }
 
-    @SuppressWarnings("unused")
     private static class CustomAgeHolder {
         @Adulthood(adulthoodAge = 21)
         private Date birthDay;

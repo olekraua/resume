@@ -15,7 +15,6 @@ public class ElasticsearchIndexConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchIndexConfig.class);
 
     @Bean
-    @SuppressWarnings("unused")
     CommandLineRunner indexProfiles(ProfileSearchService profileSearchService) {
         return args -> {
             try {

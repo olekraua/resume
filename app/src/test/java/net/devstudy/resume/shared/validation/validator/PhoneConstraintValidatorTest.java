@@ -9,7 +9,6 @@ import net.devstudy.resume.shared.validation.annotation.Phone;
 
 class PhoneConstraintValidatorTest {
 
-    @SuppressWarnings("unused")
     private static class Holder {
         @Phone
         private String phone;
@@ -51,4 +50,3 @@ class PhoneConstraintValidatorTest {
         return annotation;
     }
 }
-

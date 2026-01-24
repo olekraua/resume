@@ -9,13 +9,11 @@ import net.devstudy.resume.shared.validation.annotation.MinDigitCount;
 
 class MinDigitCountConstraintValidatorTest {
 
-    @SuppressWarnings("unused")
     private static class DefaultHolder {
         @MinDigitCount
         private String value;
     }
 
-    @SuppressWarnings("unused")
     private static class TwoDigitsHolder {
         @MinDigitCount(2)
         private String value;
@@ -56,4 +54,3 @@ class MinDigitCountConstraintValidatorTest {
         return annotation;
     }
 }
-

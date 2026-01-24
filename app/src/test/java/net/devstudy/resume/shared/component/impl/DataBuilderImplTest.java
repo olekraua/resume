@@ -12,7 +12,6 @@ class DataBuilderImplTest {
     private DataBuilderImpl dataBuilder;
 
     @BeforeEach
-    @SuppressWarnings("unused")
     void setUp() {
         dataBuilder = new DataBuilderImpl(new StubTranslitConverter());
     }
