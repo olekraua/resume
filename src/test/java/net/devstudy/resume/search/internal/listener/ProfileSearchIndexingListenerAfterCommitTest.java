@@ -1,13 +1,12 @@
 package net.devstudy.resume.search.internal.listener;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -19,9 +18,8 @@ import org.springframework.transaction.support.AbstractPlatformTransactionManage
 import org.springframework.transaction.support.DefaultTransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import net.devstudy.resume.profile.api.model.Profile;
-import net.devstudy.resume.search.api.event.ProfileIndexingRequestedEvent;
-import net.devstudy.resume.profile.api.service.ProfileReadService;
+import net.devstudy.resume.profile.api.event.ProfileIndexingRequestedEvent;
+import net.devstudy.resume.profile.api.event.ProfileIndexingSnapshot;
 import net.devstudy.resume.search.api.service.ProfileSearchService;
 
 class ProfileSearchIndexingListenerAfterCommitTest {
@@ -50,51 +48,45 @@ class ProfileSearchIndexingListenerAfterCommitTest {
 
     @Test
     void indexesOnlyAfterCommit() {
-        ProfileReadService profileReadService = mock(ProfileReadService.class);
         ProfileSearchService profileSearchService = mock(ProfileSearchService.class);
-        Profile profile = new Profile();
-        profile.setId(1L);
-        when(profileReadService.findById(1L)).thenReturn(Optional.of(profile));
+        ProfileIndexingSnapshot snapshot = new ProfileIndexingSnapshot(1L, "uid", "first", "last",
+                "objective", "summary", "info", List.of());
 
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-            context.registerBean(ProfileReadService.class, () -> profileReadService);
             context.registerBean(ProfileSearchService.class, () -> profileSearchService);
             context.registerBean(PlatformTransactionManager.class, SimpleTransactionManager::new);
             context.registerBean(TransactionalEventListenerFactory.class);
             context.registerBean(ProfileSearchIndexingListener.class,
-                    () -> new ProfileSearchIndexingListener(profileReadService, profileSearchService));
+                    () -> new ProfileSearchIndexingListener(profileSearchService));
             context.refresh();
 
             TransactionTemplate transaction = new TransactionTemplate(context.getBean(PlatformTransactionManager.class));
             transaction.executeWithoutResult(status -> {
-                context.publishEvent(new ProfileIndexingRequestedEvent(1L));
+                context.publishEvent(new ProfileIndexingRequestedEvent(snapshot));
                 verifyNoInteractions(profileSearchService);
             });
 
-            verify(profileSearchService).indexProfiles(List.of(profile));
+            verify(profileSearchService).indexProfiles(anyList());
         }
     }
 
     @Test
     void doesNotIndexOnRollback() {
-        ProfileReadService profileReadService = mock(ProfileReadService.class);
         ProfileSearchService profileSearchService = mock(ProfileSearchService.class);
-        Profile profile = new Profile();
-        profile.setId(1L);
-        when(profileReadService.findById(1L)).thenReturn(Optional.of(profile));
+        ProfileIndexingSnapshot snapshot = new ProfileIndexingSnapshot(1L, "uid", "first", "last",
+                "objective", "summary", "info", List.of());
 
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-            context.registerBean(ProfileReadService.class, () -> profileReadService);
             context.registerBean(ProfileSearchService.class, () -> profileSearchService);
             context.registerBean(PlatformTransactionManager.class, SimpleTransactionManager::new);
             context.registerBean(TransactionalEventListenerFactory.class);
             context.registerBean(ProfileSearchIndexingListener.class,
-                    () -> new ProfileSearchIndexingListener(profileReadService, profileSearchService));
+                    () -> new ProfileSearchIndexingListener(profileSearchService));
             context.refresh();
 
             TransactionTemplate transaction = new TransactionTemplate(context.getBean(PlatformTransactionManager.class));
             assertThrows(RuntimeException.class, () -> transaction.executeWithoutResult(status -> {
-                context.publishEvent(new ProfileIndexingRequestedEvent(1L));
+                context.publishEvent(new ProfileIndexingRequestedEvent(snapshot));
                 throw new RuntimeException("boom");
             }));
 

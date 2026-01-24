@@ -9,13 +9,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import net.devstudy.resume.media.api.service.MediaCleanupService;
 import net.devstudy.resume.profile.api.model.Certificate;
 import net.devstudy.resume.profile.api.model.Contacts;
 import net.devstudy.resume.profile.api.model.Course;
@@ -25,9 +22,12 @@ import net.devstudy.resume.profile.api.model.Language;
 import net.devstudy.resume.profile.api.model.Practic;
 import net.devstudy.resume.profile.api.model.Profile;
 import net.devstudy.resume.profile.api.model.Skill;
-import net.devstudy.resume.search.api.event.ProfileIndexingRequestedEvent;
 import net.devstudy.resume.profile.api.exception.UidAlreadyExistsException;
+import net.devstudy.resume.profile.api.event.ProfileIndexingRequestedEvent;
+import net.devstudy.resume.profile.api.event.ProfileIndexingSnapshot;
 import net.devstudy.resume.profile.api.event.ProfilePasswordChangedEvent;
+import net.devstudy.resume.profile.api.event.ProfileSearchRemovalRequestedEvent;
+import net.devstudy.resume.shared.event.ProfileMediaCleanupRequestedEvent;
 import net.devstudy.resume.profile.api.dto.ContactsForm;
 import net.devstudy.resume.profile.api.dto.InfoForm;
 import net.devstudy.resume.shared.model.LanguageType;
@@ -55,7 +55,6 @@ public class ProfileServiceImpl implements ProfileService {
     private final LanguageRepository languageRepository;
     private final StaticDataService staticDataService;
     private final CertificateRepository certificateRepository;
-    private final MediaCleanupService mediaCleanupService;
     private final PasswordEncoder passwordEncoder;
     private final ProfileSearchService profileSearchService;
     private final ApplicationEventPublisher eventPublisher;
@@ -125,7 +124,7 @@ public class ProfileServiceImpl implements ProfileService {
             profile.setContacts(new Contacts());
         }
         Profile saved = profileRepository.save(profile);
-        requestIndexing(saved.getId());
+        requestIndexing(saved, java.util.List.of());
         return saved;
     }
 
@@ -142,7 +141,8 @@ public class ProfileServiceImpl implements ProfileService {
         java.util.List<String> photoUrls = collectProfilePhotoUrls(profile);
         java.util.List<String> certificateUrls = collectProfileCertificateUrls(profileId);
         profileRepository.delete(profile);
-        registerProfileCleanup(profileId, photoUrls, certificateUrls);
+        publishMediaCleanup(photoUrls, certificateUrls, false);
+        eventPublisher.publishEvent(new ProfileSearchRemovalRequestedEvent(profileId));
     }
 
     private boolean isProfileCompleted(Profile profile) {
@@ -194,7 +194,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
         profile.setUid(normalizedUid);
         profileRepository.save(profile);
-        requestIndexing(profileId);
+        requestIndexing(profile);
     }
 
     @Override
@@ -209,7 +209,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
             skillRepository.saveAll(items);
         }
-        requestIndexing(profileId);
+        requestIndexing(profile, collectSkillValues(items));
     }
 
     @Override
@@ -224,7 +224,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
             practicRepository.saveAll(items);
         }
-        requestIndexing(profileId);
+        requestIndexing(profile);
     }
 
     @Override
@@ -239,7 +239,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
             educationRepository.saveAll(items);
         }
-        requestIndexing(profileId);
+        requestIndexing(profile);
     }
 
     @Override
@@ -254,7 +254,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
             courseRepository.saveAll(items);
         }
-        requestIndexing(profileId);
+        requestIndexing(profile);
     }
 
     @Override
@@ -269,7 +269,7 @@ public class ProfileServiceImpl implements ProfileService {
         addLanguagesToSave(items, existingById, toSave, incomingIds, profile);
         deleteRemovedLanguages(existing, incomingIds);
         saveLanguages(toSave);
-        requestIndexing(profileId);
+        requestIndexing(profile);
     }
 
     @Override
@@ -284,7 +284,7 @@ public class ProfileServiceImpl implements ProfileService {
         profile.getHobbies().addAll(selected);
         profile.setCompleted(isProfileCompleted(profile));
         profileRepository.save(profile);
-        requestIndexing(profileId);
+        requestIndexing(profile);
     }
 
     @Override
@@ -302,7 +302,7 @@ public class ProfileServiceImpl implements ProfileService {
         profile.getContacts().setStackoverflow(form.getStackoverflow());
         profile.setCompleted(isProfileCompleted(profile));
         profileRepository.save(profile);
-        requestIndexing(profileId);
+        requestIndexing(profile);
     }
 
     @Override
@@ -318,7 +318,7 @@ public class ProfileServiceImpl implements ProfileService {
         // оновлюємо completion-статус, якщо всі ключові поля заповнені
         profile.setCompleted(isProfileCompleted(profile));
         profileRepository.save(profile);
-        requestIndexing(profileId);
+        requestIndexing(profile);
     }
 
     @Override
@@ -335,9 +335,9 @@ public class ProfileServiceImpl implements ProfileService {
             }
             certificateRepository.saveAll(items);
         }
-        registerCertificateCleanup(oldUrls, newUrls);
+        publishCertificateCleanup(oldUrls, newUrls);
         profile.setCompleted(isProfileCompleted(profile));
-        requestIndexing(profileId);
+        requestIndexing(profile);
     }
 
     @Override
@@ -349,8 +349,8 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setSmallPhoto(smallUrl);
         profile.setCompleted(isProfileCompleted(profile));
         profileRepository.save(profile);
-        requestIndexing(profileId);
-        registerPhotoCleanup(oldUrls, collectPhotoUrls(largeUrl, smallUrl));
+        requestIndexing(profile);
+        publishPhotoCleanup(oldUrls, collectPhotoUrls(largeUrl, smallUrl));
     }
 
     @Override
@@ -362,8 +362,8 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setSmallPhoto(null);
         profile.setCompleted(isProfileCompleted(profile));
         profileRepository.save(profile);
-        requestIndexing(profileId);
-        registerPhotoCleanup(oldUrls, java.util.Set.of());
+        requestIndexing(profile);
+        publishPhotoCleanup(oldUrls, java.util.Set.of());
     }
 
     private java.util.Map<Long, Language> mapExistingLanguagesById(java.util.List<Language> existing) {
@@ -445,11 +445,42 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    private void requestIndexing(Long profileId) {
-        if (profileId == null) {
+    private void requestIndexing(Profile profile) {
+        if (profile == null) {
             return;
         }
-        eventPublisher.publishEvent(new ProfileIndexingRequestedEvent(profileId));
+        requestIndexing(profile, collectSkillValues(profile.getId()));
+    }
+
+    private void requestIndexing(Profile profile, java.util.List<String> skillValues) {
+        if (profile == null || profile.getId() == null) {
+            return;
+        }
+        ProfileIndexingSnapshot snapshot = new ProfileIndexingSnapshot(profile.getId(), profile.getUid(),
+                profile.getFirstName(), profile.getLastName(), profile.getObjective(), profile.getSummary(),
+                profile.getInfo(), copyNonNull(skillValues));
+        eventPublisher.publishEvent(new ProfileIndexingRequestedEvent(snapshot));
+    }
+
+    private java.util.List<String> collectSkillValues(Long profileId) {
+        if (profileId == null) {
+            return java.util.List.of();
+        }
+        return collectSkillValues(skillRepository.findByProfileIdOrderByIdAsc(profileId));
+    }
+
+    private java.util.List<String> collectSkillValues(java.util.List<Skill> skills) {
+        if (skills == null || skills.isEmpty()) {
+            return java.util.List.of();
+        }
+        java.util.List<String> values = new java.util.ArrayList<>(skills.size());
+        for (Skill skill : skills) {
+            if (skill == null || skill.getValue() == null) {
+                continue;
+            }
+            values.add(skill.getValue());
+        }
+        return values;
     }
 
     private java.util.List<String> collectProfilePhotoUrls(Profile profile) {
@@ -497,25 +528,28 @@ public class ProfileServiceImpl implements ProfileService {
         return urls;
     }
 
-    private void registerProfileCleanup(Long profileId, java.util.List<String> photoUrls,
-            java.util.List<String> certificateUrls) {
-        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-            cleanupProfileResources(profileId, photoUrls, certificateUrls);
+    private void publishMediaCleanup(java.util.Collection<String> photoUrls,
+            java.util.Collection<String> certificateUrls, boolean clearCertificateTempLinks) {
+        java.util.List<String> safePhotos = copyNonNull(photoUrls);
+        java.util.List<String> safeCertificates = copyNonNull(certificateUrls);
+        if (safePhotos.isEmpty() && safeCertificates.isEmpty() && !clearCertificateTempLinks) {
             return;
         }
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                cleanupProfileResources(profileId, photoUrls, certificateUrls);
-            }
-        });
+        eventPublisher.publishEvent(new ProfileMediaCleanupRequestedEvent(safePhotos, safeCertificates,
+                clearCertificateTempLinks));
     }
 
-    private void cleanupProfileResources(Long profileId, java.util.List<String> photoUrls,
-            java.util.List<String> certificateUrls) {
-        mediaCleanupService.removePhotos(photoUrls);
-        mediaCleanupService.removeCertificates(certificateUrls);
-        profileSearchService.removeProfile(profileId);
+    private java.util.List<String> copyNonNull(java.util.Collection<String> values) {
+        if (values == null || values.isEmpty()) {
+            return java.util.List.of();
+        }
+        java.util.List<String> safeValues = new java.util.ArrayList<>(values.size());
+        for (String value : values) {
+            if (value != null) {
+                safeValues.add(value);
+            }
+        }
+        return safeValues;
     }
 
     private Profile getProfileOrThrow(Long profileId) {
@@ -561,7 +595,7 @@ public class ProfileServiceImpl implements ProfileService {
         return urls;
     }
 
-    private void registerPhotoCleanup(java.util.List<String> oldUrls, java.util.Set<String> newUrls) {
+    private void publishPhotoCleanup(java.util.List<String> oldUrls, java.util.Set<String> newUrls) {
         if (oldUrls == null || oldUrls.isEmpty()) {
             return;
         }
@@ -572,34 +606,16 @@ public class ProfileServiceImpl implements ProfileService {
         if (toRemove.isEmpty()) {
             return;
         }
-        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-            mediaCleanupService.removePhotos(toRemove);
-            return;
-        }
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                mediaCleanupService.removePhotos(toRemove);
-            }
-        });
+        publishMediaCleanup(toRemove, java.util.List.of(), false);
     }
 
-    private void registerCertificateCleanup(java.util.List<String> oldUrls, java.util.Set<String> newUrls) {
-        java.util.List<String> toRemove = oldUrls.stream()
-                .filter(url -> !newUrls.contains(url))
+    private void publishCertificateCleanup(java.util.List<String> oldUrls, java.util.Set<String> newUrls) {
+        java.util.List<String> safeOldUrls = oldUrls == null ? java.util.List.of() : oldUrls;
+        java.util.Set<String> safeNewUrls = newUrls == null ? java.util.Set.of() : newUrls;
+        java.util.List<String> toRemove = safeOldUrls.stream()
+                .filter(url -> !safeNewUrls.contains(url))
                 .toList();
-        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-            mediaCleanupService.clearCertificateTempLinks();
-            mediaCleanupService.removeCertificates(toRemove);
-            return;
-        }
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                mediaCleanupService.clearCertificateTempLinks();
-                mediaCleanupService.removeCertificates(toRemove);
-            }
-        });
+        publishMediaCleanup(java.util.List.of(), toRemove, true);
     }
 
     private void initializeCollections(Profile profile) {
