@@ -1,13 +1,17 @@
 package net.devstudy.resume.auth.internal.component.impl;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,10 +20,18 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.security.web.csrf.CsrfException;
 import org.springframework.stereotype.Component;
 
+import net.devstudy.resume.shared.dto.ApiErrorResponse;
+
 @Component
 public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AccessDeniedHandlerImpl.class);
+
+    private final ObjectMapper objectMapper;
+
+    public AccessDeniedHandlerImpl(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException ex)
@@ -32,9 +44,9 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
             new SecurityContextLogoutHandler().logout(request, response, authentication);
             if (apiRequest) {
                 writeJsonError(response,
-                        HttpServletResponse.SC_UNAUTHORIZED,
-                        "csrf",
-                        "CSRF token invalid or missing");
+                        HttpStatus.UNAUTHORIZED,
+                        "CSRF token invalid or missing",
+                        path);
                 return;
             }
             response.sendRedirect(request.getContextPath() + "/login?expired");
@@ -46,9 +58,9 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         }
         if (apiRequest) {
             writeJsonError(response,
-                    HttpServletResponse.SC_FORBIDDEN,
-                    "forbidden",
-                    "Access denied");
+                    HttpStatus.FORBIDDEN,
+                    "Access denied",
+                    path);
             return;
         }
         response.sendError(HttpServletResponse.SC_FORBIDDEN);
@@ -74,13 +86,12 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         return path;
     }
 
-    private void writeJsonError(HttpServletResponse response, int status, String error, String message)
+    private void writeJsonError(HttpServletResponse response, HttpStatus status, String message, String path)
             throws IOException {
-        response.setStatus(status);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write("{\"status\":" + status
-                + ",\"error\":\"" + error
-                + "\",\"message\":\"" + message + "\"}");
+        response.setStatus(status.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        ApiErrorResponse apiError = ApiErrorResponse.of(status, message, path);
+        objectMapper.writeValue(response.getWriter(), apiError);
     }
 }
