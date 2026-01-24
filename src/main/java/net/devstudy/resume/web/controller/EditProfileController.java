@@ -40,32 +40,32 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
-import net.devstudy.resume.profile.entity.Certificate;
-import net.devstudy.resume.staticdata.entity.Hobby;
-import net.devstudy.resume.profile.entity.Education;
-import net.devstudy.resume.profile.entity.Practic;
-import net.devstudy.resume.profile.entity.Profile;
-import net.devstudy.resume.staticdata.entity.SkillCategory;
-import net.devstudy.resume.auth.form.ChangePasswordForm;
-import net.devstudy.resume.profile.form.CertificateForm;
-import net.devstudy.resume.profile.form.ContactsForm;
-import net.devstudy.resume.profile.form.CourseForm;
-import net.devstudy.resume.profile.form.EducationForm;
-import net.devstudy.resume.profile.form.HobbyForm;
-import net.devstudy.resume.profile.form.InfoForm;
-import net.devstudy.resume.profile.form.LanguageForm;
-import net.devstudy.resume.profile.form.PracticForm;
-import net.devstudy.resume.profile.form.ProfileMainForm;
-import net.devstudy.resume.profile.form.SkillForm;
-import net.devstudy.resume.auth.model.CurrentProfile;
+import net.devstudy.resume.profile.api.model.Certificate;
+import net.devstudy.resume.staticdata.api.model.Hobby;
+import net.devstudy.resume.profile.api.model.Education;
+import net.devstudy.resume.profile.api.model.Practic;
+import net.devstudy.resume.profile.api.model.Profile;
+import net.devstudy.resume.staticdata.api.model.SkillCategory;
+import net.devstudy.resume.auth.api.dto.ChangePasswordForm;
+import net.devstudy.resume.profile.api.dto.CertificateForm;
+import net.devstudy.resume.profile.api.dto.ContactsForm;
+import net.devstudy.resume.profile.api.dto.CourseForm;
+import net.devstudy.resume.profile.api.dto.EducationForm;
+import net.devstudy.resume.profile.api.dto.HobbyForm;
+import net.devstudy.resume.profile.api.dto.InfoForm;
+import net.devstudy.resume.profile.api.dto.LanguageForm;
+import net.devstudy.resume.profile.api.dto.PracticForm;
+import net.devstudy.resume.profile.api.dto.ProfileMainForm;
+import net.devstudy.resume.profile.api.dto.SkillForm;
+import net.devstudy.resume.auth.api.model.CurrentProfile;
 import net.devstudy.resume.shared.model.LanguageLevel;
 import net.devstudy.resume.shared.model.LanguageType;
-import net.devstudy.resume.media.model.UploadCertificateResult;
-import net.devstudy.resume.auth.security.CurrentProfileProvider;
-import net.devstudy.resume.media.service.CertificateStorageService;
-import net.devstudy.resume.media.service.PhotoStorageService;
-import net.devstudy.resume.profile.service.ProfileService;
-import net.devstudy.resume.staticdata.service.StaticDataService;
+import net.devstudy.resume.media.api.dto.UploadCertificateResult;
+import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
+import net.devstudy.resume.media.api.service.CertificateStorageService;
+import net.devstudy.resume.media.api.service.PhotoStorageService;
+import net.devstudy.resume.profile.api.service.ProfileService;
+import net.devstudy.resume.staticdata.api.service.StaticDataService;
 
 @Controller
 @RequestMapping("/{uid}/edit")
@@ -437,7 +437,7 @@ public class EditProfileController {
 
     @PostMapping("/certificates")
     public String saveCertificates(@PathVariable String uid,
-            @ModelAttribute("form") net.devstudy.resume.profile.form.CertificateForm form,
+            @ModelAttribute("form") net.devstudy.resume.profile.api.dto.CertificateForm form,
             BindingResult bindingResult, Model model) {
         Profile profile = resolveProfile(uid);
         if (profile == null)
@@ -683,9 +683,9 @@ public class EditProfileController {
         );
         Map<String, Integer> seen = new LinkedHashMap<>();
         java.util.Set<Integer> flagged = new java.util.HashSet<>();
-        List<net.devstudy.resume.profile.entity.Language> items = form.getItems();
+        List<net.devstudy.resume.profile.api.model.Language> items = form.getItems();
         for (int i = 0; i < items.size(); i++) {
-            net.devstudy.resume.profile.entity.Language item = items.get(i);
+            net.devstudy.resume.profile.api.model.Language item = items.get(i);
             if (item == null) {
                 continue;
             }
@@ -867,7 +867,7 @@ public class EditProfileController {
         }
         if (emptyForm instanceof ContactsForm contactsForm) {
             if (profile.getContacts() == null) {
-                profile.setContacts(new net.devstudy.resume.profile.entity.Contacts());
+                profile.setContacts(new net.devstudy.resume.profile.api.model.Contacts());
             }
             contactsForm.setPhone(profile.getPhone());
             contactsForm.setEmail(profile.getEmail());

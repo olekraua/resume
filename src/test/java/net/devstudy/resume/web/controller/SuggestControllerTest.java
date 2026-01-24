@@ -15,8 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import net.devstudy.resume.profile.entity.Profile;
-import net.devstudy.resume.search.service.ProfileSearchService;
+import net.devstudy.resume.profile.api.model.Profile;
+import net.devstudy.resume.search.api.service.ProfileSearchService;
 
 class SuggestControllerTest {
 

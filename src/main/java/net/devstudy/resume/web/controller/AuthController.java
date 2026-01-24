@@ -11,13 +11,13 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
 import org.springframework.validation.BindingResult;
 import org.springframework.ui.Model;
 
-import net.devstudy.resume.auth.security.CurrentProfileProvider;
-import net.devstudy.resume.auth.model.CurrentProfile;
-import net.devstudy.resume.auth.form.RegistrationForm;
-import net.devstudy.resume.profile.exception.UidAlreadyExistsException;
+import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
+import net.devstudy.resume.auth.api.model.CurrentProfile;
+import net.devstudy.resume.auth.api.dto.RegistrationForm;
+import net.devstudy.resume.profile.api.exception.UidAlreadyExistsException;
 import net.devstudy.resume.shared.component.DataBuilder;
-import net.devstudy.resume.profile.service.ProfileService;
-import net.devstudy.resume.auth.service.UidSuggestionService;
+import net.devstudy.resume.profile.api.service.ProfileService;
+import net.devstudy.resume.auth.api.service.UidSuggestionService;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;

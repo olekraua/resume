@@ -12,9 +12,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import jakarta.validation.Valid;
-import net.devstudy.resume.auth.form.RestoreAccessForm;
-import net.devstudy.resume.auth.form.RestorePasswordForm;
-import net.devstudy.resume.auth.service.RestoreAccessService;
+import net.devstudy.resume.auth.api.dto.RestoreAccessForm;
+import net.devstudy.resume.auth.api.dto.RestorePasswordForm;
+import net.devstudy.resume.auth.api.service.RestoreAccessService;
 
 @Controller
 public class RestoreAccessController {

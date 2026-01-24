@@ -30,13 +30,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import net.devstudy.resume.web.config.UiProperties;
-import net.devstudy.resume.profile.entity.Profile;
-import net.devstudy.resume.profile.exception.UidAlreadyExistsException;
-import net.devstudy.resume.auth.form.ChangePasswordForm;
-import net.devstudy.resume.auth.model.CurrentProfile;
-import net.devstudy.resume.auth.security.CurrentProfileProvider;
-import net.devstudy.resume.profile.service.ProfileService;
-import net.devstudy.resume.auth.service.UidSuggestionService;
+import net.devstudy.resume.profile.api.model.Profile;
+import net.devstudy.resume.profile.api.exception.UidAlreadyExistsException;
+import net.devstudy.resume.auth.api.dto.ChangePasswordForm;
+import net.devstudy.resume.auth.api.model.CurrentProfile;
+import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
+import net.devstudy.resume.profile.api.service.ProfileService;
+import net.devstudy.resume.auth.api.service.UidSuggestionService;
 
 @WebMvcTest(controllers = AccountController.class)
 @Import(UiProperties.class)

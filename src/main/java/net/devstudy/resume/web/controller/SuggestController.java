@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import net.devstudy.resume.profile.entity.Profile;
-import net.devstudy.resume.search.service.ProfileSearchService;
+import net.devstudy.resume.profile.api.model.Profile;
+import net.devstudy.resume.search.api.service.ProfileSearchService;
 
 @RestController
 @RequiredArgsConstructor

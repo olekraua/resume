@@ -15,7 +15,7 @@ import jakarta.validation.ValidationException;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import net.devstudy.resume.shared.validation.annotation.FieldMatch;
-import net.devstudy.resume.auth.form.PasswordForm;
+import net.devstudy.resume.auth.api.dto.PasswordForm;
 
 class FieldMatchConstraintIntegrationTest {
 

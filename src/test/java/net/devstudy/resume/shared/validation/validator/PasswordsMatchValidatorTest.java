@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import net.devstudy.resume.shared.validation.annotation.PasswordsMatch;
-import net.devstudy.resume.auth.form.RegistrationForm;
+import net.devstudy.resume.auth.api.dto.RegistrationForm;
 
 class PasswordsMatchValidatorTest {
 

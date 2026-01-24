@@ -22,10 +22,10 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributesModelMap;
 
-import net.devstudy.resume.profile.entity.Profile;
-import net.devstudy.resume.auth.form.RestoreAccessForm;
-import net.devstudy.resume.auth.form.RestorePasswordForm;
-import net.devstudy.resume.auth.service.RestoreAccessService;
+import net.devstudy.resume.profile.api.model.Profile;
+import net.devstudy.resume.auth.api.dto.RestoreAccessForm;
+import net.devstudy.resume.auth.api.dto.RestorePasswordForm;
+import net.devstudy.resume.auth.api.service.RestoreAccessService;
 
 class RestoreAccessControllerTest {
 

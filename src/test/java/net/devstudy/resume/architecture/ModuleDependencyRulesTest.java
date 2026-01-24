@@ -89,8 +89,26 @@ class ModuleDependencyRulesTest {
                         .that(inModule(source))
                         .should()
                         .accessClassesThat()
-                        .resideInAPackage("net.devstudy.resume." + target + ".repository..")
+                        .resideInAPackage("net.devstudy.resume." + target + ".internal.repository..")
                         .because("module " + source + " must not access repositories of " + target);
+                rule.check(CLASSES);
+            }
+        }
+    }
+
+    @Test
+    void modulesShouldNotAccessOtherModulesInternalPackages() {
+        for (String source : MODULES) {
+            for (String target : MODULES) {
+                if (source.equals(target)) {
+                    continue;
+                }
+                ArchRule rule = noClasses()
+                        .that(inModule(source))
+                        .should()
+                        .accessClassesThat()
+                        .resideInAPackage("net.devstudy.resume." + target + ".internal..")
+                        .because("module " + source + " must not access internal packages of " + target);
                 rule.check(CLASSES);
             }
         }

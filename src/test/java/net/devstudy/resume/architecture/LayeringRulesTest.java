@@ -47,14 +47,14 @@ class LayeringRulesTest {
     }
 
     @Test
-    void entitiesShouldNotDependOnWebOrServiceOrRepository() {
+    void modelsShouldNotDependOnWebOrServiceOrRepository() {
         noClasses()
                 .that()
-                .resideInAPackage("..entity..")
+                .resideInAPackage("..api.model..")
                 .should()
                 .dependOnClassesThat()
                 .resideInAnyPackage("..controller..", "..service..", "..repository..")
-                .because("entities should stay in the domain layer")
+                .because("models should stay in the domain layer")
                 .check(CLASSES);
     }
 

@@ -1,13 +1,13 @@
 package net.devstudy.resume.web.controller;
 
 import lombok.RequiredArgsConstructor;
-import net.devstudy.resume.profile.entity.Profile;
-import net.devstudy.resume.auth.form.ChangePasswordForm;
-import net.devstudy.resume.auth.form.ChangeLoginForm;
-import net.devstudy.resume.auth.security.CurrentProfileProvider;
-import net.devstudy.resume.profile.service.ProfileService;
-import net.devstudy.resume.auth.service.UidSuggestionService;
-import net.devstudy.resume.profile.exception.UidAlreadyExistsException;
+import net.devstudy.resume.profile.api.model.Profile;
+import net.devstudy.resume.auth.api.dto.ChangePasswordForm;
+import net.devstudy.resume.auth.api.dto.ChangeLoginForm;
+import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
+import net.devstudy.resume.profile.api.service.ProfileService;
+import net.devstudy.resume.auth.api.service.UidSuggestionService;
+import net.devstudy.resume.profile.api.exception.UidAlreadyExistsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;

@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import net.devstudy.resume.auth.model.CurrentProfile;
-import net.devstudy.resume.auth.security.CurrentProfileProvider;
+import net.devstudy.resume.auth.api.model.CurrentProfile;
+import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
 
 @Controller
 @RequestMapping("/edit")

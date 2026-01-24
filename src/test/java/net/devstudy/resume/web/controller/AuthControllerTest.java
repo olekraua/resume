@@ -31,16 +31,16 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import net.devstudy.resume.shared.component.DataBuilder;
-import net.devstudy.resume.auth.component.impl.AccessDeniedHandlerImpl;
-import net.devstudy.resume.auth.config.SecurityConfig;
+import net.devstudy.resume.auth.internal.component.impl.AccessDeniedHandlerImpl;
+import net.devstudy.resume.auth.internal.config.SecurityConfig;
 import net.devstudy.resume.web.config.UiModelAttributes;
 import net.devstudy.resume.web.config.UiProperties;
-import net.devstudy.resume.profile.entity.Profile;
-import net.devstudy.resume.profile.exception.UidAlreadyExistsException;
-import net.devstudy.resume.auth.model.CurrentProfile;
-import net.devstudy.resume.auth.security.CurrentProfileProvider;
-import net.devstudy.resume.profile.service.ProfileService;
-import net.devstudy.resume.auth.service.UidSuggestionService;
+import net.devstudy.resume.profile.api.model.Profile;
+import net.devstudy.resume.profile.api.exception.UidAlreadyExistsException;
+import net.devstudy.resume.auth.api.model.CurrentProfile;
+import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
+import net.devstudy.resume.profile.api.service.ProfileService;
+import net.devstudy.resume.auth.api.service.UidSuggestionService;
 
 @WebMvcTest(controllers = AuthController.class)
 @Import({UiProperties.class, UiModelAttributes.class, SecurityConfig.class, AccessDeniedHandlerImpl.class})

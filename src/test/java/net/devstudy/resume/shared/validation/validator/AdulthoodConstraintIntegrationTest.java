@@ -17,7 +17,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import net.devstudy.resume.shared.validation.annotation.Adulthood;
-import net.devstudy.resume.profile.form.InfoForm;
+import net.devstudy.resume.profile.api.dto.InfoForm;
 
 class AdulthoodConstraintIntegrationTest {
 

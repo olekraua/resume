@@ -276,6 +276,7 @@ sequenceDiagram
 ### Принципи
 - Зовнішні модулі не звертаються напряму до репозиторіїв іншого модуля.
 - Доступ між модулями лише через інтерфейси сервісів або події.
+- Публічний контракт модуля лежить у `net.devstudy.resume.<module>.api`, реалізація — у `net.devstudy.resume.<module>.internal`.
 - `search` і `notification` оперують лише даними, переданими у подіях/DTO.
 
 ## Package mapping (target)
@@ -300,68 +301,83 @@ sequenceDiagram
 ### profile
 | Пакет | Класи |
 | --- | --- |
-| `net.devstudy.resume.profile.entity` | `AbstractEntity`, `AbstractFinishDateEntity`, `Profile`, `Contacts`, `Skill`, `Practic`, `Education`, `Course`, `Language`, `Certificate`, `ProfileEntity`, `ProfileCollectionField` |
-| `net.devstudy.resume.profile.repository` | `ProfileRepository`, `SkillRepository`, `PracticRepository`, `EducationRepository`, `CourseRepository`, `LanguageRepository`, `CertificateRepository` |
-| `net.devstudy.resume.profile.service` | `ProfileService`, `ProfileServiceImpl` |
-| `net.devstudy.resume.profile.form` | `ProfileMainForm`, `InfoForm`, `ContactsForm`, `SkillForm`, `PracticForm`, `EducationForm`, `CourseForm`, `LanguageForm`, `CertificateForm`, `HobbyForm` |
-| `net.devstudy.resume.profile.model` | `LanguageType`, `LanguageLevel` |
-| `net.devstudy.resume.profile.annotation` | `ProfileInfoField`, `ProfileDataFieldGroup` |
-| `net.devstudy.resume.profile.exception` | `UidAlreadyExistsException` |
+| `net.devstudy.resume.profile.api.model` | `AbstractEntity`, `AbstractFinishDateEntity`, `Profile`, `Contacts`, `Skill`, `Practic`, `Education`, `Course`, `Language`, `Certificate`, `ProfileEntity`, `ProfileCollectionField` |
+| `net.devstudy.resume.profile.api.service` | `ProfileService`, `ProfileReadService`, `EditProfileService` |
+| `net.devstudy.resume.profile.api.dto` | `ProfileMainForm`, `InfoForm`, `ContactsForm`, `SkillForm`, `PracticForm`, `EducationForm`, `CourseForm`, `LanguageForm`, `CertificateForm`, `HobbyForm` |
+| `net.devstudy.resume.profile.api.annotation` | `ProfileInfoField`, `ProfileDataFieldGroup` |
+| `net.devstudy.resume.profile.api.exception` | `UidAlreadyExistsException` |
+| `net.devstudy.resume.profile.api.event` | `ProfilePasswordChangedEvent` |
+| `net.devstudy.resume.profile.api.config` | `ProfileJpaConfig` |
+| `net.devstudy.resume.profile.internal.repository.storage` | `ProfileRepository`, `SkillRepository`, `PracticRepository`, `EducationRepository`, `CourseRepository`, `LanguageRepository`, `CertificateRepository` |
+| `net.devstudy.resume.profile.internal.service.impl` | `ProfileServiceImpl`, `ProfileReadServiceImpl` |
 
 ### staticdata
 | Пакет | Класи |
 | --- | --- |
-| `net.devstudy.resume.staticdata.entity` | `SkillCategory`, `Hobby` |
-| `net.devstudy.resume.staticdata.repository` | `SkillCategoryRepository`, `HobbyRepository` |
-| `net.devstudy.resume.staticdata.service` | `StaticDataService`, `StaticDataServiceImpl` |
+| `net.devstudy.resume.staticdata.api.model` | `SkillCategory`, `Hobby` |
+| `net.devstudy.resume.staticdata.api.service` | `StaticDataService` |
+| `net.devstudy.resume.staticdata.api.config` | `StaticDataJpaConfig` |
+| `net.devstudy.resume.staticdata.internal.repository.storage` | `SkillCategoryRepository`, `HobbyRepository` |
+| `net.devstudy.resume.staticdata.internal.service.impl` | `StaticDataServiceImpl` |
 
 ### auth
 | Пакет | Класи |
 | --- | --- |
-| `net.devstudy.resume.auth.config` | `SecurityConfig` |
-| `net.devstudy.resume.auth.security` | `CurrentProfileProvider`, `SecurityContextCurrentProfileProvider`, `AccessDeniedHandlerImpl`, `CurrentProfileDetailsService` |
-| `net.devstudy.resume.auth.entity` | `ProfileRestore`, `RememberMeToken` |
-| `net.devstudy.resume.auth.repository` | `ProfileRestoreRepository`, `RememberMeTokenRepository` |
-| `net.devstudy.resume.auth.service` | `RestoreAccessService`, `RestoreAccessServiceImpl`, `UidSuggestionService`, `UidSuggestionServiceImpl`, `RememberMeService` |
-| `net.devstudy.resume.auth.model` | `CurrentProfile`, `CurrentProfileImpl` |
-| `net.devstudy.resume.auth.form` | `RegistrationForm`, `ChangeLoginForm`, `ChangePasswordForm`, `RestoreAccessForm`, `RestorePasswordForm`, `PasswordForm`, `SignUpForm` |
-| `net.devstudy.resume.auth.util` | `SecurityUtil` |
+| `net.devstudy.resume.auth.api.config` | `AuthJpaConfig` |
+| `net.devstudy.resume.auth.internal.config` | `SecurityConfig` |
+| `net.devstudy.resume.auth.api.security` | `CurrentProfileProvider` |
+| `net.devstudy.resume.auth.internal.security` | `SecurityContextCurrentProfileProvider` |
+| `net.devstudy.resume.auth.internal.component.impl` | `AccessDeniedHandlerImpl` |
+| `net.devstudy.resume.auth.api.service` | `RestoreAccessService`, `UidSuggestionService` |
+| `net.devstudy.resume.auth.internal.service.impl` | `RestoreAccessServiceImpl`, `UidSuggestionServiceImpl`, `RememberMeService`, `CurrentProfileDetailsService` |
+| `net.devstudy.resume.auth.api.model` | `CurrentProfile` |
+| `net.devstudy.resume.auth.internal.model` | `CurrentProfileImpl` |
+| `net.devstudy.resume.auth.api.dto` | `RegistrationForm`, `ChangeLoginForm`, `ChangePasswordForm`, `RestoreAccessForm`, `RestorePasswordForm`, `PasswordForm`, `SignUpForm` |
+| `net.devstudy.resume.auth.internal.entity` | `ProfileRestore`, `RememberMeToken` |
+| `net.devstudy.resume.auth.internal.repository.storage` | `ProfileRestoreRepository`, `RememberMeTokenRepository` |
+| `net.devstudy.resume.auth.internal.event` | `ProfilePasswordChangedListener` |
+| `net.devstudy.resume.auth.internal.util` | `SecurityUtil` |
 
 ### search
 | Пакет | Класи |
 | --- | --- |
-| `net.devstudy.resume.search.document` | `ProfileSearchDocument` |
-| `net.devstudy.resume.search.repository` | `ProfileSearchRepository` |
-| `net.devstudy.resume.search.service` | `ProfileSearchService`, `ProfileSearchServiceImpl`, `ProfileSearchServiceNoOp` |
-| `net.devstudy.resume.search.mapper` | `ProfileSearchMapper`, `ProfileSearchMapperImpl` |
-| `net.devstudy.resume.search.listener` | `ProfileSearchIndexingListener` |
-| `net.devstudy.resume.search.event` | `ProfileIndexingRequestedEvent` |
-| `net.devstudy.resume.search.config` | `ElasticsearchIndexConfig`, `ElasticsearchRepositoryConfig` |
+| `net.devstudy.resume.search.api.event` | `ProfileIndexingRequestedEvent` |
+| `net.devstudy.resume.search.api.service` | `ProfileSearchService` |
+| `net.devstudy.resume.search.internal.document` | `ProfileSearchDocument` |
+| `net.devstudy.resume.search.internal.repository.search` | `ProfileSearchRepository` |
+| `net.devstudy.resume.search.internal.mapper` | `ProfileSearchMapper` |
+| `net.devstudy.resume.search.internal.service.impl` | `ProfileSearchServiceImpl`, `ProfileSearchServiceNoOp`, `ProfileSearchMapperImpl` |
+| `net.devstudy.resume.search.internal.listener` | `ProfileSearchIndexingListener` |
+| `net.devstudy.resume.search.internal.config` | `ElasticsearchIndexConfig`, `ElasticsearchRepositoryConfig` |
 
 ### media
 | Пакет | Класи |
 | --- | --- |
-| `net.devstudy.resume.media.model` | `UploadTempPath`, `UploadCertificateResult` |
-| `net.devstudy.resume.media.annotation` | `EnableUploadImageTempStorage` |
-| `net.devstudy.resume.media.component` | `ImageResizer`, `ImageOptimizator`, `ImageFormatConverter`, `UploadTempPathFactory`, `PhotoFileStorage`, `CertificateFileStorage` |
-| `net.devstudy.resume.media.component.impl` | `ThumbnailsImageResizer`, `JpegTranImageOptimizator`, `PngToJpegImageFormatConverter`, `DefaultUploadTempPathFactory`, `UploadImageTempStorage`, `UploadCertificateLinkTempStorage` |
-| `net.devstudy.resume.media.service` | `PhotoStorageService`, `PhotoStorageServiceImpl`, `CertificateStorageService`, `CertificateStorageServiceImpl` |
-| `net.devstudy.resume.media.config` | `PhotoUploadProperties`, `CertificateUploadProperties` |
+| `net.devstudy.resume.media.api.dto` | `UploadCertificateResult` |
+| `net.devstudy.resume.media.api.service` | `PhotoStorageService`, `CertificateStorageService`, `MediaCleanupService` |
+| `net.devstudy.resume.media.internal.model` | `UploadTempPath` |
+| `net.devstudy.resume.media.internal.annotation` | `EnableUploadImageTempStorage` |
+| `net.devstudy.resume.media.internal.component` | `ImageResizer`, `ImageOptimizator`, `ImageFormatConverter`, `UploadTempPathFactory`, `PhotoFileStorage`, `CertificateFileStorage` |
+| `net.devstudy.resume.media.internal.component.impl` | `ThumbnailsImageResizer`, `JpegTranImageOptimizator`, `PngToJpegImageFormatConverter`, `DefaultUploadTempPathFactory`, `UploadImageTempStorage`, `UploadCertificateLinkTempStorage` |
+| `net.devstudy.resume.media.internal.service.impl` | `PhotoStorageServiceImpl`, `CertificateStorageServiceImpl`, `MediaCleanupServiceImpl` |
+| `net.devstudy.resume.media.internal.config` | `PhotoUploadProperties`, `CertificateUploadProperties` |
 
 ### notification
 | Пакет | Класи |
 | --- | --- |
-| `net.devstudy.resume.notification.event` | `RestoreAccessMailRequestedEvent` |
-| `net.devstudy.resume.notification.listener` | `RestoreAccessMailListener` |
-| `net.devstudy.resume.notification.service` | `RestoreAccessMailService`, `RestoreAccessMailServiceImpl`, `RestoreAccessMailServiceNoOp` |
-| `net.devstudy.resume.notification.template` | `TemplateResolver`, `FreemarkerTemplateResolver` |
-| `net.devstudy.resume.notification.config` | `RestoreMailTemplateProperties` |
+| `net.devstudy.resume.notification.api.event` | `RestoreAccessMailRequestedEvent` |
+| `net.devstudy.resume.notification.internal.mail` | `RestoreAccessMailListener` |
+| `net.devstudy.resume.notification.internal.service` | `RestoreAccessMailService` |
+| `net.devstudy.resume.notification.internal.service.impl` | `RestoreAccessMailServiceImpl`, `RestoreAccessMailServiceNoOp` |
+| `net.devstudy.resume.notification.internal.component` | `TemplateResolver` |
+| `net.devstudy.resume.notification.internal.component.impl` | `FreemarkerTemplateResolver` |
+| `net.devstudy.resume.notification.internal.config` | `RestoreMailTemplateProperties` |
 
 ### shared
 | Пакет | Класи |
 | --- | --- |
 | `net.devstudy.resume.shared.constants` | `Constants` |
-| `net.devstudy.resume.shared.model` | `AbstractModel` |
+| `net.devstudy.resume.shared.model` | `AbstractModel`, `AbstractEntity`, `LanguageType`, `LanguageLevel` |
 | `net.devstudy.resume.shared.util` | `BeanCopyUtil`, `DataUtil`, `SanitizationUtils` |
 | `net.devstudy.resume.shared.component` | `DataBuilder`, `TranslitConverter`, `FormErrorConverter` |
 | `net.devstudy.resume.shared.component.impl` | `DataBuilderImpl`, `SimpleTranslitConverter`, `JunidecodeTranslitConverter` |

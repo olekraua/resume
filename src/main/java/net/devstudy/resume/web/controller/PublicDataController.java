@@ -1,10 +1,10 @@
 package net.devstudy.resume.web.controller;
 
-import net.devstudy.resume.profile.entity.Profile;
-import net.devstudy.resume.auth.form.ChangeLoginForm;
-import net.devstudy.resume.auth.model.CurrentProfile;
-import net.devstudy.resume.auth.security.CurrentProfileProvider;
-import net.devstudy.resume.profile.service.ProfileService;
+import net.devstudy.resume.profile.api.model.Profile;
+import net.devstudy.resume.auth.api.dto.ChangeLoginForm;
+import net.devstudy.resume.auth.api.model.CurrentProfile;
+import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
+import net.devstudy.resume.profile.api.service.ProfileService;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
