@@ -8,6 +8,13 @@ import { CoursePayload, ProfileEditApiService } from '../../services/profile-edi
 import { SessionService } from '../../services/session.service';
 import { parseApiError } from '../../utils/api-error';
 
+interface CourseFormItem {
+  name: string | null;
+  school: string | null;
+  finishDate: string | null;
+  ongoing: boolean;
+}
+
 @Component({
   selector: 'app-edit-courses',
   standalone: true,
@@ -76,7 +83,7 @@ export class EditCoursesComponent implements OnInit, OnDestroy {
   submit(): void {
     this.errorMessage = '';
     this.successMessage = '';
-    const rawItems = this.items.getRawValue() as Array<Record<string, string | boolean>>;
+    const rawItems = this.items.getRawValue() as CourseFormItem[];
     const filtered = rawItems.filter((item) => {
       const hasName = Boolean((item.name as string)?.trim());
       const hasSchool = Boolean((item.school as string)?.trim());

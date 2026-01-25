@@ -8,6 +8,13 @@ import { CertificatePayload, ProfileEditApiService } from '../../services/profil
 import { SessionService } from '../../services/session.service';
 import { parseApiError } from '../../utils/api-error';
 
+interface CertificateFormItem {
+  name: string | null;
+  issuer: string | null;
+  smallUrl: string | null;
+  largeUrl: string | null;
+}
+
 @Component({
   selector: 'app-edit-certificates',
   standalone: true,
@@ -94,7 +101,7 @@ export class EditCertificatesComponent implements OnInit, OnDestroy {
   submit(): void {
     this.errorMessage = '';
     this.successMessage = '';
-    const rawItems = this.items.getRawValue() as Array<Record<string, string>>;
+    const rawItems = this.items.getRawValue() as CertificateFormItem[];
     const filtered = rawItems.filter((item) => {
       const hasName = Boolean(item.name?.trim());
       const hasIssuer = Boolean(item.issuer?.trim());

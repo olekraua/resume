@@ -8,6 +8,17 @@ import { PracticPayload, ProfileEditApiService } from '../../services/profile-ed
 import { SessionService } from '../../services/session.service';
 import { parseApiError } from '../../utils/api-error';
 
+interface PracticFormItem {
+  position: string | null;
+  company: string | null;
+  beginDate: string | null;
+  finishDate: string | null;
+  responsibilities: string | null;
+  demo: string | null;
+  src: string | null;
+  ongoing: boolean;
+}
+
 @Component({
   selector: 'app-edit-practics',
   standalone: true,
@@ -80,7 +91,7 @@ export class EditPracticsComponent implements OnInit, OnDestroy {
   submit(): void {
     this.errorMessage = '';
     this.successMessage = '';
-    const rawItems = this.items.getRawValue() as Array<Record<string, string | boolean>>;
+    const rawItems = this.items.getRawValue() as PracticFormItem[];
     const filtered = rawItems.filter((item) => {
       const hasPosition = Boolean((item.position as string)?.trim());
       const hasCompany = Boolean((item.company as string)?.trim());

@@ -9,6 +9,15 @@ import { SessionService } from '../../services/session.service';
 import { StaticDataService } from '../../services/static-data.service';
 import { parseApiError } from '../../utils/api-error';
 
+interface EducationFormItem {
+  university: string | null;
+  faculty: string | null;
+  summary: string | null;
+  beginYear: string | number | null;
+  finishYear: string | number | null;
+  ongoing: boolean;
+}
+
 @Component({
   selector: 'app-edit-education',
   standalone: true,
@@ -85,7 +94,7 @@ export class EditEducationComponent implements OnInit, OnDestroy {
   submit(): void {
     this.errorMessage = '';
     this.successMessage = '';
-    const rawItems = this.items.getRawValue() as Array<Record<string, string | number | boolean | null>>;
+    const rawItems = this.items.getRawValue() as EducationFormItem[];
     const filtered = rawItems.filter((item) => {
       const hasUniversity = Boolean((item.university as string)?.trim());
       const hasFaculty = Boolean((item.faculty as string)?.trim());

@@ -19,6 +19,12 @@ interface LanguageLevelOption {
   sliderValue: number;
 }
 
+interface LanguageFormItem {
+  name: string | null;
+  level: string | null;
+  type: string | null;
+}
+
 @Component({
   selector: 'app-edit-languages',
   standalone: true,
@@ -104,7 +110,7 @@ export class EditLanguagesComponent implements OnInit, OnDestroy {
   submit(): void {
     this.errorMessage = '';
     this.successMessage = '';
-    const rawItems = this.items.getRawValue() as Array<Record<string, string>>;
+    const rawItems = this.items.getRawValue() as LanguageFormItem[];
     const filtered = rawItems.filter((item) => {
       const hasName = Boolean(item.name?.trim());
       return hasName;

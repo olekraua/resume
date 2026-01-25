@@ -1,0 +1,840 @@
+@charset "UTF-8";
+/* @font-face kit by Fonts2u (http://www.fonts2u.com) for font http://www.fontspace.com/alan-carr/sports-and-hobbies */
+@font-face {
+  font-family: "Sports and Hobbies";
+  src: url("../fonts/sporthob.eot?") format("eot"), url("../fonts/sporthob.woff") format("woff"), url("../fonts/sporthob.ttf") format("truetype"), url("../fonts/sporthob.svg#SportsAndHobbies") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+.resume {
+  background-color: #eae8e7;
+  color: #222;
+}
+
+.resume .contacts {
+  margin-top: 30px;
+}
+
+.resume .photo {
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+  width: 100%;
+}
+
+.resume .l-container {
+  margin-top: 20px;
+}
+
+.resume .layout-content {
+  margin: 20px auto;
+  max-width: 1100px;
+}
+
+.c-modal {
+  -webkit-overflow-scrolling: touch;
+}
+
+.c-modal-open .c-modal {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+@media (min-width: 768px) {
+  .resume .c-navbar__nav--right .c-dropdown__menu {
+    right: 0;
+    left: auto;
+  }
+}
+
+.resume .profiles .c-panel {
+  margin-bottom: 15px;
+}
+
+.resume .profile-item .c-media {
+  padding: 15px;
+}
+
+.resume .profile-item .photo {
+  width: 120px;
+  border-radius: 3px;
+}
+
+.resume .profile-item .c-media {
+  background: #fff;
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.resume .contacts i {
+  font-size: 1.4em;
+  display: block;
+  float: left;
+  margin-right: 5px;
+  width: 25px;
+}
+
+.resume .hobbies {
+  text-align: center;
+}
+
+.resume .hobbies i {
+  font-size: 1.8em;
+  margin: 0 5px;
+  color: #767270;
+}
+
+.resume .hobbies .c-table > tbody > tr > td {
+  vertical-align: middle;
+}
+
+.resume .certificates .c-panel__body {
+  text-align: center;
+}
+
+.resume .certificates .c-thumbnail {
+  width: 160px;
+  margin: 0 auto;
+  display: inline-block;
+}
+
+/* Legacy-like bootstrap styling tweaks */
+.resume .c-panel--primary > .c-panel__heading {
+  background: -webkit-gradient(linear, left top, left bottom, from(#428bca), to(#2e6da4));
+  background: linear-gradient(to bottom, #428bca 0%, #2e6da4 100%);
+  border-color: #2e6da4;
+  color: #fff;
+}
+
+.resume .c-button--primary {
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+
+.resume .c-button--primary:hover,
+.resume .c-button--primary:focus {
+  background-color: #2e6da4;
+  border-color: #245682;
+}
+
+.resume .c-table > thead > tr > th {
+  background-color: #f5f5f5;
+  border-bottom: 2px solid #ddd;
+}
+
+.resume .data-form .c-form__group {
+  margin-bottom: 20px;
+}
+
+.resume .data-form .c-form__help,
+.resume .c-form--horizontal .c-form__help {
+  color: #777;
+  margin-top: 5px;
+}
+
+.resume .hobby.hobby-cycling::before {
+  content: "\f206";
+}
+
+.resume .hobby.hobby-handball::before {
+  font-family: "Sports and Hobbies";
+  content: "!";
+}
+
+.resume .hobby.hobby-football::before {
+  font-family: "Sports and Hobbies";
+  content: "#";
+}
+
+.resume .hobby.hobby-basketball::before {
+  font-family: "Sports and Hobbies";
+  content: "U";
+}
+
+.resume .hobby.hobby-bowling::before {
+  font-family: "Sports and Hobbies";
+  content: ")";
+}
+
+.resume .hobby.hobby-boxing::before {
+  font-family: "Sports and Hobbies";
+  content: "J";
+}
+
+.resume .hobby.hobby-volleyball::before {
+  font-family: "Sports and Hobbies";
+  content: "'";
+}
+
+.resume .hobby.hobby-baseball::before {
+  font-family: "Sports and Hobbies";
+  content: "O";
+}
+
+.resume .hobby.hobby-skating::before {
+  font-family: "Sports and Hobbies";
+  content: "@";
+}
+
+.resume .hobby.hobby-skiing::before {
+  font-family: "Sports and Hobbies";
+  content: "D";
+}
+
+.resume .hobby.hobby-table-tennis::before {
+  font-family: "Sports and Hobbies";
+  content: "4";
+}
+
+.resume .hobby.hobby-tennis::before {
+  font-family: "Sports and Hobbies";
+  content: "2";
+}
+
+.resume .hobby.hobby-weightlifting::before {
+  font-family: "Sports and Hobbies";
+  content: "L";
+}
+
+.resume .hobby.hobby-cricket::before {
+  font-family: "Sports and Hobbies";
+  content: "%";
+}
+
+.resume .hobby.hobby-automobiles::before {
+  content: "\f1b9";
+}
+
+.resume .hobby.hobby-book-reading::before {
+  content: "\f02d";
+}
+
+.resume .hobby.hobby-photo::before {
+  content: "\f030";
+}
+
+.resume .hobby.hobby-shopping:before {
+  content: "\f290";
+}
+
+.resume .hobby.hobby-cooking:before {
+  content: "\f0f5";
+}
+
+.resume .hobby.hobby-codding:before {
+  content: "\f121";
+}
+
+.resume .hobby.hobby-animals:before {
+  content: "\f1b0";
+}
+
+.resume .hobby.hobby-traveling:before {
+  content: "\f0f2";
+}
+
+.resume .hobby.hobby-movie:before {
+  content: "\f26c";
+}
+
+.resume .hobby.hobby-painting:before {
+  content: "\f1fc";
+}
+
+.resume .hobby.hobby-darts::before {
+  font-family: "Sports and Hobbies";
+  content: "b";
+}
+
+.resume .hobby.hobby-fishing::before {
+  font-family: "Sports and Hobbies";
+  content: "f";
+}
+
+.resume .hobby.hobby-kayak-slalom::before {
+  font-family: "Sports and Hobbies";
+  content: "t";
+}
+
+.resume .hobby.hobby-games-of-chance::before {
+  font-family: "Sports and Hobbies";
+  content: "x";
+}
+
+.resume .hobby.hobby-ice-hockey::before {
+  font-family: "Sports and Hobbies";
+  content: "P";
+}
+
+.resume .hobby.hobby-roller-skating::before {
+  font-family: "Sports and Hobbies";
+  content: "A";
+}
+
+.resume .hobby.hobby-swimming::before {
+  font-family: "Sports and Hobbies";
+  content: "I";
+}
+
+.resume .hobby.hobby-diving::before {
+  font-family: "Sports and Hobbies";
+  content: "<";
+}
+
+.resume .hobby.hobby-golf::before {
+  font-family: "Sports and Hobbies";
+  content: "8";
+}
+
+.resume .hobby.hobby-shooting::before {
+  font-family: "Sports and Hobbies";
+  content: "]";
+}
+
+.resume .hobby.hobby-rowing::before {
+  font-family: "Sports and Hobbies";
+  content: "u";
+}
+
+.resume .hobby.hobby-camping::before {
+  font-family: "Sports and Hobbies";
+  content: "d";
+}
+
+.resume .hobby.hobby-archery::before {
+  font-family: "Sports and Hobbies";
+  content: "^";
+}
+
+.resume .hobby.hobby-pubs::before {
+  content: "\f0fc";
+}
+
+.resume .hobby.hobby-music::before {
+  content: "\f001";
+}
+
+.resume .hobby.hobby-computer-games::before {
+  content: "\f11b";
+}
+
+.resume .hobby.hobby-authorship::before {
+  content: "\f11c";
+}
+
+.resume .hobby.hobby-foreign-lang::before {
+  content: "\f1ab";
+}
+
+.resume .hobby.hobby-singing::before {
+  content: "\f130";
+}
+
+.resume .hobby.hobby-billiards::before {
+  font-family: "Sports and Hobbies";
+  content: "-";
+}
+
+.resume .hobby.hobby-skateboarding::before {
+  font-family: "Sports and Hobbies";
+  content: "W";
+}
+
+.resume .hobby.hobby-collecting::before {
+  content: "\f1c5";
+}
+
+.resume .hobby.hobby-badminton::before {
+  font-family: "Sports and Hobbies";
+  content: ".";
+}
+
+.resume .hobby.hobby-disco::before {
+  content: "\f0c0";
+}
+
+.resume a.c-navbar__brand {
+  padding: 15px;
+  font-size: 1.4em;
+}
+
+.resume .profiles .photo {
+  width: 110px;
+  height: 110px;
+  border-radius: 4px;
+}
+
+.resume blockquote .small::before, .resume blockquote footer::before, .resume blockquote small::before {
+  content: "";
+}
+
+.resume .profiles blockquote {
+  margin: 0;
+  padding-left: 8px;
+}
+
+.resume .profiles .search-result-item p {
+  margin: 1px 0;
+}
+
+.resume .data-form img.edit-photo {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+}
+
+.resume .data-form blockquote {
+  font-size: 14px;
+  margin: 0;
+  text-align: justify;
+}
+
+.resume .data-form .c-form__help {
+  margin-bottom: 5px;
+}
+
+@media (max-width: 768px) {
+  .resume .data-form blockquote {
+    border: 0;
+    padding-left: 0;
+  }
+  .resume .data-form .c-form__group {
+    margin: 0;
+  }
+}
+.resume .data-form .c-form__group {
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+.resume .data-header {
+  text-align: center;
+  margin: 5px 0 15px;
+}
+
+.resume .hobby-btn {
+  text-align: left;
+  font-size: 20px;
+  margin: 5px 0;
+  position: relative;
+  padding-left: 50px;
+}
+
+.resume .hobby-btn i {
+  position: absolute;
+  left: 10px;
+  font-size: 1.3em;
+  top: 8px;
+  text-align: center;
+  width: 30px;
+}
+
+.resume .c-button.hobby-btn.is-active, .resume .c-button.hobby-btn:active {
+  background-color: #5cb85c;
+  border-color: #5cb85c;
+  color: white;
+}
+
+.resume .skill-item textarea {
+  margin-right: 20px;
+}
+
+.resume .skill-item .value-container {
+  position: relative;
+}
+
+.resume .skill-item .value-container .c-close {
+  position: absolute;
+  right: 15px;
+  top: -5px;
+}
+
+.resume a.edit-block {
+  color: #fffaf0;
+  float: right;
+  font-size: 0.9em;
+  text-decoration: underline;
+}
+
+.resume #loadMoreContainer {
+  margin-bottom: 15px;
+}
+
+.resume #loadMoreIndicator img {
+  width: 30px;
+  height: 30px;
+}
+
+.resume .edit-languages {
+  --language-type-width: minmax(115px, 120px);
+  --language-name-width: minmax(115px, 120px);
+  --language-level-width: minmax(320px, 1fr);
+  --language-col-gap: 16px;
+  --language-slider-pad-left: 30px;
+  --language-slider-pad-right: 60px;
+  --language-slider-top-offset: 4px;
+  --language-slider-label-gap: 22px;
+  --language-slider-bottom-space: 10px;
+  --language-level-label-offset: 2px;
+}
+
+.resume .edit-languages .language-col {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.resume .edit-languages .language-col-level .c-form__label {
+  position: relative;
+  top: var(--language-level-label-offset);
+}
+
+.resume .edit-languages .language-col-level .c-slider {
+  display: block;
+  max-width: 100%;
+  width: calc(100% - var(--language-slider-pad-left) - var(--language-slider-pad-right));
+  margin-left: var(--language-slider-pad-left);
+  margin-right: var(--language-slider-pad-right);
+  margin-top: var(--language-slider-top-offset);
+  margin-bottom: var(--language-slider-bottom-space);
+}
+
+.resume .edit-languages .language-col-level .c-slider__labels {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  margin-top: var(--language-slider-label-gap);
+  font-size: 12px;
+}
+
+@media (min-width: 768px) {
+  .resume .edit-languages .language-grid {
+    display: grid;
+    grid-template-columns: var(--language-type-width) var(--language-name-width) var(--language-level-width);
+    grid-template-areas: "type name level";
+    -webkit-column-gap: var(--language-col-gap);
+       -moz-column-gap: var(--language-col-gap);
+            column-gap: var(--language-col-gap);
+    -webkit-box-align: start;
+        -ms-flex-align: start;
+            align-items: start;
+  }
+  .resume .edit-languages .language-col {
+    float: none;
+  }
+  .resume .edit-languages .language-col-type {
+    grid-area: type;
+  }
+  .resume .edit-languages .language-col-name {
+    grid-area: name;
+  }
+  .resume .edit-languages .language-col-level {
+    grid-area: level;
+  }
+}
+@media (max-width: 767px) {
+  .resume .edit-languages .language-grid::before,
+  .resume .edit-languages .language-grid::after {
+    content: " ";
+    display: table;
+  }
+  .resume .edit-languages .language-grid::after {
+    clear: both;
+  }
+}
+.c-slider__input {
+  -webkit-appearance: none;
+          appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 4px;
+  background: linear-gradient(to right, #f9f9f9 0%, #f9f9f9 var(--c-slider-progress, 0%), transparent var(--c-slider-progress, 0%), transparent 100%), linear-gradient(to bottom, #f5f5f5 0%, #f9f9f9 100%);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+          box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  outline: none;
+  cursor: pointer;
+}
+
+.c-slider__input::-webkit-slider-runnable-track {
+  height: 10px;
+  border-radius: 4px;
+  background: transparent;
+}
+
+.c-slider__input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+          appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 0;
+  background: linear-gradient(to bottom, #149bdf 0%, #0480be 100%);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  border: 0;
+}
+
+.c-slider__input::-moz-range-track {
+  height: 10px;
+  border-radius: 4px;
+  background: linear-gradient(to bottom, #f5f5f5 0%, #f9f9f9 100%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.c-slider__input::-moz-range-progress {
+  height: 10px;
+  border-radius: 4px;
+  background: #f9f9f9;
+}
+
+.c-slider__input::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 0;
+  background: #149bdf;
+  border: 0;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.c-slider__input::-ms-track {
+  height: 10px;
+  border-radius: 4px;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+
+.c-slider__input::-ms-fill-lower {
+  background: #f9f9f9;
+  border-radius: 4px;
+}
+
+.c-slider__input::-ms-fill-upper {
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.c-slider__input::-ms-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 0;
+  background: #149bdf;
+  border: 0;
+}
+
+.c-file {
+  position: relative;
+}
+
+.c-file__input {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.c-file__group {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+  width: 100%;
+  -ms-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+}
+
+.c-file__button {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 auto;
+          flex: 0 0 auto;
+}
+
+.c-file__caption {
+  -webkit-box-flex: 1;
+      -ms-flex: 1 1 auto;
+          flex: 1 1 auto;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  min-width: 0;
+  padding: 6px 12px;
+  min-height: 34px;
+  border: 1px solid #ccc;
+  border-left: 0;
+  border-right: 0;
+  background: #fff;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.42857143;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c-file__clear {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 auto;
+          flex: 0 0 auto;
+}
+
+.c-file__status {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #777;
+}
+
+.c-file--photo .c-file__caption {
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.c-file--photo .c-file__clear,
+.c-file--photo .c-file__action {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 auto;
+          flex: 0 0 auto;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.c-file--photo .c-file__action {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c-file--photo .c-file__clear {
+  display: none;
+}
+
+.c-file--photo.is-ready .c-file__clear {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.c-file--photo .c-file__clear {
+  min-width: 34px;
+  padding: 6px 10px;
+  margin-left: 6px;
+}
+
+.c-file--photo .c-file__action {
+  min-width: 110px;
+  padding: 6px 12px;
+  margin-left: 6px;
+}
+
+.c-file--photo .c-file__action .fa {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+.c-file--photo.is-ready .c-file__caption {
+  border-color: #2e6da4;
+  box-shadow: 0 0 0 1px rgba(51, 122, 183, 0.12);
+}
+.resume h1 {
+  margin-bottom: 15px;
+  margin-top: 10px;
+}
+
+@media (max-width: 767px) {
+  .resume .caption {
+    font-size: 20px;
+  }
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  .resume .caption {
+    font-size: 24px;
+  }
+}
+@media (min-width: 992px) and (max-width: 1199px) {
+  .resume .caption {
+    font-size: 26px;
+  }
+}
+@media (min-width: 1200px) {
+  .resume .caption {
+    font-size: 36px;
+  }
+}
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Padding bottom by footer height */
+  padding-bottom: 60px;
+}
+
+/* Suggest dropdown */
+.suggest-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  z-index: 1001;
+}
+
+.suggest-list > li > a {
+  padding: 8px 12px;
+  white-space: normal;
+}
+
+.suggest-list .empty {
+  padding: 8px 12px;
+  color: #777;
+}
+
+/* Center search form in navbar */
+.c-navbar__center {
+  float: none !important;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  gap: 8px;
+}
+
+#nav-search-input {
+  width: 540px;
+  max-width: 100%;
+}
+
+.layout-footer {
+  position: fixed; /* або sticky, якщо хочеш, щоб при скролі піднімався */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #cfd4d8;
+  padding: 12px;
+  text-align: center;
+  background: #fafafa;
+}

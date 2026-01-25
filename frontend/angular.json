@@ -54,6 +54,10 @@
               "src/assets"
             ],
             "styles": [
+              "src/assets/css/ui.css",
+              "src/assets/css/font-awesome-custom.css",
+              "src/assets/css/timeline-modern.css",
+              "src/assets/css/app.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -113,6 +117,10 @@
               "src/assets"
             ],
             "styles": [
+              "src/assets/css/ui.css",
+              "src/assets/css/font-awesome-custom.css",
+              "src/assets/css/timeline-modern.css",
+              "src/assets/css/app.css",
               "src/styles.css"
             ],
             "scripts": []
