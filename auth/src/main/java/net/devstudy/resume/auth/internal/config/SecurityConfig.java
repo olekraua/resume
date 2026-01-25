@@ -47,12 +47,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // публічні сторінки/статичні ресурси
                         .requestMatchers("/", "/welcome", "/fragment/more", "/search",
-                                "/error/**", "/css/**", "/favicon/**",
+                                "/app", "/app/**", "/error/**", "/css/**", "/favicon/**",
                                 "/fonts/**", "/img/**",
                                 "/js/**", "/media/**", "/uploads/**", "/favicon.ico")
                         .permitAll()
                         // публічні GET API для SPA
                         .requestMatchers(HttpMethod.GET,
+                                "/api/me",
                                 "/api/profiles",
                                 "/api/profiles/*",
                                 "/api/search",

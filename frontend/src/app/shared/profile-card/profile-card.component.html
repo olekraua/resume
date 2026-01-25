@@ -1,0 +1,23 @@
+<div class="c-panel c-panel--default profile-item">
+  <div class="c-media c-panel__body">
+    <div class="c-media__left c-media__left--top">
+      <a [routerLink]="['/', profile.uid]">
+        <img class="photo u-img-thumbnail" [src]="photo" [attr.alt]="fullName">
+      </a>
+      <a class="c-button c-button--primary u-visible-xs-block" style="margin-top: 15px;" [routerLink]="['/', profile.uid]">
+        Details
+      </a>
+    </div>
+    <div class="c-media__body search-result-item">
+      <a class="c-button c-button--primary u-pull-right u-hidden-xs" [routerLink]="['/', profile.uid]">Details</a>
+      <h4 class="c-media__heading">
+        <a [routerLink]="['/', profile.uid]">{{ title }}</a>
+      </h4>
+      <strong>{{ profile.objective || '' }}</strong>
+      <p>{{ location }}</p>
+      <blockquote>
+        <small>{{ profile.summary || '' }}</small>
+      </blockquote>
+    </div>
+  </div>
+</div>

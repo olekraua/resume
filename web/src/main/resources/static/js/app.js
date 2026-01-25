@@ -4,6 +4,17 @@
   const doc = document;
   const win = window;
 
+  const appBase = (() => {
+    const value = doc.body ? doc.body.getAttribute('data-app-base') : '';
+    if (!value) return '';
+    return value.endsWith('/') ? value.slice(0, -1) : value;
+  })();
+
+  const buildAppPath = (path) => {
+    const normalized = path && path.startsWith('/') ? path : `/${path || ''}`;
+    return `${appBase}${normalized}`;
+  };
+
   const config = {
     collapseDurationMs: 350,
     modalOpenDelayMs: 10,
@@ -863,7 +874,7 @@
         items.forEach((item) => {
           const text = item.fullName || item.uid;
           const link = doc.createElement('a');
-          link.href = `/${item.uid}`;
+          link.href = buildAppPath(item.uid || '');
           link.textContent = text;
           const li = doc.createElement('li');
           li.appendChild(link);
