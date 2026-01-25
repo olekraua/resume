@@ -514,25 +514,19 @@
 
     const photoLink = layout.querySelector('[data-spa="photo-link"]');
     const photo = layout.querySelector('[data-spa="photo"]');
-    const photoStatic = layout.querySelector('[data-spa="photo-static"]');
     const photoSrc = profile.largePhoto || PLACEHOLDER_PHOTO;
 
     if (photo) {
       setSrc(photo, photoSrc);
       photo.setAttribute('alt', fullName || 'photo');
     }
-    if (photoStatic) {
-      setSrc(photoStatic, photoSrc);
-      photoStatic.setAttribute('alt', fullName || 'photo');
-    }
 
     if (ownProfile) {
-      setHidden(photoLink, false);
-      setHidden(photoStatic, true);
       setHref(photoLink, buildPath(`/${uid}/edit`));
     } else {
-      setHidden(photoLink, true);
-      setHidden(photoStatic, false);
+      if (photoLink) {
+        photoLink.removeAttribute('href');
+      }
     }
 
     const nameLinkWrap = layout.querySelector('[data-spa="name-link-wrap"]');
