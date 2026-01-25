@@ -52,7 +52,13 @@ public class SecurityConfig {
                                 "/js/**", "/media/**", "/uploads/**", "/favicon.ico")
                         .permitAll()
                         // публічні GET API для SPA
-                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/profiles",
+                                "/api/profiles/*",
+                                "/api/search",
+                                "/api/suggest",
+                                "/api/static-data")
+                        .permitAll()
                         .requestMatchers("/login", "/register", "/register/**", "/restore/**")
                         .anonymous()
                         // профільні сторінки (GET /{uid}) публічні, але редагування/акаунт захищені
