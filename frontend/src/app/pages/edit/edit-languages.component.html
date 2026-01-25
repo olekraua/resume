@@ -1,0 +1,58 @@
+<div class="c-panel c-panel--default">
+  <div class="c-panel__body">
+    <h4 class="data-header">Languages</h4>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div formArrayName="items">
+        <div class="c-panel c-panel--default ui-item language-item" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+          <div class="c-panel__body">
+            <div class="l-row">
+              <div class="l-col l-col--xs-12">
+                <button type="button" class="c-close" (click)="removeItem(i)">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            </div>
+            <div class="l-row">
+              <div class="l-col l-col--xs-12 l-col--sm-4 c-form__group">
+                <label class="c-form__label">Language</label>
+                <input class="c-input" type="text" formControlName="name" />
+              </div>
+              <div class="l-col l-col--xs-12 l-col--sm-4 c-form__group">
+                <label class="c-form__label">Level</label>
+                <select class="c-input" formControlName="level">
+                  <option value="" disabled>Select level</option>
+                  <option *ngFor="let level of languageLevels" [value]="level.code">
+                    {{ level.code.replace('_', ' ') }}
+                  </option>
+                </select>
+              </div>
+              <div class="l-col l-col--xs-12 l-col--sm-4 c-form__group">
+                <label class="c-form__label">Type</label>
+                <select class="c-input" formControlName="type">
+                  <option *ngFor="let type of languageTypes" [value]="type.code">
+                    {{ type.label }}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="l-row">
+        <div class="l-col l-col--xs-12">
+          <a href="javascript:void(0)" (click)="addItem()">+ Add language</a>
+        </div>
+      </div>
+
+      <div *ngIf="successMessage" class="c-alert c-alert--success" style="margin-top: 10px;">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="c-alert c-alert--danger" style="margin-top: 10px;">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="c-button c-button--primary" style="margin-top: 10px;">Save</button>
+    </form>
+  </div>
+</div>

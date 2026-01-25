@@ -1,0 +1,56 @@
+<div class="c-panel c-panel--default">
+  <div class="c-panel__body">
+    <h4 class="data-header">Courses</h4>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div formArrayName="items">
+        <div class="c-panel c-panel--default ui-item course-item" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+          <div class="c-panel__heading">Course {{ i + 1 }}
+            <button type="button" class="c-close u-pull-right" (click)="removeItem(i)">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="c-panel__body">
+            <div class="c-form__group">
+              <label class="l-col l-col--sm-3 c-form__label">Name</label>
+              <div class="l-col l-col--sm-9">
+                <input class="c-input" type="text" formControlName="name" />
+              </div>
+            </div>
+            <div class="c-form__group">
+              <label class="l-col l-col--sm-3 c-form__label">School</label>
+              <div class="l-col l-col--sm-9">
+                <input class="c-input" type="text" formControlName="school" />
+              </div>
+            </div>
+            <div class="c-form__group">
+              <label class="l-col l-col--sm-3 c-form__label">Finish date</label>
+              <div class="l-col l-col--sm-5">
+                <input class="c-input" type="date" formControlName="finishDate" />
+              </div>
+              <div class="l-col l-col--sm-4">
+                <label class="c-checkbox" style="margin-top: 6px;">
+                  <input type="checkbox" formControlName="ongoing" (change)="toggleOngoing(i)" /> Ongoing
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="l-row">
+        <div class="l-col l-col--xs-12">
+          <a href="javascript:void(0)" (click)="addItem()">+ Add course</a>
+        </div>
+      </div>
+
+      <div *ngIf="successMessage" class="c-alert c-alert--success" style="margin-top: 10px;">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="c-alert c-alert--danger" style="margin-top: 10px;">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="c-button c-button--primary" style="margin-top: 10px;">Save</button>
+    </form>
+  </div>
+</div>

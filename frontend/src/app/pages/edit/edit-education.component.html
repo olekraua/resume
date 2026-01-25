@@ -1,0 +1,70 @@
+<div class="c-panel c-panel--default">
+  <div class="c-panel__body">
+    <h4 class="data-header">Education</h4>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div formArrayName="items">
+        <div class="c-panel c-panel--default ui-item education-item" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+          <div class="c-panel__heading">Education {{ i + 1 }}
+            <button type="button" class="c-close u-pull-right" (click)="removeItem(i)">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="c-panel__body">
+            <div class="c-form__group">
+              <label class="l-col l-col--sm-3 c-form__label">University</label>
+              <div class="l-col l-col--sm-9">
+                <input class="c-input" type="text" formControlName="university" />
+              </div>
+            </div>
+            <div class="c-form__group">
+              <label class="l-col l-col--sm-3 c-form__label">Faculty</label>
+              <div class="l-col l-col--sm-9">
+                <input class="c-input" type="text" formControlName="faculty" />
+              </div>
+            </div>
+            <div class="c-form__group">
+              <label class="l-col l-col--sm-3 c-form__label">Summary</label>
+              <div class="l-col l-col--sm-9">
+                <input class="c-input" type="text" formControlName="summary" />
+              </div>
+            </div>
+            <div class="c-form__group">
+              <label class="l-col l-col--sm-3 c-form__label">Begin year</label>
+              <div class="l-col l-col--sm-3">
+                <select class="c-input" formControlName="beginYear">
+                  <option [ngValue]="null">Year</option>
+                  <option *ngFor="let year of years" [ngValue]="year">{{ year }}</option>
+                </select>
+              </div>
+              <label class="l-col l-col--sm-2 c-form__label">Ongoing</label>
+              <div class="l-col l-col--sm-1">
+                <input type="checkbox" formControlName="ongoing" (change)="toggleOngoing(i)" />
+              </div>
+              <div class="l-col l-col--sm-3">
+                <select class="c-input" formControlName="finishYear">
+                  <option [ngValue]="null">Year</option>
+                  <option *ngFor="let year of years" [ngValue]="year">{{ year }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="l-row">
+        <div class="l-col l-col--xs-12">
+          <a href="javascript:void(0)" (click)="addItem()">+ Add education</a>
+        </div>
+      </div>
+
+      <div *ngIf="successMessage" class="c-alert c-alert--success" style="margin-top: 10px;">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="c-alert c-alert--danger" style="margin-top: 10px;">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="c-button c-button--primary" style="margin-top: 10px;">Save</button>
+    </form>
+  </div>
+</div>

@@ -12,13 +12,14 @@
       </div>
       <div class="c-collapse c-navbar__collapse" id="main-nav">
         <ul class="c-nav c-navbar__nav c-navbar__nav--right">
-          <li *ngIf="!session?.authenticated"><a href="/login">Sign in</a></li>
-          <li *ngIf="!session?.authenticated"><a href="/register">Register</a></li>
+          <li *ngIf="!session?.authenticated"><a routerLink="/login">Sign in</a></li>
+          <li *ngIf="!session?.authenticated"><a routerLink="/register">Register</a></li>
           <li *ngIf="session?.authenticated && session?.uid">
             <a [routerLink]="['/', session?.uid]">My profile</a>
           </li>
-          <li *ngIf="session?.authenticated"><a href="/edit/profile">Edit profile</a></li>
-          <li *ngIf="session?.authenticated"><a href="/account/password">Account</a></li>
+          <li *ngIf="session?.authenticated"><a routerLink="/edit/profile">Edit profile</a></li>
+          <li *ngIf="session?.authenticated"><a routerLink="/account/password">Account</a></li>
+          <li *ngIf="session?.authenticated"><a href="#" (click)="onLogout($event)">Sign out</a></li>
         </ul>
         <form class="c-navbar__form c-navbar__center" role="search" id="nav-search-form" (ngSubmit)="onSearch()">
           <div class="c-form__group" style="position: relative;">

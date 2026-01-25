@@ -1,0 +1,70 @@
+<div class="c-panel c-panel--default">
+  <div class="c-panel__body">
+    <h4 class="data-header">Practical experience</h4>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div formArrayName="items">
+        <div class="c-panel c-panel--default ui-item practic-item" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+          <div class="c-panel__body">
+            <div class="l-row">
+              <div class="l-col l-col--xs-12">
+                <button type="button" class="c-close" (click)="removeItem(i)">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            </div>
+            <div class="l-row">
+              <div class="l-col l-col--xs-12 l-col--md-6 c-form__group">
+                <label class="c-form__label">Position</label>
+                <input class="c-input" type="text" formControlName="position" />
+              </div>
+              <div class="l-col l-col--xs-12 l-col--md-6 c-form__group">
+                <label class="c-form__label">Company</label>
+                <input class="c-input" type="text" formControlName="company" />
+              </div>
+              <div class="l-col l-col--xs-12 l-col--md-6 c-form__group">
+                <label class="c-form__label">Start date</label>
+                <input class="c-input" type="date" formControlName="beginDate" />
+              </div>
+              <div class="l-col l-col--xs-12 l-col--md-6 c-form__group">
+                <label class="c-form__label">Finish date</label>
+                <input class="c-input" type="date" formControlName="finishDate" />
+                <div class="c-checkbox" style="margin-top: 6px;">
+                  <label>
+                    <input type="checkbox" formControlName="ongoing" (change)="toggleOngoing(i)" /> Ongoing
+                  </label>
+                </div>
+              </div>
+              <div class="l-col l-col--xs-12 c-form__group">
+                <label class="c-form__label">Responsibilities</label>
+                <textarea class="c-input" rows="2" formControlName="responsibilities"></textarea>
+              </div>
+              <div class="l-col l-col--xs-12 l-col--md-6 c-form__group">
+                <label class="c-form__label">Demo URL</label>
+                <input class="c-input" type="text" formControlName="demo" />
+              </div>
+              <div class="l-col l-col--xs-12 l-col--md-6 c-form__group">
+                <label class="c-form__label">Source URL</label>
+                <input class="c-input" type="text" formControlName="src" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="l-row">
+        <div class="l-col l-col--xs-12">
+          <a href="javascript:void(0)" (click)="addItem()">+ Add practics</a>
+        </div>
+      </div>
+
+      <div *ngIf="successMessage" class="c-alert c-alert--success" style="margin-top: 10px;">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="c-alert c-alert--danger" style="margin-top: 10px;">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="c-button c-button--primary" style="margin-top: 10px;">Save</button>
+    </form>
+  </div>
+</div>

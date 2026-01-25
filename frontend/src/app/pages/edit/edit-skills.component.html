@@ -1,0 +1,37 @@
+<div class="c-panel c-panel--default">
+  <div class="c-panel__body">
+    <h4 class="data-header">Technical skills</h4>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div formArrayName="items">
+        <div class="l-row ui-item skill-item" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+          <div class="l-col l-col--xs-5 l-col--sm-4 l-col--md-2 c-form__group">
+            <select class="c-input" formControlName="category">
+              <option value="" disabled>Select category</option>
+              <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+            </select>
+          </div>
+          <div class="l-col l-col--xs-7 l-col--sm-8 l-col--md-10 value-container">
+            <button type="button" class="c-close" (click)="removeItem(i)">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <textarea class="c-input u-pull-right" rows="2" formControlName="value"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="l-row" style="margin-bottom: 10px;">
+        <div class="l-col l-col--xs-12">
+          <a href="javascript:void(0)" (click)="addItem()">+ Add skill</a>
+        </div>
+      </div>
+
+      <div *ngIf="successMessage" class="c-alert c-alert--success" style="margin-top: 10px;">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="c-alert c-alert--danger" style="margin-top: 10px;">
+        {{ errorMessage }}
+      </div>
+      <button type="submit" class="c-button c-button--primary">Save</button>
+    </form>
+  </div>
+</div>

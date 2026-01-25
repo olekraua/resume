@@ -7,13 +7,13 @@
     <div class="l-col l-col--xs-12 l-col--sm-6 l-col--md-4">
       <div class="c-panel c-panel--primary">
         <div class="c-panel__body">
-          <a *ngIf="profile.ownProfile" href="/edit/profile">
+          <a *ngIf="profile.ownProfile" routerLink="/edit/profile">
             <img class="u-img-responsive photo" [src]="photoLarge" [attr.alt]="fullName">
           </a>
           <img *ngIf="!profile.ownProfile" class="u-img-responsive photo" [src]="photoLarge" [attr.alt]="fullName">
           <h1 class="u-text-center">
             <span *ngIf="profile.ownProfile; else profileNamePlain">
-              <a href="/edit/profile" style="color:black;">{{ fullName }}</a>
+              <a routerLink="/edit/profile" style="color:black;">{{ fullName }}</a>
             </span>
             <ng-template #profileNamePlain>
               <span>{{ fullName }}</span>
@@ -41,7 +41,7 @@
         <div class="c-panel__heading">
           <h3 class="c-panel__title">
             <i class="fa fa-language"></i> Foreign languages
-            <a class="edit-block" *ngIf="profile.ownProfile" href="/edit/languages">Edit</a>
+            <a class="edit-block" *ngIf="profile.ownProfile" routerLink="/edit/languages">Edit</a>
           </h3>
         </div>
         <div class="c-panel__body">
@@ -58,7 +58,7 @@
         <div class="c-panel__heading">
           <h3 class="c-panel__title">
             <i class="fa fa-heart"></i> Hobbies
-            <a class="edit-block" *ngIf="profile.ownProfile" href="/edit/hobbies">Edit</a>
+            <a class="edit-block" *ngIf="profile.ownProfile" routerLink="/edit/hobbies">Edit</a>
           </h3>
         </div>
         <div class="c-panel__body">
@@ -79,7 +79,7 @@
         <div class="c-panel__heading">
           <h3 class="c-panel__title">
             <i class="fa fa-info-circle"></i> Additional info
-            <a class="edit-block" *ngIf="profile.ownProfile" href="/edit/info">Edit</a>
+            <a class="edit-block" *ngIf="profile.ownProfile" routerLink="/edit/info">Edit</a>
           </h3>
         </div>
         <div class="c-panel__body u-text-justify">{{ profile.info }}</div>
@@ -91,7 +91,7 @@
         <div class="c-panel__heading">
           <h3 class="c-panel__title">
             <i class="fa fa-bullseye"></i> Objective
-            <a class="edit-block" *ngIf="profile.ownProfile" href="/edit/profile#inputObjective">Edit</a>
+            <a class="edit-block" *ngIf="profile.ownProfile" routerLink="/edit/profile" fragment="inputObjective">Edit</a>
           </h3>
         </div>
         <div class="c-panel__body">
@@ -107,7 +107,7 @@
         <div class="c-panel__heading">
           <h3 class="c-panel__title">
             <i class="fa fa-code"></i> Technical Skills
-            <a class="edit-block" *ngIf="profile.ownProfile" href="/edit/skills">Edit</a>
+            <a class="edit-block" *ngIf="profile.ownProfile" routerLink="/edit/skills">Edit</a>
           </h3>
         </div>
         <div class="c-panel__body">
@@ -132,7 +132,7 @@
         <div class="c-panel__heading">
           <h3 class="c-panel__title">
             <i class="fa fa-briefcase"></i> Practical experience
-            <a class="edit-block" *ngIf="profile.ownProfile" href="/edit/practics">Edit</a>
+            <a class="edit-block" *ngIf="profile.ownProfile" routerLink="/edit/practics">Edit</a>
           </h3>
         </div>
         <div class="c-panel__body">
@@ -176,7 +176,7 @@
         <div class="c-panel__heading">
           <h3 class="c-panel__title">
             <i class="fa fa-certificate"></i> Certificates
-            <a class="edit-block" *ngIf="profile.ownProfile" href="/edit/certificates">Edit</a>
+            <a class="edit-block" *ngIf="profile.ownProfile" routerLink="/edit/certificates">Edit</a>
           </h3>
         </div>
         <div class="c-panel__body">
@@ -192,7 +192,7 @@
         <div class="c-panel__heading">
           <h3 class="c-panel__title">
             <i class="fa fa-book"></i> Courses
-            <a class="edit-block" *ngIf="profile.ownProfile" href="/edit/courses">Edit</a>
+            <a class="edit-block" *ngIf="profile.ownProfile" routerLink="/edit/courses">Edit</a>
           </h3>
         </div>
         <div class="c-panel__body">
@@ -223,7 +223,7 @@
         <div class="c-panel__heading">
           <h3 class="c-panel__title">
             <i class="fa fa-graduation-cap"></i> Education
-            <a class="edit-block" *ngIf="profile.ownProfile" href="/edit/education">Edit</a>
+            <a class="edit-block" *ngIf="profile.ownProfile" routerLink="/edit/education">Edit</a>
           </h3>
         </div>
         <div class="c-panel__body">
@@ -260,7 +260,7 @@
         <div class="c-panel__heading">
           <h3 class="c-panel__title">
             <i class="fa fa-language"></i> Foreign languages
-            <a class="edit-block" *ngIf="profile.ownProfile" href="/edit/languages">Edit</a>
+            <a class="edit-block" *ngIf="profile.ownProfile" routerLink="/edit/languages">Edit</a>
           </h3>
         </div>
         <div class="c-panel__body">
@@ -277,7 +277,7 @@
         <div class="c-panel__heading">
           <h3 class="c-panel__title">
             <i class="fa fa-heart"></i> Hobbies
-            <a class="edit-block" *ngIf="profile.ownProfile" href="/edit/hobbies">Edit</a>
+            <a class="edit-block" *ngIf="profile.ownProfile" routerLink="/edit/hobbies">Edit</a>
           </h3>
         </div>
         <div class="c-panel__body">
@@ -298,7 +298,7 @@
         <div class="c-panel__heading">
           <h3 class="c-panel__title">
             <i class="fa fa-info-circle"></i> Additional info
-            <a class="edit-block" *ngIf="profile.ownProfile" href="/edit/info">Edit</a>
+            <a class="edit-block" *ngIf="profile.ownProfile" routerLink="/edit/info">Edit</a>
           </h3>
         </div>
         <div class="c-panel__body u-text-justify">{{ profile.info }}</div>

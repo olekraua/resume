@@ -1,0 +1,64 @@
+<div class="c-panel c-panel--default">
+  <div class="c-panel__body">
+    <h4 class="data-header">Certificates</h4>
+
+    <div class="c-form__group">
+      <label class="c-form__label">Upload certificate</label>
+      <input type="file" class="c-input" (change)="onUploadSelected($event)" />
+      <div class="c-form__help" *ngIf="uploading">Uploading...</div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div formArrayName="items">
+        <div class="c-panel c-panel--default ui-item certificate-item" *ngFor="let item of items.controls; let i = index" [formGroupName]="i">
+          <div class="c-panel__heading">Certificate {{ i + 1 }}
+            <button type="button" class="c-close u-pull-right" (click)="removeItem(i)">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="c-panel__body">
+            <div class="c-form__group">
+              <label class="l-col l-col--sm-3 c-form__label">Name</label>
+              <div class="l-col l-col--sm-9">
+                <input class="c-input" type="text" formControlName="name" />
+              </div>
+            </div>
+            <div class="c-form__group">
+              <label class="l-col l-col--sm-3 c-form__label">Issuer</label>
+              <div class="l-col l-col--sm-9">
+                <input class="c-input" type="text" formControlName="issuer" />
+              </div>
+            </div>
+            <div class="c-form__group">
+              <label class="l-col l-col--sm-3 c-form__label">Small URL</label>
+              <div class="l-col l-col--sm-9">
+                <input class="c-input" type="text" formControlName="smallUrl" />
+              </div>
+            </div>
+            <div class="c-form__group">
+              <label class="l-col l-col--sm-3 c-form__label">Large URL</label>
+              <div class="l-col l-col--sm-9">
+                <input class="c-input" type="text" formControlName="largeUrl" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="l-row">
+        <div class="l-col l-col--xs-12">
+          <a href="javascript:void(0)" (click)="addItem()">+ Add certificate</a>
+        </div>
+      </div>
+
+      <div *ngIf="successMessage" class="c-alert c-alert--success" style="margin-top: 10px;">
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="c-alert c-alert--danger" style="margin-top: 10px;">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="c-button c-button--primary" style="margin-top: 10px;">Save</button>
+    </form>
+  </div>
+</div>

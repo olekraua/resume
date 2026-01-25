@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.util.StringUtils;
 
 import net.devstudy.resume.auth.internal.service.impl.RememberMeService;
@@ -44,6 +45,8 @@ public class SecurityConfig {
             ObjectProvider<RememberMeService> rememberMeServiceProvider)
             throws Exception {
         http
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .authorizeHttpRequests(auth -> auth
                         // публічні сторінки/статичні ресурси
                         .requestMatchers("/", "/welcome", "/fragment/more", "/search",
@@ -51,6 +54,7 @@ public class SecurityConfig {
                                 "/fonts/**", "/img/**",
                                 "/js/**", "/media/**", "/uploads/**", "/favicon.ico")
                         .permitAll()
+                        .requestMatchers("/api/auth/**", "/api/csrf").permitAll()
                         // публічні GET API для SPA
                         .requestMatchers(HttpMethod.GET,
                                 "/api/me",

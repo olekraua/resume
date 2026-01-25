@@ -1,0 +1,49 @@
+<div class="l-container" style="max-width: 520px;">
+    <div class="c-panel c-panel--default">
+      <div class="c-panel__heading">
+        <h4 class="c-panel__title"><i class="fa fa-sign-in"></i> Sign in</h4>
+      </div>
+      <div class="c-panel__body">
+        <p class="u-text-muted">Use your username to sign in.</p>
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <div class="c-form__group">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" class="c-input" formControlName="username" />
+            <div class="c-form__help" *ngIf="fieldErrors['username']?.length">
+              {{ fieldErrors['username'][0] }}
+            </div>
+          </div>
+          <div class="c-form__group">
+            <label for="password">Password</label>
+            <input id="password" name="password" [type]="showPassword ? 'text' : 'password'" class="c-input" formControlName="password" />
+            <div style="margin-top: 6px;">
+              <label style="font-weight: normal; cursor: pointer;">
+                <input type="checkbox" (change)="showPassword = !showPassword" /> Show password
+              </label>
+            </div>
+            <div class="c-form__help" *ngIf="fieldErrors['password']?.length">
+              {{ fieldErrors['password'][0] }}
+            </div>
+          </div>
+          <div class="c-checkbox">
+            <label>
+              <input type="checkbox" formControlName="rememberMe" /> Remember me
+            </label>
+          </div>
+          <div *ngIf="infoMessage" [class]="infoClass" style="margin-top: 10px;">
+            {{ infoMessage }}
+          </div>
+          <div *ngIf="errorMessage" class="c-alert c-alert--danger" style="margin-top: 10px;">
+            {{ errorMessage }}
+          </div>
+          <button type="submit" class="c-button c-button--primary c-button--block">Sign in</button>
+        </form>
+        <div class="u-text-center" style="margin-top: 10px;">
+          <a routerLink="/register">Create account</a>
+        </div>
+        <div class="u-text-center" style="margin-top: 6px;">
+          <a routerLink="/restore">Forgot password?</a>
+        </div>
+      </div>
+    </div>
+</div>

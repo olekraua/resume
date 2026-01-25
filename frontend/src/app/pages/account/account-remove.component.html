@@ -1,0 +1,21 @@
+<div class="l-container" style="max-width: 520px;">
+    <div class="c-panel c-panel--default">
+      <div class="c-panel__heading">
+        <h4 class="c-panel__title"><i class="fa fa-trash"></i> Remove account</h4>
+      </div>
+      <div class="c-panel__body">
+        <p class="u-text-muted">This action is irreversible. Your profile and data will be deleted.</p>
+        <div class="c-checkbox" style="margin-top: 10px;">
+          <label>
+            <input type="checkbox" [(ngModel)]="confirmed" /> I understand and want to remove my account
+          </label>
+        </div>
+        <div *ngIf="errorMessage" class="c-alert c-alert--danger" style="margin-top: 10px;">
+          {{ errorMessage }}
+        </div>
+        <button type="button" class="c-button c-button--danger c-button--block" (click)="remove()" style="margin-top: 12px;">
+          Remove account
+        </button>
+      </div>
+    </div>
+  </div>

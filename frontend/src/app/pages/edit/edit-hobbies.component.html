@@ -1,0 +1,25 @@
+<div class="c-panel c-panel--default">
+  <div class="c-panel__body">
+    <h4 class="data-header">Hobbies</h4>
+    <div class="hobbies">
+      <div class="c-form__group" *ngFor="let hobby of hobbies">
+        <label class="c-checkbox" style="cursor: pointer;">
+          <input type="checkbox" [checked]="isSelected(hobby.id)" (change)="toggleHobby(hobby.id)" />
+          <i class="fa hobby" [ngClass]="hobby.cssClassName ? 'hobby-' + hobby.cssClassName : ''"></i>
+          <span>{{ hobby.name || '' }}</span>
+        </label>
+      </div>
+    </div>
+
+    <div *ngIf="successMessage" class="c-alert c-alert--success" style="margin-top: 10px;">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="c-alert c-alert--danger" style="margin-top: 10px;">
+      {{ errorMessage }}
+    </div>
+
+    <button type="button" class="c-button c-button--primary" (click)="submit()" style="margin-top: 10px;">
+      Save
+    </button>
+  </div>
+</div>
