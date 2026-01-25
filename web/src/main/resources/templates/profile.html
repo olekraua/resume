@@ -304,7 +304,9 @@
     </div>
 
 <div th:replace="~{fragments/layout :: footer}"></div>
+<th:block th:replace="~{fragments/layout :: public-spa-templates}"></th:block>
 <th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
+<script th:src="${appHost} + @{/js/public-spa.js(v=${jsCommonVersion})}"></script>
 
     <div id="certificateViewer" class="c-modal is-fade" role="dialog">
         <div class="c-modal__dialog c-modal__dialog--lg">

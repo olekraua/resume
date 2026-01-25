@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
+import net.devstudy.resume.auth.api.model.CurrentProfile;
+import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
 import net.devstudy.resume.profile.api.model.Certificate;
 import net.devstudy.resume.profile.api.model.Contacts;
 import net.devstudy.resume.profile.api.model.Course;
@@ -42,6 +44,7 @@ public class ProfileApiController {
     private static final int MAX_PAGE_SIZE = 50;
 
     private final ProfileService profileService;
+    private final CurrentProfileProvider currentProfileProvider;
 
     @GetMapping
     public PageResponse<ProfileSummary> list(
@@ -66,10 +69,12 @@ public class ProfileApiController {
     public ProfileDetails profile(@PathVariable String uid) {
         Profile profile = profileService.findWithAllByUid(uid)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
-        return toDetails(profile);
+        CurrentProfile currentProfile = currentProfileProvider.getCurrentProfile();
+        boolean ownProfile = currentProfile != null && currentProfile.getId().equals(profile.getId());
+        return toDetails(profile, ownProfile);
     }
 
-    private ProfileDetails toDetails(Profile profile) {
+    private ProfileDetails toDetails(Profile profile, boolean ownProfile) {
         LocalDate birthDay = profile.getBirthDay() == null ? null : profile.getBirthDay().toLocalDate();
         ContactsItem contacts = toContacts(profile.getContacts());
         List<SkillItem> skills = mapList(profile.getSkills(), this::toSkill);
@@ -96,6 +101,7 @@ public class ProfileApiController {
                 profile.getPhone(),
                 profile.getEmail(),
                 profile.isCompleted(),
+                ownProfile,
                 contacts,
                 skills,
                 languages,
@@ -212,6 +218,7 @@ public class ProfileApiController {
             String phone,
             String email,
             boolean completed,
+            boolean ownProfile,
             ContactsItem contacts,
             List<SkillItem> skills,
             List<LanguageItem> languages,

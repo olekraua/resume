@@ -99,5 +99,266 @@
 <th:block th:fragment="scripts-edit">
   <script th:src="${appHost} + @{/js/resume-template.js(v=${jsExVersion})}"></script>
 </th:block>
+<th:block th:fragment="public-spa-templates">
+  <template id="spa-welcome-view">
+    <div class="l-row profiles" data-spa-title="My Resume">
+      <div class="l-col l-col--xs-12" data-spa="profile-container"></div>
+      <div class="l-col l-col--xs-12 u-text-center" data-spa="load-more-container">
+        <a class="c-button c-button--primary" href="#" data-spa="load-more-button">Загрузить еще</a>
+      </div>
+      <div class="l-col l-col--xs-12 u-text-center" data-spa="load-more-indicator" style="display:none;">
+        <img th:src="${appHost} + @{/img/large-loading.gif}" alt="loading...">
+      </div>
+    </div>
+  </template>
+
+  <template id="spa-search-view">
+    <div class="c-panel c-panel--default" data-spa-title="Пошук профілів">
+      <div class="c-panel__body">
+        <h4 class="caption" data-spa="search-title"
+            data-spa-template="Найдено {{count}} профилей по запросу '{{query}}'">Результати пошуку</h4>
+      </div>
+    </div>
+    <div class="l-row profiles">
+      <div class="l-col l-col--xs-12">
+        <div class="c-alert c-alert--info" data-spa="search-empty" style="display:none;">Нічого не знайдено.</div>
+        <div data-spa="profile-container"></div>
+      </div>
+    </div>
+  </template>
+
+  <template id="spa-profile-item">
+    <div class="c-panel c-panel--default profile-item">
+      <div class="c-media c-panel__body">
+        <div class="c-media__left c-media__left--top">
+          <a data-spa-link="profile">
+            <img class="photo u-img-thumbnail" alt="" data-spa-photo>
+          </a>
+          <a class="c-button c-button--primary u-visible-xs-block" style="margin-top: 15px;"
+             data-spa-link="profile">Деталі</a>
+        </div>
+        <div class="c-media__body search-result-item">
+          <a class="c-button c-button--primary u-pull-right u-hidden-xs" data-spa-link="profile">Деталі</a>
+          <h4 class="c-media__heading">
+            <a data-spa-link="profile" data-spa-text="profile-title">John Doe, 28</a>
+          </h4>
+          <strong data-spa-text="profile-objective">Objective</strong>
+          <p data-spa-text="profile-location">City, Country</p>
+          <blockquote>
+            <small data-spa-text="profile-summary">Summary text</small>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="spa-profile-view">
+    <div class="l-row profile">
+      <div class="l-col l-col--xs-12 l-col--sm-6 l-col--md-4">
+        <div class="c-panel c-panel--primary">
+          <div class="c-panel__body">
+            <a data-spa="photo-link" hidden>
+              <img alt="photo" class="u-img-responsive photo" data-spa="photo">
+            </a>
+            <img alt="photo" class="u-img-responsive photo" data-spa="photo-static">
+            <h1 class="u-text-center">
+              <span data-spa="name-link-wrap" hidden>
+                <a data-spa="name-link" style="color:black;">Full Name</a>
+              </span>
+              <span data-spa="name-text">Full Name</span>
+              <span data-spa="profile-incomplete" class="c-label c-label--warning" style="margin-left:8px;" hidden>Незавершений</span>
+            </h1>
+            <h6 class="u-text-center">
+              <strong data-spa="city"></strong><span data-spa="location-comma" hidden>, </span><strong data-spa="country"></strong>
+            </h6>
+            <h6 class="u-text-center">
+              <strong>Age:</strong> <span data-spa="age">0</span>
+              <span data-spa="birthday-wrap" hidden>, <strong>Birthday:</strong> <span data-spa="birthday"></span></span>
+            </h6>
+            <div class="c-list contacts" data-spa="contacts"></div>
+          </div>
+        </div>
+
+        <div class="c-panel c-panel--primary u-hidden-xs" data-spa-section="languages" hidden>
+          <div class="c-panel__heading">
+            <h3 class="c-panel__title">
+              <i class="fa fa-language"></i> Foreign languages
+              <a class="edit-block" data-spa="languages-edit" hidden>Edit</a>
+            </h3>
+          </div>
+          <div class="c-panel__body">
+            <div data-spa="languages-list"></div>
+          </div>
+        </div>
+
+        <div class="c-panel c-panel--primary u-hidden-xs" data-spa-section="hobbies" hidden>
+          <div class="c-panel__heading">
+            <h3 class="c-panel__title">
+              <i class="fa fa-heart"></i> Хобі
+              <a class="edit-block" data-spa="hobbies-edit" hidden>Edit</a>
+            </h3>
+          </div>
+          <div class="c-panel__body">
+            <div class="hobbies">
+              <table class="c-table c-table--bordered">
+                <tbody data-spa="hobbies-list"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="c-panel c-panel--primary u-hidden-xs" data-spa-section="info" hidden>
+          <div class="c-panel__heading">
+            <h3 class="c-panel__title">
+              <i class="fa fa-info-circle"></i> Additional info
+              <a class="edit-block" data-spa="info-edit" hidden>Edit</a>
+            </h3>
+          </div>
+          <div class="c-panel__body u-text-justify" data-spa="info-text">Info</div>
+        </div>
+      </div>
+
+      <div class="l-col l-col--xs-12 l-col--sm-6 l-col--md-8">
+        <div class="c-panel c-panel--primary">
+          <div class="c-panel__heading">
+            <h3 class="c-panel__title">
+              <i class="fa fa-bullseye"></i> Мета
+              <a class="edit-block" data-spa="objective-edit" hidden>Редагувати</a>
+            </h3>
+          </div>
+          <div class="c-panel__body">
+            <h4 data-spa="objective">Objective</h4>
+            <p>
+              <strong>Короткий огляд кваліфікації:</strong><br/>
+              <span data-spa="summary"></span>
+            </p>
+          </div>
+        </div>
+
+        <div class="c-panel c-panel--primary" data-spa-section="skills" hidden>
+          <div class="c-panel__heading">
+            <h3 class="c-panel__title">
+              <i class="fa fa-code"></i> Technical Skills
+              <a class="edit-block" data-spa="skills-edit" hidden>Edit</a>
+            </h3>
+          </div>
+          <div class="c-panel__body">
+            <table class="c-table c-table--striped c-table--bordered">
+              <thead>
+                <tr>
+                  <th style="width: 140px;">Category</th>
+                  <th>Frameworks and technologies</th>
+                </tr>
+              </thead>
+              <tbody data-spa="skills-list"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="c-panel c-panel--primary" data-spa-section="practics" hidden>
+          <div class="c-panel__heading">
+            <h3 class="c-panel__title">
+              <i class="fa fa-briefcase"></i> Практичний досвід
+              <a class="edit-block" data-spa="practics-edit" hidden>Редагувати</a>
+            </h3>
+          </div>
+          <div class="c-panel__body">
+            <ul class="timeline" data-spa="practics-list"></ul>
+          </div>
+        </div>
+
+        <div class="c-panel c-panel--primary certificates" data-spa-section="certificates" hidden>
+          <div class="c-panel__heading">
+            <h3 class="c-panel__title">
+              <i class="fa fa-certificate"></i> Сертифікати
+              <a class="edit-block" data-spa="certificates-edit" hidden>Редагувати</a>
+            </h3>
+          </div>
+          <div class="c-panel__body" data-spa="certificates-list"></div>
+        </div>
+
+        <div class="c-panel c-panel--primary" data-spa-section="courses" hidden>
+          <div class="c-panel__heading">
+            <h3 class="c-panel__title">
+              <i class="fa fa-book"></i> Courses
+              <a class="edit-block" data-spa="courses-edit" hidden>Edit</a>
+            </h3>
+          </div>
+          <div class="c-panel__body">
+            <ul class="timeline" data-spa="courses-list"></ul>
+          </div>
+        </div>
+
+        <div class="c-panel c-panel--primary" data-spa-section="educations" hidden>
+          <div class="c-panel__heading">
+            <h3 class="c-panel__title">
+              <i class="fa fa-graduation-cap"></i> Education
+              <a class="edit-block" data-spa="educations-edit" hidden>Edit</a>
+            </h3>
+          </div>
+          <div class="c-panel__body">
+            <ul class="timeline" data-spa="educations-list"></ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="l-col l-col--xs-12 u-visible-xs">
+        <div class="c-panel c-panel--primary" data-spa-section="languages-mobile" hidden>
+          <div class="c-panel__heading">
+            <h3 class="c-panel__title">
+              <i class="fa fa-language"></i> Foreign languages
+              <a class="edit-block" data-spa="languages-mobile-edit" hidden>Edit</a>
+            </h3>
+          </div>
+          <div class="c-panel__body">
+            <div data-spa="languages-mobile-list"></div>
+          </div>
+        </div>
+
+        <div class="c-panel c-panel--primary" data-spa-section="hobbies-mobile" hidden>
+          <div class="c-panel__heading">
+            <h3 class="c-panel__title">
+              <i class="fa fa-heart"></i> Хобі
+              <a class="edit-block" data-spa="hobbies-mobile-edit" hidden>Edit</a>
+            </h3>
+          </div>
+          <div class="c-panel__body">
+            <div class="hobbies">
+              <table class="c-table c-table--bordered">
+                <tbody data-spa="hobbies-mobile-list"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="c-panel c-panel--primary" data-spa-section="info-mobile" hidden>
+          <div class="c-panel__heading">
+            <h3 class="c-panel__title">
+              <i class="fa fa-info-circle"></i> Additional info
+              <a class="edit-block" data-spa="info-mobile-edit" hidden>Edit</a>
+            </h3>
+          </div>
+          <div class="c-panel__body u-text-justify" data-spa="info-mobile-text">Info</div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="spa-certificate-viewer">
+    <div id="certificateViewer" class="c-modal is-fade" role="dialog">
+      <div class="c-modal__dialog c-modal__dialog--lg">
+        <div class="c-modal__content">
+          <div class="c-modal__header">
+            <button type="button" class="c-close" data-ui-dismiss="modal">&times;</button>
+            <h4 class="c-modal__title">Перегляд сертифікату</h4>
+          </div>
+          <div class="c-modal__body">
+            <img class="u-img-responsive" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Certificate image">
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+</th:block>
 </body>
 </html>

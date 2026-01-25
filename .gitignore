@@ -9,6 +9,8 @@ target/
 ### Uploads ###
 /uploads/
 !/uploads/.gitkeep
+/app/uploads/
+!/app/uploads/.gitkeep
 
 ### Legacy ###
 /legacy/
