@@ -20,7 +20,7 @@ The app reads them via `spring.mail.username=${SMTP_USER}` and `spring.mail.pass
 
 ## SPA (Angular)
 
-Build the Angular SPA into `web/src/main/resources/static/app`:
+Build the Angular SPA into `web/src/main/resources/static`:
 
 ```
 cd frontend

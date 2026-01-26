@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title th:text="${pageTitle} ?: 'My Resume'">My Resume</title>
-  <link rel="stylesheet" th:href="${appHost} + @{/css/ui.css(v=${cssCommonVersion})}" />
-  <link rel="stylesheet" th:href="${appHost} + @{/css/font-awesome-custom.css(v=${cssCommonVersion})}" />
-  <link rel="stylesheet" th:href="${appHost} + @{/css/timeline-modern.css(v=${cssCommonVersion})}" />
-  <link rel="stylesheet" th:href="${appHost} + @{/css/app.css(v=${cssCommonVersion})}" />
+  <link rel="stylesheet" th:href="${appHost} + @{/assets/css/ui.css(v=${cssCommonVersion})}" />
+  <link rel="stylesheet" th:href="${appHost} + @{/assets/css/font-awesome-custom.css(v=${cssCommonVersion})}" />
+  <link rel="stylesheet" th:href="${appHost} + @{/assets/css/timeline-modern.css(v=${cssCommonVersion})}" />
+  <link rel="stylesheet" th:href="${appHost} + @{/assets/css/app.css(v=${cssCommonVersion})}" />
   <style>
     body.resume { background-color: #eae8e7; }
     .layout-content { min-height: calc(100vh - 140px); padding: 16px; }
@@ -92,12 +92,12 @@
 </footer>
 
 <th:block th:fragment="scripts-base">
-  <script th:src="${appHost} + @{/js/messages.js(v=${jsMessagesVersion})}"></script>
-  <script th:src="${appHost} + @{/js/app.js(v=${jsCommonVersion})}"></script>
-  <script th:src="${appHost} + @{/js/ui-slider.js(v=${jsCommonVersion})}"></script>
+  <script th:src="${appHost} + @{/assets/js/messages.js(v=${jsMessagesVersion})}"></script>
+  <script th:src="${appHost} + @{/assets/js/app.js(v=${jsCommonVersion})}"></script>
+  <script th:src="${appHost} + @{/assets/js/ui-slider.js(v=${jsCommonVersion})}"></script>
 </th:block>
 <th:block th:fragment="scripts-edit">
-  <script th:src="${appHost} + @{/js/resume-template.js(v=${jsExVersion})}"></script>
+  <script th:src="${appHost} + @{/assets/js/resume-template.js(v=${jsExVersion})}"></script>
 </th:block>
 <th:block th:fragment="public-spa-templates">
   <template id="spa-welcome-view">
@@ -107,7 +107,7 @@
         <a class="c-button c-button--primary" href="#" data-spa="load-more-button">Загрузить еще</a>
       </div>
       <div class="l-col l-col--xs-12 u-text-center" data-spa="load-more-indicator" style="display:none;">
-        <img th:src="${appHost} + @{/img/large-loading.gif}" alt="loading...">
+        <img th:src="${appHost} + @{/assets/img/large-loading.gif}" alt="loading...">
       </div>
     </div>
   </template>

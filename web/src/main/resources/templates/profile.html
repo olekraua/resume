@@ -11,9 +11,9 @@
                 <div class="c-panel c-panel--primary">
                     <div class="c-panel__body">
                         <a th:if="${ownProfile}" th:href="${appHost} + @{|/${profile.uid}/edit|}">
-                            <img alt="photo" th:src="${profile.largePhoto != null ? profile.largePhoto : '/img/profile-placeholder.png'}" class="u-img-responsive photo">
+                            <img alt="photo" th:src="${profile.largePhoto != null ? profile.largePhoto : '/assets/img/profile-placeholder.png'}" class="u-img-responsive photo">
                         </a>
-                        <img th:if="${!ownProfile}" alt="photo" th:src="${profile.largePhoto != null ? profile.largePhoto : '/img/profile-placeholder.png'}" class="u-img-responsive photo">
+                        <img th:if="${!ownProfile}" alt="photo" th:src="${profile.largePhoto != null ? profile.largePhoto : '/assets/img/profile-placeholder.png'}" class="u-img-responsive photo">
                         <h1 class="u-text-center">
                             <span th:if="${ownProfile}">
                                 <a th:href="${appHost} + @{|/${profile.uid}/edit|}" style="color:black;" th:text="${profile.fullName}">Full Name</a>
@@ -306,7 +306,7 @@
 <div th:replace="~{fragments/layout :: footer}"></div>
 <th:block th:replace="~{fragments/layout :: public-spa-templates}"></th:block>
 <th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
-<script th:src="${appHost} + @{/js/public-spa.js(v=${jsCommonVersion})}"></script>
+<script th:src="${appHost} + @{/assets/js/public-spa.js(v=${jsCommonVersion})}"></script>
 
     <div id="certificateViewer" class="c-modal is-fade" role="dialog">
         <div class="c-modal__dialog c-modal__dialog--lg">

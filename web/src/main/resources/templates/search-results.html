@@ -22,6 +22,6 @@
 <div th:replace="~{fragments/layout :: footer}"></div>
 <th:block th:replace="~{fragments/layout :: public-spa-templates}"></th:block>
 <th:block th:replace="~{fragments/layout :: scripts-base}"></th:block>
-<script th:src="${appHost} + @{/js/public-spa.js(v=${jsCommonVersion})}"></script>
+<script th:src="${appHost} + @{/assets/js/public-spa.js(v=${jsCommonVersion})}"></script>
 </body>
 </html>

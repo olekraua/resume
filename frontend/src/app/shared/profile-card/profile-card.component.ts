@@ -33,6 +33,6 @@ export class ProfileCardComponent {
   }
 
   get photo(): string {
-    return this.profile.smallPhoto || '/img/profile-placeholder.png';
+    return this.profile.smallPhoto || '/assets/img/profile-placeholder.png';
   }
 }

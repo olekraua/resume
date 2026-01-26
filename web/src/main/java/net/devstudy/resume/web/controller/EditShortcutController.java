@@ -6,12 +6,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import net.devstudy.resume.auth.api.model.CurrentProfile;
 import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
 
 @Controller
 @RequestMapping("/edit")
+@ConditionalOnProperty(name = "app.ui.mvc.enabled", havingValue = "true")
 public class EditShortcutController {
 
     private static final Set<String> SECTIONS = Set.of(

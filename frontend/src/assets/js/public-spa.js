@@ -10,7 +10,7 @@
   }
 
   const base = resolveBase();
-  const PLACEHOLDER_PHOTO = buildPath('/img/profile-placeholder.png');
+  const PLACEHOLDER_PHOTO = buildPath('/assets/img/profile-placeholder.png');
   const RESERVED_PATHS = new Set([
     'welcome',
     'search',
@@ -26,6 +26,7 @@
     'js',
     'img',
     'fonts',
+    'assets',
     'uploads',
     'media',
     'favicon',

@@ -1,6 +1,7 @@
 package net.devstudy.resume.web.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
  * Centralizes custom error handling for MVC controllers.
  */
 @ControllerAdvice
+@ConditionalOnProperty(name = "app.ui.mvc.enabled", havingValue = "true")
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalStateException.class)

@@ -69,7 +69,7 @@ export class EditProfileComponent implements OnInit, OnDestroy {
     if (this.photoPreviewUrl) {
       return this.photoPreviewUrl;
     }
-    return this.profile?.largePhoto || '/img/profile-placeholder.png';
+    return this.profile?.largePhoto || '/assets/img/profile-placeholder.png';
   }
 
   onPhotoSelected(event: Event): void {

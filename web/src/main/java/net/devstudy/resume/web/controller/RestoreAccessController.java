@@ -1,6 +1,7 @@
 package net.devstudy.resume.web.controller;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,7 @@ import net.devstudy.resume.auth.api.dto.RestorePasswordForm;
 import net.devstudy.resume.auth.api.service.RestoreAccessService;
 
 @Controller
+@ConditionalOnProperty(name = "app.ui.mvc.enabled", havingValue = "true")
 public class RestoreAccessController {
 
     private final RestoreAccessService restoreAccessService;

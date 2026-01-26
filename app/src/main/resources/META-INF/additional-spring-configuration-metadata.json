@@ -42,6 +42,12 @@
       "description": "Static version token appended to the i18n messages JS bundle."
     },
     {
+      "name": "app.ui.mvc.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Enable legacy MVC/Thymeleaf controllers."
+    },
+    {
       "name": "uid.max-tries",
       "type": "java.lang.Integer",
       "description": "Maximum number of attempts to generate a unique UID."

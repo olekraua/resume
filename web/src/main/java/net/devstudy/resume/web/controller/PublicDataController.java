@@ -6,6 +6,7 @@ import net.devstudy.resume.auth.api.model.CurrentProfile;
 import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
 import net.devstudy.resume.profile.api.service.ProfileService;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -23,6 +24,7 @@ import java.util.Optional;
 
 @Controller
 @RequestMapping
+@ConditionalOnProperty(name = "app.ui.mvc.enabled", havingValue = "true")
 @RequiredArgsConstructor
 public class PublicDataController {
     private final ProfileService profileService;

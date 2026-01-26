@@ -11,6 +11,7 @@ import java.util.Map;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -65,6 +66,7 @@ import net.devstudy.resume.staticdata.api.service.StaticDataService;
 @Controller
 @RequestMapping("/{uid}/edit")
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "app.ui.mvc.enabled", havingValue = "true")
 public class EditProfileController {
 
     private final StaticDataService staticDataService;

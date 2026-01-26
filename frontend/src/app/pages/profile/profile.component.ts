@@ -99,7 +99,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   get photoLarge(): string {
-    return this.profile?.largePhoto || '/img/profile-placeholder.png';
+    return this.profile?.largePhoto || '/assets/img/profile-placeholder.png';
   }
 
   get profileUid(): string {

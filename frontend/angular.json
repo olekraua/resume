@@ -41,10 +41,14 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "../web/src/main/resources/static/app",
+            "outputPath": {
+              "base": "../web/src/main/resources/static",
+              "browser": ""
+            },
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "baseHref": "/app/",
+            "baseHref": "/",
+            "deleteOutputPath": false,
             "polyfills": [
               "zone.js"
             ],

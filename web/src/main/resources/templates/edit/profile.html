@@ -25,7 +25,7 @@
         <div class="c-form__group">
           <label for="profilePhoto" class="l-col l-col--sm-2 c-form__label">Фото <span class="u-text-muted">(опційно)</span></label>
           <div class="l-col l-col--sm-5">
-            <img id="currentPhoto" th:src="${profile.largePhoto != null ? profile.largePhoto : '/img/profile-placeholder.png'}" class="edit-photo u-img-responsive" alt="photo"/><br/>
+            <img id="currentPhoto" th:src="${profile.largePhoto != null ? profile.largePhoto : '/assets/img/profile-placeholder.png'}" class="edit-photo u-img-responsive" alt="photo"/><br/>
             <div class="c-file c-file--photo" data-file-input>
               <input type="file" th:field="*{profilePhoto}" id="profilePhoto" class="c-file__input" accept="image/*"/>
               <div class="c-file__group">

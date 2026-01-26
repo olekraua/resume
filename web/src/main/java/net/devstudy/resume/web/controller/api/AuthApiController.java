@@ -153,7 +153,6 @@ public class AuthApiController {
             return ApiErrorUtils.badRequest(bindingResult, request);
         }
         String appHost = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/app")
                 .build()
                 .toUriString();
         String link = null;

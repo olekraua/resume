@@ -3,8 +3,10 @@ package net.devstudy.resume.web.config;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 @ControllerAdvice
+@ConditionalOnProperty(name = "app.ui.mvc.enabled", havingValue = "true")
 public class UiModelAttributes {
 
     private final UiProperties uiProperties;

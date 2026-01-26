@@ -8,6 +8,7 @@ import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
 import net.devstudy.resume.profile.api.service.ProfileService;
 import net.devstudy.resume.auth.api.service.UidSuggestionService;
 import net.devstudy.resume.profile.api.exception.UidAlreadyExistsException;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -26,6 +27,7 @@ import java.util.Optional;
 @Controller
 @RequestMapping("/account")
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "app.ui.mvc.enabled", havingValue = "true")
 public class AccountController {
 
     private final ProfileService profileService;

@@ -38,6 +38,9 @@ public class SecurityConfig {
     @Value("${app.security.remember-me.cookie-name:remember-me}")
     private String rememberMeCookieName;
 
+    @Value("${app.ui.mvc.enabled:false}")
+    private boolean mvcEnabled;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
             UserDetailsService userDetailsService,
@@ -47,29 +50,36 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-                .authorizeHttpRequests(auth -> auth
-                        // публічні сторінки/статичні ресурси
-                        .requestMatchers("/", "/welcome", "/fragment/more", "/search",
-                                "/app", "/app/**", "/error/**", "/css/**", "/favicon/**",
-                                "/fonts/**", "/img/**",
-                                "/js/**", "/media/**", "/uploads/**", "/favicon.ico")
-                        .permitAll()
-                        .requestMatchers("/api/auth/**", "/api/csrf").permitAll()
-                        // публічні GET API для SPA
-                        .requestMatchers(HttpMethod.GET,
-                                "/api/me",
-                                "/api/profiles",
-                                "/api/profiles/*",
-                                "/api/search",
-                                "/api/suggest",
-                                "/api/static-data")
-                        .permitAll()
-                        .requestMatchers("/login", "/register", "/register/**", "/restore/**")
-                        .anonymous()
-                        // профільні сторінки (GET /{uid}) публічні, але редагування/акаунт захищені
-                        .requestMatchers("/me", "/account/**", "/*/edit/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/*").permitAll()
-                        .anyRequest().authenticated())
+                .authorizeHttpRequests(auth -> {
+                        auth
+                                // public static resources
+                                .requestMatchers("/", "/index.html", "/error/**",
+                                        "/css/**", "/favicon/**", "/fonts/**", "/img/**",
+                                        "/js/**", "/media/**", "/uploads/**", "/assets/**",
+                                        "/favicon.ico")
+                                .permitAll()
+                                .requestMatchers("/api/auth/**", "/api/csrf").permitAll()
+                                // public GET API for SPA
+                                .requestMatchers(HttpMethod.GET,
+                                        "/api/me",
+                                        "/api/profiles",
+                                        "/api/profiles/*",
+                                        "/api/search",
+                                        "/api/suggest",
+                                        "/api/static-data")
+                                .permitAll()
+                                .requestMatchers("/api/**").authenticated()
+                                .requestMatchers("/actuator/**").authenticated();
+                        if (mvcEnabled) {
+                                auth
+                                        .requestMatchers("/login", "/register", "/register/**", "/restore/**")
+                                        .anonymous()
+                                        // MVC profile pages (GET /{uid}) are public, edit/account are protected
+                                        .requestMatchers("/me", "/account/**", "/*/edit/**").authenticated()
+                                        .requestMatchers(HttpMethod.GET, "/*").permitAll();
+                        }
+                        auth.anyRequest().permitAll();
+                })
                 .userDetailsService(userDetailsService)
                 .exceptionHandling(ex -> ex.accessDeniedHandler(accessDeniedHandler))
                 .formLogin(form -> form
