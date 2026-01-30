@@ -18,17 +18,25 @@ export SMTP_PASS="app_password"
 
 The app reads them via `spring.mail.username=${SMTP_USER}` and `spring.mail.password=${SMTP_PASS}`.
 
-## SPA (Angular)
+## Frontend (Angular)
 
-Build the Angular SPA into `frontend/dist/frontend`:
+The SPA lives in a separate repo (local path: `/Users/oleksandrkravchenko/Desktop/resume-frontend`).
+
+Run it from there:
 
 ```
-cd frontend
+cd /Users/oleksandrkravchenko/Desktop/resume-frontend
 npm install
+npm start
+```
+
+Production build:
+
+```
 npm run build
 ```
 
 ### Separate frontend/backend (REST)
 
 - Backend: start Spring Boot and allow the SPA origin via `app.cors.allowed-origins`.
-- Frontend: set `frontend/src/environments/environment.ts` → `apiBaseUrl` (default `http://localhost:8080`) and run `npm start`.
+- Frontend: set `src/environments/environment.ts` → `apiBaseUrl` (default `http://localhost:8080`).
