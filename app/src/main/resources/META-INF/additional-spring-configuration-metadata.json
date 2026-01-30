@@ -48,6 +48,38 @@
       "description": "Enable legacy MVC/Thymeleaf controllers."
     },
     {
+      "name": "app.cors.allowed-origins",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Allowed CORS origins for API requests."
+    },
+    {
+      "name": "app.cors.allowed-methods",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Allowed CORS HTTP methods."
+    },
+    {
+      "name": "app.cors.allowed-headers",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Allowed CORS request headers."
+    },
+    {
+      "name": "app.cors.exposed-headers",
+      "type": "java.util.List<java.lang.String>",
+      "description": "CORS response headers exposed to the client."
+    },
+    {
+      "name": "app.cors.allow-credentials",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Allow CORS credentials (cookies, authorization headers)."
+    },
+    {
+      "name": "app.cors.max-age",
+      "type": "java.lang.Long",
+      "defaultValue": 3600,
+      "description": "CORS preflight cache max age in seconds."
+    },
+    {
       "name": "uid.max-tries",
       "type": "java.lang.Integer",
       "description": "Maximum number of attempts to generate a unique UID."

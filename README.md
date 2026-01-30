@@ -20,10 +20,15 @@ The app reads them via `spring.mail.username=${SMTP_USER}` and `spring.mail.pass
 
 ## SPA (Angular)
 
-Build the Angular SPA into `web/src/main/resources/static`:
+Build the Angular SPA into `frontend/dist/frontend`:
 
 ```
 cd frontend
 npm install
 npm run build
 ```
+
+### Separate frontend/backend (REST)
+
+- Backend: start Spring Boot and allow the SPA origin via `app.cors.allowed-origins`.
+- Frontend: set `frontend/src/environments/environment.ts` → `apiBaseUrl` (default `http://localhost:8080`) and run `npm start`.

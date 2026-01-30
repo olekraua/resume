@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, of, ReplaySubject, tap } from 'rxjs';
 
+import { CsrfResponse, CsrfService } from './csrf.service';
+
 export interface SessionInfo {
   authenticated: boolean;
   uid?: string | null;
@@ -15,15 +17,16 @@ export class SessionService {
   private sessionSubject = new ReplaySubject<SessionInfo>(1);
   private loaded = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private csrfService: CsrfService) {}
 
   load(): Observable<SessionInfo> {
     if (this.loaded) {
       return this.sessionSubject.asObservable();
     }
     this.loaded = true;
-    this.http.get('/api/csrf', { responseType: 'text' }).pipe(
-      catchError(() => of(''))
+    this.http.get<CsrfResponse>('/api/csrf').pipe(
+      tap((response) => this.csrfService.updateFromResponse(response)),
+      catchError(() => of(null))
     ).subscribe();
     this.http.get<SessionInfo>('/api/me').pipe(
       catchError(() => of({ authenticated: false })),

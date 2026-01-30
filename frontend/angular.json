@@ -42,7 +42,7 @@
           "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": {
-              "base": "../web/src/main/resources/static",
+              "base": "dist/frontend",
               "browser": ""
             },
             "index": "src/index.html",
@@ -68,6 +68,12 @@
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",
