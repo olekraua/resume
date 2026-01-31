@@ -1,59 +1,6 @@
 {
   "properties": [
     {
-      "name": "ui.max-profiles-per-page",
-      "type": "java.lang.Integer",
-      "description": "Maximum number of profiles displayed per page."
-    },
-    {
-      "name": "ui.production",
-      "type": "java.lang.Boolean",
-      "defaultValue": false,
-      "description": "Expose production flag to UI templates."
-    },
-    {
-      "name": "ui.host",
-      "type": "java.lang.String",
-      "description": "Base application host exposed to UI templates."
-    },
-    {
-      "name": "ui.versions.css-common",
-      "type": "java.lang.String",
-      "description": "Static version token appended to the common CSS bundle."
-    },
-    {
-      "name": "ui.versions.css-ex",
-      "type": "java.lang.String",
-      "description": "Static version token appended to the extra CSS bundle."
-    },
-    {
-      "name": "ui.versions.js-common",
-      "type": "java.lang.String",
-      "description": "Static version token appended to the common JS bundle."
-    },
-    {
-      "name": "ui.versions.js-ex",
-      "type": "java.lang.String",
-      "description": "Static version token appended to the extra JS bundle."
-    },
-    {
-      "name": "ui.versions.js-messages",
-      "type": "java.lang.String",
-      "description": "Static version token appended to the i18n messages JS bundle."
-    },
-    {
-      "name": "app.ui.mvc.enabled",
-      "type": "java.lang.Boolean",
-      "defaultValue": false,
-      "description": "Enable legacy MVC/Thymeleaf controllers."
-    },
-    {
-      "name": "app.ui.spa.enabled",
-      "type": "java.lang.Boolean",
-      "defaultValue": false,
-      "description": "Serve the SPA index and legacy client routes from the backend."
-    },
-    {
       "name": "app.cors.allowed-origins",
       "type": "java.util.List<java.lang.String>",
       "description": "Allowed CORS origins for API requests."

@@ -1,6 +1,7 @@
 package net.devstudy.resume.auth.internal.config;
 
 import java.time.Duration;
+import java.util.Locale;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.util.StringUtils;
 
 import net.devstudy.resume.auth.internal.service.impl.RememberMeService;
@@ -42,8 +44,11 @@ public class SecurityConfig {
     @Value("${app.security.remember-me.cookie-name:remember-me}")
     private String rememberMeCookieName;
 
-    @Value("${app.ui.mvc.enabled:false}")
-    private boolean mvcEnabled;
+    @Value("${app.security.csrf.cookie.same-site:Lax}")
+    private String csrfCookieSameSite;
+
+    @Value("${app.security.csrf.cookie.secure:false}")
+    private boolean csrfCookieSecure;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
@@ -54,12 +59,13 @@ public class SecurityConfig {
         http
                 .cors(withDefaults())
                 .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                        .csrfTokenRepository(buildCsrfTokenRepository())
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
                 .authorizeHttpRequests(auth -> {
                         auth
                                 .requestMatchers("/api/auth/**", "/api/csrf").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
-                                // public GET API for SPA
+                                // public GET API for frontend
                                 .requestMatchers(HttpMethod.GET,
                                         "/api/me",
                                         "/api/profiles",
@@ -70,30 +76,12 @@ public class SecurityConfig {
                                 .permitAll()
                                 .requestMatchers("/api/**").authenticated()
                                 .requestMatchers("/actuator/**").authenticated();
-                        if (mvcEnabled) {
-                                auth
-                                        // public static resources
-                                        .requestMatchers("/", "/index.html", "/error/**",
-                                                "/css/**", "/favicon/**", "/fonts/**", "/img/**",
-                                                "/js/**", "/media/**", "/uploads/**", "/assets/**",
-                                                "/favicon.ico")
-                                        .permitAll()
-                                        .requestMatchers("/login", "/register", "/register/**", "/restore/**")
-                                        .anonymous()
-                                        // MVC profile pages (GET /{uid}) are public, edit/account are protected
-                                        .requestMatchers("/me", "/account/**", "/*/edit/**").authenticated()
-                                        .requestMatchers(HttpMethod.GET, "/*").permitAll();
-                                auth.anyRequest().permitAll();
-                        } else {
-                                auth.anyRequest().denyAll();
-                        }
+                        auth.anyRequest().denyAll();
                 })
                 .userDetailsService(userDetailsService)
                 .exceptionHandling(ex -> {
                         ex.accessDeniedHandler(accessDeniedHandler);
-                        if (!mvcEnabled) {
-                                ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
-                        }
+                        ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
                 });
 
         RememberMeService rememberMeService = rememberMeServiceProvider.getIfAvailable();
@@ -109,15 +97,6 @@ public class SecurityConfig {
                     .userDetailsService(userDetailsService));
         }
 
-        if (mvcEnabled) {
-            http.formLogin(form -> form
-                    .loginPage("/login")
-                    .defaultSuccessUrl("/me", false));
-            http.logout(logout -> logout
-                    .logoutUrl("/logout")
-                    .logoutSuccessUrl("/login?logout")
-                    .permitAll());
-        }
         return http.build();
     }
 
@@ -143,5 +122,31 @@ public class SecurityConfig {
             return value.trim();
         }
         return fallback;
+    }
+
+    private CookieCsrfTokenRepository buildCsrfTokenRepository() {
+        CookieCsrfTokenRepository repository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+        String sameSite = normalizeSameSite(csrfCookieSameSite);
+        repository.setCookieCustomizer(builder -> {
+            if (StringUtils.hasText(sameSite)) {
+                builder.sameSite(sameSite);
+            }
+            boolean secure = csrfCookieSecure || "None".equalsIgnoreCase(sameSite);
+            builder.secure(secure);
+        });
+        return repository;
+    }
+
+    private String normalizeSameSite(String value) {
+        if (!StringUtils.hasText(value)) {
+            return "Lax";
+        }
+        String normalized = value.trim().toLowerCase(Locale.ROOT);
+        return switch (normalized) {
+            case "lax" -> "Lax";
+            case "strict" -> "Strict";
+            case "none" -> "None";
+            default -> "Lax";
+        };
     }
 }

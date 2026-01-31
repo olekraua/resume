@@ -15,20 +15,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrlPattern;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import net.devstudy.resume.web.config.UiProperties;
 
 @WebMvcTest(controllers = SecurityConfigTest.TestController.class)
 @Import({
         SecurityConfig.class,
-        UiProperties.class,
         SecurityConfigTest.SecurityTestConfig.class,
         SecurityConfigTest.TestController.class
 })
@@ -41,46 +35,24 @@ class SecurityConfigTest {
     private PasswordEncoder passwordEncoder;
 
     @Test
-    void permitsPublicGetEndpoints() throws Exception {
-        mockMvc.perform(get("/"))
+    void permitsPublicApiEndpoints() throws Exception {
+        mockMvc.perform(get("/api/csrf"))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get("/public"))
+        mockMvc.perform(get("/api/static-data"))
                 .andExpect(status().isOk());
     }
 
     @Test
-    void requiresAuthForProtectedEndpoints() throws Exception {
-        mockMvc.perform(get("/me"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
-
-        mockMvc.perform(get("/account/test"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
-
-        mockMvc.perform(get("/user/edit/profile"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
-    }
-
-    @Test
-    void requiresAuthForNonGetSingleSegment() throws Exception {
-        mockMvc.perform(post("/public").with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrlPattern("**/login"));
+    void requiresAuthForProtectedApiEndpoints() throws Exception {
+        mockMvc.perform(get("/api/secure"))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
     @WithMockUser
-    void allowsAuthenticatedUserToAccessProtectedEndpoints() throws Exception {
-        mockMvc.perform(get("/me"))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/account/test"))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(get("/user/edit/profile"))
+    void allowsAuthenticatedUserToAccessProtectedApiEndpoints() throws Exception {
+        mockMvc.perform(get("/api/secure"))
                 .andExpect(status().isOk());
     }
 
@@ -110,34 +82,19 @@ class SecurityConfigTest {
     @RestController
     public static class TestController {
 
-        @GetMapping("/")
-        String root() {
-            return "root";
+        @GetMapping("/api/csrf")
+        String csrf() {
+            return "csrf";
         }
 
-        @GetMapping("/public")
-        String publicGet() {
-            return "public";
+        @GetMapping("/api/static-data")
+        String staticData() {
+            return "static-data";
         }
 
-        @PostMapping("/public")
-        String publicPost() {
-            return "public-post";
-        }
-
-        @GetMapping("/me")
-        String me() {
-            return "me";
-        }
-
-        @GetMapping("/account/test")
-        String account() {
-            return "account";
-        }
-
-        @GetMapping("/user/edit/profile")
-        String editProfile() {
-            return "edit";
+        @GetMapping("/api/secure")
+        String secure() {
+            return "secure";
         }
     }
 }

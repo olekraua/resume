@@ -299,9 +299,9 @@ sequenceDiagram
 ### web
 | Пакет | Класи |
 | --- | --- |
-| `net.devstudy.resume.web.controller` | `ProfileApiController`, `SearchApiController`, `StaticDataApiController`, `SuggestController`, `SessionApiController`, `LegacyRouteRedirectController`, `GlobalExceptionHandler` |
+| `net.devstudy.resume.web.controller` | `ProfileApiController`, `SearchApiController`, `StaticDataApiController`, `SuggestController`, `SessionApiController` |
 | `net.devstudy.resume.web.controller.api` | `AuthApiController`, `AccountApiController`, `ProfileEditApiController`, `CsrfApiController`, `ApiExceptionHandler` |
-| `net.devstudy.resume.web.config` | `UiProperties`, `UiModelAttributes`, `UploadResourceConfig` |
+| `net.devstudy.resume.web.config` | `UploadResourceConfig` |
 | `net.devstudy.resume.web.filter` | `AbstractFilter` |
 
 ### profile
