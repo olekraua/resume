@@ -6,6 +6,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpMethod;
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.util.StringUtils;
 
@@ -55,13 +57,8 @@ public class SecurityConfig {
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .authorizeHttpRequests(auth -> {
                         auth
-                                // public static resources
-                                .requestMatchers("/", "/index.html", "/error/**",
-                                        "/css/**", "/favicon/**", "/fonts/**", "/img/**",
-                                        "/js/**", "/media/**", "/uploads/**", "/assets/**",
-                                        "/favicon.ico")
-                                .permitAll()
                                 .requestMatchers("/api/auth/**", "/api/csrf").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                                 // public GET API for SPA
                                 .requestMatchers(HttpMethod.GET,
                                         "/api/me",
@@ -75,19 +72,29 @@ public class SecurityConfig {
                                 .requestMatchers("/actuator/**").authenticated();
                         if (mvcEnabled) {
                                 auth
+                                        // public static resources
+                                        .requestMatchers("/", "/index.html", "/error/**",
+                                                "/css/**", "/favicon/**", "/fonts/**", "/img/**",
+                                                "/js/**", "/media/**", "/uploads/**", "/assets/**",
+                                                "/favicon.ico")
+                                        .permitAll()
                                         .requestMatchers("/login", "/register", "/register/**", "/restore/**")
                                         .anonymous()
                                         // MVC profile pages (GET /{uid}) are public, edit/account are protected
                                         .requestMatchers("/me", "/account/**", "/*/edit/**").authenticated()
                                         .requestMatchers(HttpMethod.GET, "/*").permitAll();
+                                auth.anyRequest().permitAll();
+                        } else {
+                                auth.anyRequest().denyAll();
                         }
-                        auth.anyRequest().permitAll();
                 })
                 .userDetailsService(userDetailsService)
-                .exceptionHandling(ex -> ex.accessDeniedHandler(accessDeniedHandler))
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/me", false));
+                .exceptionHandling(ex -> {
+                        ex.accessDeniedHandler(accessDeniedHandler);
+                        if (!mvcEnabled) {
+                                ex.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+                        }
+                });
 
         RememberMeService rememberMeService = rememberMeServiceProvider.getIfAvailable();
         if (rememberMeService != null) {
@@ -102,10 +109,15 @@ public class SecurityConfig {
                     .userDetailsService(userDetailsService));
         }
 
-        http.logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
-                .permitAll());
+        if (mvcEnabled) {
+            http.formLogin(form -> form
+                    .loginPage("/login")
+                    .defaultSuccessUrl("/me", false));
+            http.logout(logout -> logout
+                    .logoutUrl("/logout")
+                    .logoutSuccessUrl("/login?logout")
+                    .permitAll());
+        }
         return http.build();
     }
 

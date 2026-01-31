@@ -1,21 +1,22 @@
 # Architecture
 
 ## Контекст
-- Монолітний застосунок на Spring Boot (MVC + Thymeleaf).
+- Монолітний застосунок на Spring Boot (REST-only API; без SSR/Thymeleaf).
+- Клієнти (SPA/мобільні/інтеграції) працюють через JSON/HTTP; UI живе окремо.
 - Основна БД: PostgreSQL (JPA/Hibernate).
 - Пошук: Elasticsearch (опційно, керується `app.search.elasticsearch.enabled`).
 - Зберігання медіа: локальна файлова система (`uploads/...`).
 - Асинхронність: внутрішні Spring events після коміту транзакції.
 
 ## Крок 3 (безпека)
-- Поточна модель: stateful session + CSRF (Spring Security за замовчуванням), `SecurityConfig` у `auth/src/main/java/net/devstudy/resume/auth/internal/config/SecurityConfig.java`.
+- Поточна модель: stateful session + CSRF (Spring Security за замовчуванням) для REST API з cookie-auth, `SecurityConfig` у `auth/src/main/java/net/devstudy/resume/auth/internal/config/SecurityConfig.java`.
 - Якщо SPA працює на тому ж домені (same-site), залишаємо session+CSRF і поточний `SecurityConfig` без CORS.
 - Якщо SPA окремо (інший домен), це окремий етап: JWT/OIDC для автентифікації, CORS політика для API, перегляд CSRF/сесійної моделі.
 
 ## Потоки
 
 ### Редагування профілю
-- Вхід: `GET/POST /{uid}/edit/...` через `src/main/java/net/devstudy/resume/web/controller/EditProfileController.java`.
+- Вхід: `PUT /api/profile/...` (напр. `/api/profile/info`, `/api/profile/skills`, `/api/profile/practics`) через `src/main/java/net/devstudy/resume/web/controller/api/ProfileEditApiController.java`.
 - Доступ: звірка `uid` з поточним користувачем у `src/main/java/net/devstudy/resume/auth/security/CurrentProfileProvider.java`.
 - Валідація: форми в `src/main/java/net/devstudy/resume/profile/form/*` + ручна валідація для `Practic`/`Education`.
 - Запис: `src/main/java/net/devstudy/resume/profile/internal/service/impl/ProfileServiceImpl.java` оновлює сутності, прапорець `completed`, публікує подію індексації зі snapshot‑payload.
@@ -24,8 +25,8 @@
 ```mermaid
 sequenceDiagram
     actor User
-    participant Browser
-    participant Ctrl as EditProfileController
+    participant Client
+    participant Ctrl as ProfileEditApiController
     participant Auth as CurrentProfileProvider
     participant ProfileSvc as ProfileServiceImpl
     participant Repo as ProfileRepository
@@ -34,19 +35,19 @@ sequenceDiagram
     participant SearchSvc as ProfileSearchService
     participant ES as Elasticsearch
 
-    User->>Browser: Submit edit form
-    Browser->>Ctrl: POST /{uid}/edit/...
+    User->>Client: Submit edit request
+    Client->>Ctrl: PUT /api/profile/...
     Ctrl->>Auth: getCurrentProfile()
     Auth-->>Ctrl: CurrentProfile / null
     alt not authenticated
-        Ctrl-->>Browser: redirect /login
+        Ctrl-->>Client: 401/403 JSON error
     else authenticated
         Ctrl->>ProfileSvc: update...(...)
         ProfileSvc->>Repo: save(...)
         Repo-->>ProfileSvc: saved
         ProfileSvc-->>Ctrl: ok
         ProfileSvc->>Events: publish ProfileIndexingRequestedEvent(snapshot)
-        Ctrl-->>Browser: redirect ?success
+        Ctrl-->>Client: 204 No Content
         Note over Events,Indexer: after commit
         Events-->>Indexer: ProfileIndexingRequestedEvent(snapshot)
         Indexer->>SearchSvc: indexProfiles([Profile])
@@ -55,7 +56,7 @@ sequenceDiagram
 ```
 
 ### Пошук
-- Вхід: `GET /welcome`, `GET /search` у `src/main/java/net/devstudy/resume/web/controller/PublicDataController.java`, `GET /api/suggest` у `src/main/java/net/devstudy/resume/web/controller/SuggestController.java`.
+- Вхід: `GET /api/search` у `src/main/java/net/devstudy/resume/web/controller/SearchApiController.java`, `GET /api/suggest` у `src/main/java/net/devstudy/resume/web/controller/SuggestController.java`.
 - Запит: `ProfileService.search()` делегує у `ProfileSearchService`.
 - Elasticsearch: `src/main/java/net/devstudy/resume/search/service/impl/ProfileSearchServiceImpl.java` виконує ES‑запит і потім вантажить `Profile` по id з JPA.
 - Fallback: при помилках ES повертається JPA‑пошук у `ProfileRepository`.
@@ -65,15 +66,15 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     actor User
-    participant Browser
-    participant Ctrl as PublicDataController
+    participant Client
+    participant Ctrl as SearchApiController
     participant ProfileSvc as ProfileServiceImpl
     participant SearchSvc as ProfileSearchServiceImpl
     participant ES as Elasticsearch
     participant Repo as ProfileRepository
 
-    User->>Browser: Enter query
-    Browser->>Ctrl: GET /search?q=...
+    User->>Client: Enter query
+    Client->>Ctrl: GET /api/search?q=...
     Ctrl->>ProfileSvc: search(q, page)
     ProfileSvc->>SearchSvc: search(q, page)
     alt ES available
@@ -88,11 +89,11 @@ sequenceDiagram
         Repo-->>ProfileSvc: Page<Profile>
     end
     ProfileSvc-->>Ctrl: Page<Profile>
-    Ctrl-->>Browser: render results
+    Ctrl-->>Client: 200 OK (PageResponse<ProfileSummary>)
 ```
 
 ### Відновлення доступу
-- Вхід: `GET/POST /restore` та `GET/POST /restore/{token}` у `src/main/java/net/devstudy/resume/web/controller/RestoreAccessController.java`.
+- Вхід: `POST /api/auth/restore` та `GET/POST /api/auth/restore/{token}` у `src/main/java/net/devstudy/resume/web/controller/api/AuthApiController.java`.
 - Запит: `RestoreAccessServiceImpl` знаходить профіль по uid/email/phone, створює токен, хешує і зберігає у `ProfileRestore`.
 - Повідомлення: `RestoreAccessMailRequestedEvent` → `RestoreAccessMailListener` → `RestoreAccessMailServiceImpl`.
 - Скидання пароля: `resetPassword()` оновлює пароль через `ProfileService`, видаляє токен.
@@ -101,8 +102,8 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     actor User
-    participant Browser
-    participant Ctrl as RestoreAccessController
+    participant Client
+    participant Ctrl as AuthApiController
     participant RestoreSvc as RestoreAccessServiceImpl
     participant ProfileRepo as ProfileRepository
     participant RestoreRepo as ProfileRestoreRepository
@@ -111,8 +112,8 @@ sequenceDiagram
     participant MailSvc as RestoreAccessMailServiceImpl
     participant SMTP as SMTP
 
-    User->>Browser: Submit restore form
-    Browser->>Ctrl: POST /restore
+    User->>Client: Submit restore request
+    Client->>Ctrl: POST /api/auth/restore
     Ctrl->>RestoreSvc: requestRestore(identifier, appHost)
     RestoreSvc->>ProfileRepo: findByUid/Email/Phone
     alt profile not found
@@ -127,39 +128,39 @@ sequenceDiagram
         MailListener->>MailSvc: sendRestoreLink(...)
         MailSvc->>SMTP: send
     end
-    Ctrl-->>Browser: redirect /restore/success
+    Ctrl-->>Client: 200 OK (RestoreRequestResponse)
 ```
 
 #### Sequence diagram: reset password
 ```mermaid
 sequenceDiagram
     actor User
-    participant Browser
-    participant Ctrl as RestoreAccessController
+    participant Client
+    participant Ctrl as AuthApiController
     participant RestoreSvc as RestoreAccessServiceImpl
     participant RestoreRepo as ProfileRestoreRepository
     participant ProfileSvc as ProfileServiceImpl
     participant ProfileRepo as ProfileRepository
 
-    User->>Browser: Submit new password
-    Browser->>Ctrl: POST /restore/{token}
+    User->>Client: Submit new password
+    Client->>Ctrl: POST /api/auth/restore/{token}
     Ctrl->>RestoreSvc: resetPassword(token, newPassword)
     RestoreSvc->>RestoreRepo: findByToken(hash)
     alt invalid or expired
         RestoreRepo-->>RestoreSvc: empty/expired
         RestoreSvc-->>Ctrl: throws
-        Ctrl-->>Browser: redirect /restore?invalid
+        Ctrl-->>Client: 400/404 JSON error
     else valid
         RestoreRepo-->>RestoreSvc: ProfileRestore
         RestoreSvc->>ProfileSvc: updatePassword(profileId, rawPassword)
         ProfileSvc->>ProfileRepo: save
         RestoreSvc->>RestoreRepo: delete token
-        Ctrl-->>Browser: redirect /login?restored
+        Ctrl-->>Client: 204 No Content
     end
 ```
 
 ### Медіа (фото/сертифікати)
-- Вхід: `POST /{uid}/edit/photo` і `POST /{uid}/edit/certificates/upload` у `EditProfileController`.
+- Вхід: `POST /api/profile/photo` і `POST /api/profile/certificates/upload` у `src/main/java/net/devstudy/resume/web/controller/api/ProfileEditApiController.java`.
 - Обробка: валідація, конвертація, ресайз, оптимізація у `PhotoStorageServiceImpl` та `CertificateStorageServiceImpl`.
 - Збереження: файли у `uploads/...`, повернення URL для збереження в профілі.
 - Очищення: `ProfileServiceImpl` публікує `ProfileMediaCleanupRequestedEvent`, після коміту `ProfileMediaCleanupListener` виконує cleanup через `MediaCleanupService`.
@@ -168,8 +169,8 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     actor User
-    participant Browser
-    participant Ctrl as EditProfileController
+    participant Client
+    participant Ctrl as ProfileEditApiController
     participant PhotoSvc as PhotoStorageServiceImpl
     participant Temp as UploadImageTempStorage
     participant Resizer as ImageResizer
@@ -178,8 +179,8 @@ sequenceDiagram
     participant ProfileSvc as ProfileServiceImpl
     participant ProfileRepo as ProfileRepository
 
-    User->>Browser: Select photo
-    Browser->>Ctrl: POST /{uid}/edit/photo
+    User->>Client: Select photo
+    Client->>Ctrl: POST /api/profile/photo
     Ctrl->>PhotoSvc: store(file)
     PhotoSvc->>Temp: getCurrentUploadTempPath()
     PhotoSvc->>Resizer: resize
@@ -188,15 +189,15 @@ sequenceDiagram
     PhotoSvc-->>Ctrl: [largeUrl, smallUrl]
     Ctrl->>ProfileSvc: updatePhoto(profileId, urls)
     ProfileSvc->>ProfileRepo: save
-    Ctrl-->>Browser: redirect ?success
+    Ctrl-->>Client: 200 OK (PhotoResponse)
 ```
 
 #### Sequence diagram: certificate upload + save
 ```mermaid
 sequenceDiagram
     actor User
-    participant Browser
-    participant Ctrl as EditProfileController
+    participant Client
+    participant Ctrl as ProfileEditApiController
     participant CertSvc as CertificateStorageServiceImpl
     participant Temp as UploadImageTempStorage
     participant Resizer as ImageResizer
@@ -209,8 +210,8 @@ sequenceDiagram
     participant Events as ApplicationEventPublisher
     participant MediaListener as ProfileMediaCleanupListener
 
-    User->>Browser: Upload certificate image
-    Browser->>Ctrl: POST /{uid}/edit/certificates/upload
+    User->>Client: Upload certificate image
+    Client->>Ctrl: POST /api/profile/certificates/upload
     Ctrl->>CertSvc: store(file)
     CertSvc->>Temp: getCurrentUploadTempPath()
     CertSvc->>Resizer: resize
@@ -219,8 +220,8 @@ sequenceDiagram
     CertSvc->>LinkTemp: addImageLinks(largeUrl, smallUrl)
     CertSvc-->>Ctrl: UploadCertificateResult
 
-    User->>Browser: Submit certificates form
-    Browser->>Ctrl: POST /{uid}/edit/certificates
+    User->>Client: Submit certificates request
+    Client->>Ctrl: PUT /api/profile/certificates
     Ctrl->>ProfileSvc: updateCertificates(profileId, items)
     ProfileSvc->>CertRepo: delete/save
     ProfileSvc->>Events: publish ProfileMediaCleanupRequestedEvent(certificatesToRemove, clearTempLinks)
@@ -228,7 +229,7 @@ sequenceDiagram
     Events-->>MediaListener: ProfileMediaCleanupRequestedEvent
     MediaListener->>LinkTemp: clearImageLinks()
     MediaListener->>FileStore: removeAll(oldUrls)
-    Ctrl-->>Browser: redirect ?success
+    Ctrl-->>Client: 204 No Content
 ```
 
 ## Власники даних (Source of Truth)
@@ -269,7 +270,7 @@ sequenceDiagram
 - `media`: обробка/зберігання фото й сертифікатів.
 - `notification`: email‑відновлення.
 - `shared`: спільні типи, валідації, утиліти.
-- `web`: MVC‑контролери, UI‑конфіги, шаблони.
+- `web`: REST‑контролери, API‑конфіги, обробка помилок, фільтри.
 
 ### Дозволені залежності (на рівні модулів)
 - `web` → `profile`, `staticdata`, `auth`, `media`, `notification`, `shared`
@@ -298,11 +299,8 @@ sequenceDiagram
 ### web
 | Пакет | Класи |
 | --- | --- |
-| `net.devstudy.resume.web.controller.auth` | `AuthController`, `AccountController`, `RestoreAccessController` |
-| `net.devstudy.resume.web.controller.profile` | `EditProfileController`, `EditShortcutController` |
-| `net.devstudy.resume.web.controller.public` | `PublicDataController` |
-| `net.devstudy.resume.web.controller.search` | `SuggestController` |
-| `net.devstudy.resume.web.advice` | `GlobalExceptionHandler` |
+| `net.devstudy.resume.web.controller` | `ProfileApiController`, `SearchApiController`, `StaticDataApiController`, `SuggestController`, `SessionApiController`, `LegacyRouteRedirectController`, `GlobalExceptionHandler` |
+| `net.devstudy.resume.web.controller.api` | `AuthApiController`, `AccountApiController`, `ProfileEditApiController`, `CsrfApiController`, `ApiExceptionHandler` |
 | `net.devstudy.resume.web.config` | `UiProperties`, `UiModelAttributes`, `UploadResourceConfig` |
 | `net.devstudy.resume.web.filter` | `AbstractFilter` |
 

@@ -7,6 +7,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+@ConditionalOnProperty(name = "app.ui.spa.enabled", havingValue = "true")
 @ConditionalOnProperty(name = "app.ui.mvc.enabled", havingValue = "false", matchIfMissing = true)
 public class SpaForwardingConfig implements WebMvcConfigurer {
 

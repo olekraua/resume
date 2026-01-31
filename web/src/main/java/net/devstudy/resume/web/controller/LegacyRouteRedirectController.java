@@ -13,6 +13,7 @@ import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
 
 @Controller
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "app.ui.spa.enabled", havingValue = "true")
 @ConditionalOnProperty(name = "app.ui.mvc.enabled", havingValue = "false", matchIfMissing = true)
 public class LegacyRouteRedirectController {
 
