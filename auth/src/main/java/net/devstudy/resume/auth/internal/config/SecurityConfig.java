@@ -20,7 +20,7 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.util.StringUtils;
 
 import net.devstudy.resume.auth.internal.service.impl.RememberMeService;
@@ -67,10 +67,14 @@ public class SecurityConfig {
                                 .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
                         if (ignoreAuthEndpointsCsrf) {
                             csrf.ignoringRequestMatchers(
-                                    new AntPathRequestMatcher("/api/auth/login", "POST"),
-                                    new AntPathRequestMatcher("/api/auth/register", "POST"),
-                                    new AntPathRequestMatcher("/api/auth/restore", "POST"),
-                                    new AntPathRequestMatcher("/api/auth/restore/*", "POST")
+                                    PathPatternRequestMatcher.withDefaults()
+                                            .matcher(HttpMethod.POST, "/api/auth/login"),
+                                    PathPatternRequestMatcher.withDefaults()
+                                            .matcher(HttpMethod.POST, "/api/auth/register"),
+                                    PathPatternRequestMatcher.withDefaults()
+                                            .matcher(HttpMethod.POST, "/api/auth/restore"),
+                                    PathPatternRequestMatcher.withDefaults()
+                                            .matcher(HttpMethod.POST, "/api/auth/restore/*")
                             );
                         }
                 })
