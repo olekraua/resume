@@ -3,6 +3,7 @@ package net.devstudy.resume.web.controller.api;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,61 +44,81 @@ public class ProfileConnectionApiController {
     private final CurrentProfileProvider currentProfileProvider;
     private final Executor connectionExecutor;
 
+    @PostMapping
+    public ResponseEntity<?> requestConnectionBody(@RequestBody(required = false) ConnectionActionRequest payload,
+            HttpServletRequest request) {
+        String uid = payload == null ? null : payload.uid();
+        String action = normalizeAction(payload == null ? null : payload.action());
+        if (!action.isEmpty() && !isRequestAction(action)) {
+            return ApiErrorUtils.error(HttpStatus.BAD_REQUEST, "Unsupported action", request);
+        }
+        return requestConnectionInternal(uid, request);
+    }
+
+    @PostMapping("/{uid}")
+    public ResponseEntity<?> requestConnectionLegacy(@PathVariable String uid, HttpServletRequest request) {
+        return requestConnectionInternal(uid, request);
+    }
+
     @PostMapping("/requests/{uid}")
     public ResponseEntity<?> requestConnection(@PathVariable String uid, HttpServletRequest request) {
-        Long currentId = currentProfileProvider.getCurrentId();
-        if (currentId == null) {
-            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
+        return requestConnectionInternal(uid, request);
+    }
+
+    @PutMapping
+    public ResponseEntity<?> acceptRequestBody(@RequestBody(required = false) ConnectionActionRequest payload,
+            HttpServletRequest request) {
+        String uid = payload == null ? null : payload.uid();
+        String action = normalizeAction(payload == null ? null : payload.action());
+        if (!action.isEmpty() && !isAcceptAction(action)) {
+            return ApiErrorUtils.error(HttpStatus.BAD_REQUEST, "Unsupported action", request);
         }
-        Profile target = findProfileOrThrow(uid);
-        ProfileConnection connection = profileConnectionService.requestConnection(currentId, target.getId());
-        ConnectionItem item = toConnectionItem(connection, currentId, resolveRequestState(connection, currentId));
-        return ResponseEntity.ok(item);
+        return acceptRequestInternal(uid, request);
+    }
+
+    @PutMapping("/{uid}")
+    public ResponseEntity<?> acceptRequestLegacy(@PathVariable String uid, HttpServletRequest request) {
+        return acceptRequestInternal(uid, request);
     }
 
     @PostMapping("/requests/{uid}/accept")
     public ResponseEntity<?> acceptRequest(@PathVariable String uid, HttpServletRequest request) {
-        Long currentId = currentProfileProvider.getCurrentId();
-        if (currentId == null) {
-            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
-        }
-        Profile requester = findProfileOrThrow(uid);
-        ProfileConnection connection = profileConnectionService.acceptRequest(currentId, requester.getId());
-        ConnectionItem item = toConnectionItem(connection, currentId, ProfileConnectionState.CONNECTED);
-        return ResponseEntity.ok(item);
+        return acceptRequestInternal(uid, request);
     }
 
     @PostMapping("/requests/{uid}/decline")
     public ResponseEntity<?> declineRequest(@PathVariable String uid, HttpServletRequest request) {
-        Long currentId = currentProfileProvider.getCurrentId();
-        if (currentId == null) {
-            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
-        }
-        Profile requester = findProfileOrThrow(uid);
-        profileConnectionService.declineRequest(currentId, requester.getId());
-        return ResponseEntity.noContent().build();
+        return declineRequestInternal(uid, request);
     }
 
     @DeleteMapping("/requests/{uid}")
     public ResponseEntity<?> withdrawRequest(@PathVariable String uid, HttpServletRequest request) {
-        Long currentId = currentProfileProvider.getCurrentId();
-        if (currentId == null) {
-            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
+        return withdrawRequestInternal(uid, request);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteConnection(@RequestBody(required = false) ConnectionActionRequest payload,
+            HttpServletRequest request) {
+        String uid = payload == null ? null : payload.uid();
+        String action = normalizeAction(payload == null ? null : payload.action());
+        if (action.isEmpty()) {
+            return ApiErrorUtils.error(HttpStatus.BAD_REQUEST, "Action is required", request);
         }
-        Profile addressee = findProfileOrThrow(uid);
-        profileConnectionService.withdrawRequest(currentId, addressee.getId());
-        return ResponseEntity.noContent().build();
+        if (isDeclineAction(action)) {
+            return declineRequestInternal(uid, request);
+        }
+        if (isWithdrawAction(action)) {
+            return withdrawRequestInternal(uid, request);
+        }
+        if (isRemoveAction(action)) {
+            return removeConnectionInternal(uid, request);
+        }
+        return ApiErrorUtils.error(HttpStatus.BAD_REQUEST, "Unsupported action", request);
     }
 
     @DeleteMapping("/{uid}")
     public ResponseEntity<?> removeConnection(@PathVariable String uid, HttpServletRequest request) {
-        Long currentId = currentProfileProvider.getCurrentId();
-        if (currentId == null) {
-            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
-        }
-        Profile other = findProfileOrThrow(uid);
-        profileConnectionService.removeConnection(currentId, other.getId());
-        return ResponseEntity.noContent().build();
+        return removeConnectionInternal(uid, request);
     }
 
     @GetMapping
@@ -265,6 +288,85 @@ public class ProfileConnectionApiController {
         return future == null ? null : future.join();
     }
 
+    private ResponseEntity<?> requestConnectionInternal(String uid, HttpServletRequest request) {
+        Long currentId = currentProfileProvider.getCurrentId();
+        if (currentId == null) {
+            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
+        }
+        Profile target = findProfileOrThrow(uid);
+        ProfileConnection connection = profileConnectionService.requestConnection(currentId, target.getId());
+        ConnectionItem item = toConnectionItem(connection, currentId, resolveRequestState(connection, currentId));
+        return ResponseEntity.ok(item);
+    }
+
+    private ResponseEntity<?> acceptRequestInternal(String uid, HttpServletRequest request) {
+        Long currentId = currentProfileProvider.getCurrentId();
+        if (currentId == null) {
+            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
+        }
+        Profile requester = findProfileOrThrow(uid);
+        ProfileConnection connection = profileConnectionService.acceptRequest(currentId, requester.getId());
+        ConnectionItem item = toConnectionItem(connection, currentId, ProfileConnectionState.CONNECTED);
+        return ResponseEntity.ok(item);
+    }
+
+    private ResponseEntity<?> declineRequestInternal(String uid, HttpServletRequest request) {
+        Long currentId = currentProfileProvider.getCurrentId();
+        if (currentId == null) {
+            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
+        }
+        Profile requester = findProfileOrThrow(uid);
+        profileConnectionService.declineRequest(currentId, requester.getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    private ResponseEntity<?> withdrawRequestInternal(String uid, HttpServletRequest request) {
+        Long currentId = currentProfileProvider.getCurrentId();
+        if (currentId == null) {
+            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
+        }
+        Profile addressee = findProfileOrThrow(uid);
+        profileConnectionService.withdrawRequest(currentId, addressee.getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    private ResponseEntity<?> removeConnectionInternal(String uid, HttpServletRequest request) {
+        Long currentId = currentProfileProvider.getCurrentId();
+        if (currentId == null) {
+            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
+        }
+        Profile other = findProfileOrThrow(uid);
+        profileConnectionService.removeConnection(currentId, other.getId());
+        return ResponseEntity.noContent().build();
+    }
+
+    private String normalizeAction(String action) {
+        if (action == null) {
+            return "";
+        }
+        return action.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private boolean isRequestAction(String action) {
+        return "connect".equals(action) || "request".equals(action) || "add".equals(action);
+    }
+
+    private boolean isAcceptAction(String action) {
+        return "accept".equals(action);
+    }
+
+    private boolean isDeclineAction(String action) {
+        return "decline".equals(action) || "ignore".equals(action) || "reject".equals(action);
+    }
+
+    private boolean isWithdrawAction(String action) {
+        return "withdraw".equals(action) || "cancel".equals(action);
+    }
+
+    private boolean isRemoveAction(String action) {
+        return "remove".equals(action) || "disconnect".equals(action);
+    }
+
     public record ConnectionItem(
             String uid,
             String fullName,
@@ -276,6 +378,9 @@ public class ProfileConnectionApiController {
             Instant requestedAt,
             Instant respondedAt
     ) {
+    }
+
+    public record ConnectionActionRequest(String uid, String action) {
     }
 
     public record ConnectionOverview(

@@ -33,6 +33,12 @@
       "description": "CORS preflight cache max age in seconds."
     },
     {
+      "name": "app.security.csrf.ignore-auth-endpoints",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Ignore CSRF for auth endpoints (login/register/restore)."
+    },
+    {
       "name": "uid.max-tries",
       "type": "java.lang.Integer",
       "description": "Maximum number of attempts to generate a unique UID."
