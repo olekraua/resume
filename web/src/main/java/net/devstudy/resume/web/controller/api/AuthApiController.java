@@ -196,7 +196,11 @@ public class AuthApiController {
         if (currentProfile == null) {
             return new SessionApiController.SessionResponse(false, null, null);
         }
-        return new SessionApiController.SessionResponse(true, currentProfile.getUsername(), currentProfile.getFullName());
+        return new SessionApiController.SessionResponse(
+                true,
+                currentProfile.getUsername(),
+                currentProfile.getFullName()
+        );
     }
 
     private CurrentProfile resolveCurrentProfile(Authentication authentication) {
