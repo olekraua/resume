@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resume-notification-service
+  namespace: resume
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resume-notification-service
+  template:
+    metadata:
+      labels:
+        app: resume-notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: resume/notification-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8085
+          envFrom:
+            - configMapRef:
+                name: resume-common-config
+            - configMapRef:
+                name: resume-mail-config
+            - secretRef:
+                name: resume-mail-secret
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resume-notification-service
+  namespace: resume
+spec:
+  selector:
+    app: resume-notification-service
+  ports:
+    - name: http
+      port: 8085
+      targetPort: 8085

@@ -460,8 +460,10 @@ public class ProfileServiceImpl implements ProfileService {
             return;
         }
         ProfileIndexingSnapshot snapshot = new ProfileIndexingSnapshot(profile.getId(), profile.getUid(),
-                profile.getFirstName(), profile.getLastName(), profile.getObjective(), profile.getSummary(),
-                profile.getInfo(), copyNonNull(skillValues));
+                profile.getFirstName(), profile.getLastName(),
+                profile.getCity(), profile.getCountry(), profile.getSmallPhoto(),
+                profile.getBirthDay() != null ? profile.getBirthDay().toLocalDate() : null,
+                profile.getObjective(), profile.getSummary(), profile.getInfo(), copyNonNull(skillValues));
         eventPublisher.publishEvent(new ProfileIndexingRequestedEvent(snapshot));
     }
 

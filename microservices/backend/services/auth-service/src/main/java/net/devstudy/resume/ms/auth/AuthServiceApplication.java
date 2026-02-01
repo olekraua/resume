@@ -17,10 +17,6 @@ import net.devstudy.resume.web.controller.api.CsrfApiController;
 @ConfigurationPropertiesScan(basePackages = "net.devstudy.resume")
 @ComponentScan(basePackages = {
         "net.devstudy.resume.auth",
-        "net.devstudy.resume.profile",
-        "net.devstudy.resume.staticdata",
-        "net.devstudy.resume.search",
-        "net.devstudy.resume.notification",
         "net.devstudy.resume.shared",
         "net.devstudy.resume.web.security",
         "net.devstudy.resume.web.config"

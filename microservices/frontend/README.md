@@ -1,30 +1,29 @@
-# Frontend micro-frontends (safe blueprint)
+# Frontend micro‑frontends (Module Federation)
 
-This is a **blueprint** for migrating the current Angular 17 SPA into micro-frontends without breaking the existing app.
-It does not modify `/Users/oleksandrkravchenko/Desktop/resume-frontend`.
+Мікро‑фронтенди вже підготовлені у репозиторії `resume-frontend`.
+Поточна SPA залишається стабільною, а micro‑frontends доступні під `/mf/*`.
 
-## Target layout (Module Federation)
-- shell (host) — layout, routing, auth shell, shared UI shell
-- mf-auth — login/register/restore/account
-- mf-profile — profile view/edit
-- mf-search — search + suggest
-- mf-staticdata — cached static lookups
-- mf-admin (optional)
+## Remotes
+- mf-auth (4201)
+- mf-profile (4202)
+- mf-search (4203)
+- mf-staticdata (4204)
 
-## Recommended stack (Angular 17)
-- `@angular-architects/module-federation` (Webpack Module Federation)
-- Shared design system library (Angular library project)
-- Feature-contracts as TypeScript interfaces per micro-frontend
+## Host
+- frontend (4200)
 
-## Safe migration steps
-1) Keep existing SPA as the **shell** app.
-2) Create new remote apps for each domain (auth/profile/search/staticdata).
-3) Expose each remote’s main routes via Module Federation.
-4) Gradually move routes/components from shell into the remotes.
-5) Keep a compatibility layer so current routing continues to work.
+## Quick start
+```
+cd /Users/oleksandrkravchenko/Desktop/resume-frontend
+npm install
+npm run run:all
+```
 
-## Backend alignment
-- Use the gateway to route `/api/*` to the correct backend service.
-- Keep `apiBaseUrl` pointing to the gateway so the frontend doesn’t need per-service URLs.
+Host app:
+- http://localhost:4200/
+- micro‑frontends: `/mf/auth`, `/mf/profile`, `/mf/search`, `/mf/staticdata`
 
-When you are ready, I can scaffold the micro-frontend workspace in the frontend repo.
+## Migration path
+1) Переносити маршрути по доменах у відповідні remotes.
+2) Виносити shared‑код у спільні бібліотеки.
+3) Використовувати gateway для `/api/*`.

@@ -4,7 +4,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,33 +13,30 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.devstudy.resume.shared.component.DataBuilder;
-import net.devstudy.resume.profile.api.model.Profile;
+import net.devstudy.resume.auth.internal.client.ProfileInternalClient;
 import net.devstudy.resume.auth.internal.entity.ProfileRestore;
 import net.devstudy.resume.notification.api.event.RestoreAccessMailRequestedEvent;
-import net.devstudy.resume.profile.api.service.ProfileReadService;
 import net.devstudy.resume.auth.internal.repository.storage.ProfileRestoreRepository;
-import net.devstudy.resume.profile.api.service.ProfileService;
+import net.devstudy.resume.profile.api.dto.internal.ProfileIdentifierLookupRequest;
+import net.devstudy.resume.profile.api.dto.internal.ProfileLookupResponse;
 import net.devstudy.resume.auth.api.service.RestoreAccessService;
 
 @Service
 public class RestoreAccessServiceImpl implements RestoreAccessService {
 
-    private final ProfileReadService profileReadService;
+    private final ProfileInternalClient profileInternalClient;
     private final ProfileRestoreRepository profileRestoreRepository;
-    private final ProfileService profileService;
     private final DataBuilder dataBuilder;
     private final ApplicationEventPublisher eventPublisher;
     private final Duration tokenTtl;
 
-    public RestoreAccessServiceImpl(ProfileReadService profileReadService,
+    public RestoreAccessServiceImpl(ProfileInternalClient profileInternalClient,
             ProfileRestoreRepository profileRestoreRepository,
-            ProfileService profileService,
             DataBuilder dataBuilder,
             ApplicationEventPublisher eventPublisher,
             @Value("${app.restore.token-ttl:PT1H}") Duration tokenTtl) {
-        this.profileReadService = profileReadService;
+        this.profileInternalClient = profileInternalClient;
         this.profileRestoreRepository = profileRestoreRepository;
-        this.profileService = profileService;
         this.dataBuilder = dataBuilder;
         this.eventPublisher = eventPublisher;
         this.tokenTtl = tokenTtl;
@@ -49,15 +45,15 @@ public class RestoreAccessServiceImpl implements RestoreAccessService {
     @Override
     @Transactional
     public String requestRestore(String identifier, String appHost) {
-        Profile profile = findProfileByIdentifier(identifier).orElse(null);
+        ProfileLookupResponse profile = findProfileByIdentifier(identifier).orElse(null);
         if (profile == null) {
             return dataBuilder.buildRestoreAccessLink(appHost, generateToken());
         }
 
-        ProfileRestore restore = profileRestoreRepository.findByProfileId(profile.getId())
+        ProfileRestore restore = profileRestoreRepository.findByProfileId(profile.id())
                 .orElseGet(ProfileRestore::new);
         String token = generateToken();
-        restore.setProfile(profile);
+        restore.setProfileId(profile.id());
         restore.setToken(hashToken(token));
         restore.setCreated(Instant.now());
         profileRestoreRepository.save(restore);
@@ -69,7 +65,7 @@ public class RestoreAccessServiceImpl implements RestoreAccessService {
 
     @Override
     @Transactional
-    public Optional<Profile> findProfileByToken(String token) {
+    public Optional<Long> findProfileByToken(String token) {
         Optional<ProfileRestore> restore = findRestoreByToken(token);
         if (restore.isEmpty()) {
             return Optional.empty();
@@ -79,7 +75,7 @@ public class RestoreAccessServiceImpl implements RestoreAccessService {
             profileRestoreRepository.delete(existing);
             return Optional.empty();
         }
-        return Optional.ofNullable(existing.getProfile());
+        return Optional.ofNullable(existing.getProfileId());
     }
 
     @Override
@@ -91,11 +87,12 @@ public class RestoreAccessServiceImpl implements RestoreAccessService {
             profileRestoreRepository.delete(restore);
             throw new IllegalArgumentException("Невірний токен відновлення");
         }
-        profileService.updatePassword(restore.getProfile().getId(), rawPassword);
+        profileInternalClient.updatePassword(restore.getProfileId(),
+                new net.devstudy.resume.profile.api.dto.internal.ProfilePasswordUpdateRequest(rawPassword));
         profileRestoreRepository.delete(restore);
     }
 
-    private Optional<Profile> findProfileByIdentifier(String identifier) {
+    private Optional<ProfileLookupResponse> findProfileByIdentifier(String identifier) {
         if (identifier == null) {
             return Optional.empty();
         }
@@ -103,16 +100,9 @@ public class RestoreAccessServiceImpl implements RestoreAccessService {
         if (trimmed.isEmpty()) {
             return Optional.empty();
         }
-        String lower = trimmed.toLowerCase(Locale.ENGLISH);
-        Optional<Profile> byUid = profileReadService.findByUid(lower);
-        if (byUid.isPresent()) {
-            return byUid;
-        }
-        Optional<Profile> byEmail = profileReadService.findByEmail(lower);
-        if (byEmail.isPresent()) {
-            return byEmail;
-        }
-        return profileReadService.findByPhone(trimmed);
+        ProfileLookupResponse response = profileInternalClient.lookup(
+                new ProfileIdentifierLookupRequest(trimmed));
+        return Optional.ofNullable(response);
     }
 
     private String generateToken() {
@@ -160,16 +150,16 @@ public class RestoreAccessServiceImpl implements RestoreAccessService {
         }
     }
 
-    private void publishRestoreMail(Profile profile, String link) {
+    private void publishRestoreMail(ProfileLookupResponse profile, String link) {
         if (profile == null || link == null || link.isBlank()) {
             return;
         }
-        String email = profile.getEmail();
+        String email = profile.email();
         if (email == null || email.isBlank()) {
             return;
         }
         eventPublisher.publishEvent(new RestoreAccessMailRequestedEvent(email,
-                profile.getFirstName(),
+                profile.firstName(),
                 link));
     }
 }

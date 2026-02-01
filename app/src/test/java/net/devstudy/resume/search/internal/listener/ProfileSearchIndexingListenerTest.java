@@ -40,6 +40,7 @@ class ProfileSearchIndexingListenerTest {
     @Test
     void ignoresNullProfileId() {
         ProfileIndexingSnapshot snapshot = new ProfileIndexingSnapshot(null, "uid", "first", "last",
+                null, null, null, null,
                 "objective", "summary", "info", List.of("Java"));
         listener.onProfileIndexingRequested(new ProfileIndexingRequestedEvent(snapshot));
         verifyNoInteractions(profileSearchService);
@@ -48,6 +49,7 @@ class ProfileSearchIndexingListenerTest {
     @Test
     void indexesProfileWhenSnapshotPresent() {
         ProfileIndexingSnapshot snapshot = new ProfileIndexingSnapshot(1L, "uid", "first", "last",
+                "Kyiv", "Ukraine", "/uploads/p.jpg", null,
                 "objective", "summary", "info", List.of("Java", "Spring"));
 
         listener.onProfileIndexingRequested(new ProfileIndexingRequestedEvent(snapshot));
@@ -71,6 +73,7 @@ class ProfileSearchIndexingListenerTest {
     @Test
     void doesNotThrowWhenIndexingFails() {
         ProfileIndexingSnapshot snapshot = new ProfileIndexingSnapshot(1L, "uid", "first", "last",
+                null, null, null, null,
                 "objective", "summary", "info", List.of("Java"));
         doThrow(new RuntimeException("boom")).when(profileSearchService).indexProfiles(anyList());
 

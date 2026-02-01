@@ -5,15 +5,11 @@ import java.time.Instant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import net.devstudy.resume.profile.api.model.Profile;
 import net.devstudy.resume.shared.model.AbstractEntity;
 
 @Entity
@@ -31,9 +27,8 @@ public class ProfileRestore extends AbstractEntity<Long> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id", nullable = false, unique = true)
-    private Profile profile;
+    @Column(name = "profile_id", nullable = false, unique = true)
+    private Long profileId;
 
     @Column(nullable = false, length = 64, unique = true)
     private String token;
@@ -44,8 +39,8 @@ public class ProfileRestore extends AbstractEntity<Long> {
     public ProfileRestore() {
     }
 
-    public ProfileRestore(Profile profile, String token, Instant created) {
-        this.profile = profile;
+    public ProfileRestore(Long profileId, String token, Instant created) {
+        this.profileId = profileId;
         this.token = token;
         this.created = created;
     }
@@ -55,12 +50,12 @@ public class ProfileRestore extends AbstractEntity<Long> {
         return id;
     }
 
-    public Profile getProfile() {
-        return profile;
+    public Long getProfileId() {
+        return profileId;
     }
 
-    public void setProfile(Profile profile) {
-        this.profile = profile;
+    public void setProfileId(Long profileId) {
+        this.profileId = profileId;
     }
 
     public String getToken() {

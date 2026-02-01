@@ -4,20 +4,32 @@ server:
 spring:
   application:
     name: resume-search-service
-  datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/resume}
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:postgres}
-  jpa:
-    open-in-view: false
-  flyway:
-    enabled: true
+  elasticsearch:
+    uris: ${ELASTICSEARCH_URL:http://localhost:9200}
   autoconfigure:
     exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+      - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
       - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
       - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: resume-search-service
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: net.devstudy.resume.*
 
 app:
+  cors:
+    allowed-origins:
+      - ${APP_CORS_ALLOWED_ORIGINS:http://localhost:4200}
   search:
     elasticsearch:
       enabled: true
+    query-api:
+      enabled: true
+    profile-db:
+      enabled: false
+  kafka:
+    enabled: true

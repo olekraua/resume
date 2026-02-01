@@ -1,10 +1,11 @@
-# Microservices (non-invasive)
+# Microservices
 
-This folder adds a **parallel**, opt-in microservices layout that does **not** change or break the existing monolith.
-The current Spring Boot app in `app/` remains the default and still works as-is.
+Це **повноцінний** microservices‑режим (Kafka + OIDC + БД по сервісах) з безпечним паралельним запуском.
+Моноліт у `app/` не ламається і може співіснувати — для максимально безпечної міграції.
 
-Contents:
-- `backend/` — service slices + gateway config + local run notes.
-- `frontend/` — micro-frontend architecture blueprint (keeps the existing SPA untouched).
+Вміст:
+- `backend/` — сервіси + gateway + конфіги.
+- `frontend/` — micro‑frontend орієнтир і правила маршрутизації.
+- `infra/` — Kubernetes маніфести (Kustomize) та інструкції.
 
-If you want to keep the monolith only, you can ignore this folder entirely.
+Якщо ви хочете залишити лише моноліт — просто ігноруйте цю папку.

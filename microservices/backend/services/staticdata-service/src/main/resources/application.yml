@@ -5,14 +5,20 @@ spring:
   application:
     name: resume-staticdata-service
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/resume}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/resume_staticdata}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:postgres}
   jpa:
     open-in-view: false
   flyway:
     enabled: true
+    locations: classpath:db/migration/staticdata
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
       - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
+app:
+  cors:
+    allowed-origins:
+      - ${APP_CORS_ALLOWED_ORIGINS:http://localhost:4200}

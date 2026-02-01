@@ -51,6 +51,10 @@ public class ProfileSearchMapperImpl implements ProfileSearchMapper {
         }
         info = truncate(info, MAX_INFO_LENGTH);
         return new ProfileSearchDocument(profile.getId(), profile.getUid(), first, last, fullName,
+                normalizeText(profile.getCity(), 100),
+                normalizeText(profile.getCountry(), 60),
+                normalizeText(profile.getSmallPhoto(), 255),
+                profile.getBirthDay() != null ? profile.getBirthDay().toLocalDate() : null,
                 normalizeText(profile.getObjective(), MAX_OBJECTIVE_LENGTH),
                 normalizeText(profile.getSummary(), MAX_SUMMARY_LENGTH),
                 info,

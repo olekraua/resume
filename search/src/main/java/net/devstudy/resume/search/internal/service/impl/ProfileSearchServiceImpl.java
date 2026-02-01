@@ -27,6 +27,7 @@ import net.devstudy.resume.profile.api.service.ProfileSearchService;
 
 @Service
 @ConditionalOnProperty(name = "app.search.elasticsearch.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "app.search.profile-db.enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class ProfileSearchServiceImpl implements ProfileSearchService {
 

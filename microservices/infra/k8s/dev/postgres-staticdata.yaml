@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: resume-staticdata-db
+  namespace: resume
+spec:
+  selector:
+    app: resume-staticdata-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: resume-staticdata-db
+  namespace: resume
+spec:
+  serviceName: resume-staticdata-db
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resume-staticdata-db
+  template:
+    metadata:
+      labels:
+        app: resume-staticdata-db
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: resume_staticdata
+            - name: POSTGRES_USER
+              value: resume
+            - name: POSTGRES_PASSWORD
+              value: resume
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi

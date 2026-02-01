@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,8 @@ import net.devstudy.resume.profile.api.event.ProfileSearchRemovalRequestedEvent;
 import net.devstudy.resume.profile.api.service.ProfileSearchService;
 
 @Component
+@ConditionalOnProperty(name = "app.search.profile-db.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "app.kafka.enabled", havingValue = "false", matchIfMissing = true)
 @RequiredArgsConstructor
 public class ProfileSearchIndexingListener {
 
@@ -55,6 +58,12 @@ public class ProfileSearchIndexingListener {
         profile.setUid(snapshot.uid());
         profile.setFirstName(snapshot.firstName());
         profile.setLastName(snapshot.lastName());
+        profile.setCity(snapshot.city());
+        profile.setCountry(snapshot.country());
+        profile.setSmallPhoto(snapshot.smallPhoto());
+        if (snapshot.birthDay() != null) {
+            profile.setBirthDay(java.sql.Date.valueOf(snapshot.birthDay()));
+        }
         profile.setObjective(snapshot.objective());
         profile.setSummary(snapshot.summary());
         profile.setInfo(snapshot.info());

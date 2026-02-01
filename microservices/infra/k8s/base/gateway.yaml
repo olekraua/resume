@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resume-gateway
+  namespace: resume
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resume-gateway
+  template:
+    metadata:
+      labels:
+        app: resume-gateway
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.25-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: resume-gateway-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resume-gateway
+  namespace: resume
+spec:
+  selector:
+    app: resume-gateway
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

@@ -50,6 +50,7 @@ class ProfileSearchIndexingListenerAfterCommitTest {
     void indexesOnlyAfterCommit() {
         ProfileSearchService profileSearchService = mock(ProfileSearchService.class);
         ProfileIndexingSnapshot snapshot = new ProfileIndexingSnapshot(1L, "uid", "first", "last",
+                null, null, null, null,
                 "objective", "summary", "info", List.of());
 
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
@@ -74,6 +75,7 @@ class ProfileSearchIndexingListenerAfterCommitTest {
     void doesNotIndexOnRollback() {
         ProfileSearchService profileSearchService = mock(ProfileSearchService.class);
         ProfileIndexingSnapshot snapshot = new ProfileIndexingSnapshot(1L, "uid", "first", "last",
+                null, null, null, null,
                 "objective", "summary", "info", List.of());
 
         try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {

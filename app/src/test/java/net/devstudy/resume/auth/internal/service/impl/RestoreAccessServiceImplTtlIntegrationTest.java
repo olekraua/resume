@@ -13,12 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
-import net.devstudy.resume.profile.api.model.Profile;
 import net.devstudy.resume.auth.internal.entity.ProfileRestore;
 import net.devstudy.resume.profile.internal.repository.storage.ProfileRepository;
 import net.devstudy.resume.auth.internal.repository.storage.ProfileRestoreRepository;
 import net.devstudy.resume.auth.api.service.RestoreAccessService;
 import net.devstudy.resume.testcontainers.PostgresIntegrationTest;
+import net.devstudy.resume.profile.api.model.Profile;
 
 @TestPropertySource(properties = "app.restore.token-ttl=PT1H")
 class RestoreAccessServiceImplTtlIntegrationTest extends PostgresIntegrationTest {
@@ -39,7 +39,7 @@ class RestoreAccessServiceImplTtlIntegrationTest extends PostgresIntegrationTest
         Instant created = Instant.now().minus(Duration.ofHours(2));
         saveRestore(profile, token, created);
 
-        Optional<Profile> resolved = restoreAccessService.findProfileByToken(token);
+        Optional<Long> resolved = restoreAccessService.findProfileByToken(token);
 
         assertTrue(resolved.isEmpty());
         assertTrue(profileRestoreRepository.findByProfileId(profile.getId()).isEmpty());
@@ -65,10 +65,10 @@ class RestoreAccessServiceImplTtlIntegrationTest extends PostgresIntegrationTest
         Instant created = Instant.now();
         saveRestore(profile, token, created);
 
-        Optional<Profile> resolved = restoreAccessService.findProfileByToken(token);
+        Optional<Long> resolved = restoreAccessService.findProfileByToken(token);
 
         assertTrue(resolved.isPresent());
-        assertEquals(profile.getId(), resolved.get().getId());
+        assertEquals(profile.getId(), resolved.get());
         assertFalse(profileRestoreRepository.findByProfileId(profile.getId()).isEmpty());
     }
 
@@ -84,7 +84,7 @@ class RestoreAccessServiceImplTtlIntegrationTest extends PostgresIntegrationTest
 
     private void saveRestore(Profile profile, String token, Instant created) {
         ProfileRestore restore = new ProfileRestore();
-        restore.setProfile(profile);
+        restore.setProfileId(profile.getId());
         restore.setToken(token);
         restore.setCreated(created);
         profileRestoreRepository.save(restore);

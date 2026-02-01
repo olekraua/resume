@@ -10,7 +10,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import net.devstudy.resume.profile.api.service.ProfileReadService;
+import net.devstudy.resume.auth.internal.client.ProfileInternalClient;
 import net.devstudy.resume.auth.api.service.UidSuggestionService;
 
 @Service
@@ -19,18 +19,18 @@ public class UidSuggestionServiceImpl implements UidSuggestionService {
     private static final int MAX_UID_LENGTH = 50;
     private static final String UID_DELIMITER = "-";
 
-    private final ProfileReadService profileReadService;
+    private final ProfileInternalClient profileInternalClient;
     private final int maxTries;
     private final String alphabet;
     private final int suffixLength;
     private final SecureRandom random = new SecureRandom();
 
     public UidSuggestionServiceImpl(
-            ProfileReadService profileReadService,
+            ProfileInternalClient profileInternalClient,
             @Value("${uid.max-tries:20}") int maxTries,
             @Value("${uid.suffix.alphabet:abcdefghijklmnopqrstuvwxyz0123456789}") String alphabet,
             @Value("${uid.suffix.length:2}") int suffixLength) {
-        this.profileReadService = profileReadService;
+        this.profileInternalClient = profileInternalClient;
         this.maxTries = maxTries;
         this.alphabet = alphabet == null ? "" : alphabet;
         this.suffixLength = suffixLength;
@@ -56,7 +56,7 @@ public class UidSuggestionServiceImpl implements UidSuggestionService {
         int attempts = Math.max(0, maxTries);
         for (int i = 0; i < attempts && suggestions.size() < attempts; i++) {
             String candidate = normalized + UID_DELIMITER + randomSuffix();
-            if (!profileReadService.uidExists(candidate)) {
+            if (!profileInternalClient.uidExists(candidate)) {
                 suggestions.add(candidate);
             }
         }

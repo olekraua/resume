@@ -40,3 +40,14 @@ npm run build
 
 - Backend: start Spring Boot and allow the SPA origin via `app.cors.allowed-origins`.
 - Frontend: set `src/environments/environment.ts` → `apiBaseUrl` (default `http://localhost:8080`).
+
+## Microservices + Kubernetes
+- Backend services: `microservices/backend`
+- Micro‑frontends: see `/Users/oleksandrkravchenko/Desktop/resume-frontend`
+- K8s manifests: `microservices/infra/k8s`
+
+Start here:
+```
+cat microservices/backend/README.md
+cat microservices/infra/k8s/README.md
+```

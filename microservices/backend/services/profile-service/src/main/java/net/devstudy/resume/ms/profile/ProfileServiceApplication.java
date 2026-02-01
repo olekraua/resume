@@ -16,7 +16,6 @@ import net.devstudy.resume.web.controller.api.ProfileEditApiController;
 @ConfigurationPropertiesScan(basePackages = "net.devstudy.resume")
 @ComponentScan(basePackages = {
         "net.devstudy.resume.profile",
-        "net.devstudy.resume.auth",
         "net.devstudy.resume.media",
         "net.devstudy.resume.staticdata",
         "net.devstudy.resume.search",

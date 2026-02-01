@@ -1,7 +1,6 @@
 package net.devstudy.resume.web.controller.api;
 
 import java.util.List;
-import java.util.Optional;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,11 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.auth.api.dto.ChangeLoginForm;
 import net.devstudy.resume.auth.api.dto.ChangePasswordForm;
+import net.devstudy.resume.auth.api.model.CurrentProfile;
 import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
 import net.devstudy.resume.auth.api.service.UidSuggestionService;
+import net.devstudy.resume.auth.internal.client.ProfileInternalClient;
+import net.devstudy.resume.profile.api.dto.internal.ProfileAuthResponse;
+import net.devstudy.resume.profile.api.dto.internal.ProfilePasswordUpdateRequest;
+import net.devstudy.resume.profile.api.dto.internal.ProfileUidUpdateRequest;
 import net.devstudy.resume.profile.api.exception.UidAlreadyExistsException;
-import net.devstudy.resume.profile.api.model.Profile;
-import net.devstudy.resume.profile.api.service.ProfileService;
 import net.devstudy.resume.shared.dto.ApiErrorResponse;
 import net.devstudy.resume.web.security.RememberMeSupport;
 
@@ -36,11 +38,11 @@ import net.devstudy.resume.web.security.RememberMeSupport;
 @RequiredArgsConstructor
 public class AccountApiController {
 
-    private final ProfileService profileService;
     private final PasswordEncoder passwordEncoder;
     private final CurrentProfileProvider currentProfileProvider;
     private final UidSuggestionService uidSuggestionService;
     private final RememberMeSupport rememberMeSupport;
+    private final ProfileInternalClient profileInternalClient;
 
     @PostMapping("/password")
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordForm form,
@@ -53,12 +55,15 @@ public class AccountApiController {
         if (currentId == null) {
             return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
         }
-        Optional<Profile> profileOpt = profileService.findById(currentId);
-        if (profileOpt.isEmpty()) {
+        CurrentProfile currentProfile = currentProfileProvider.getCurrentProfile();
+        if (currentProfile == null) {
             return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
         }
-        Profile profile = profileOpt.get();
-        if (!passwordEncoder.matches(form.getCurrentPassword(), profile.getPassword())) {
+        ProfileAuthResponse profile = profileInternalClient.loadForAuth(currentProfile.getUsername());
+        if (profile == null || profile.id() == null) {
+            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
+        }
+        if (!passwordEncoder.matches(form.getCurrentPassword(), profile.passwordHash())) {
             ApiErrorResponse error = ApiErrorResponse.of(
                     HttpStatus.BAD_REQUEST,
                     "Current password is invalid",
@@ -67,7 +72,7 @@ public class AccountApiController {
             );
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
-        profileService.updatePassword(currentId, form.getNewPassword());
+        profileInternalClient.updatePassword(currentId, new ProfilePasswordUpdateRequest(form.getNewPassword()));
         return ResponseEntity.noContent().build();
     }
 
@@ -83,12 +88,8 @@ public class AccountApiController {
         if (currentId == null) {
             return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
         }
-        Optional<Profile> profileOpt = profileService.findById(currentId);
-        if (profileOpt.isEmpty()) {
-            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
-        }
         try {
-            profileService.updateUid(currentId, form.getNewUid());
+            profileInternalClient.updateUid(currentId, new ProfileUidUpdateRequest(form.getNewUid()));
         } catch (UidAlreadyExistsException ex) {
             List<String> suggestions = uidSuggestionService.suggest(ex.getUid());
             ApiErrorResponse error = ApiErrorResponse.of(
@@ -114,7 +115,7 @@ public class AccountApiController {
         if (currentId == null) {
             return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
         }
-        profileService.removeProfile(currentId);
+        profileInternalClient.removeProfile(currentId);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         rememberMeSupport.logout(request, response, authentication);
         new SecurityContextLogoutHandler().logout(request, response, authentication);

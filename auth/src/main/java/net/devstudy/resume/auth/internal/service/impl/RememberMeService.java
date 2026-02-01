@@ -16,8 +16,8 @@ import org.springframework.util.StringUtils;
 
 import net.devstudy.resume.auth.internal.entity.RememberMeToken;
 import net.devstudy.resume.auth.internal.repository.storage.RememberMeTokenRepository;
-import net.devstudy.resume.profile.api.model.Profile;
-import net.devstudy.resume.profile.api.service.ProfileReadService;
+import net.devstudy.resume.auth.internal.client.ProfileInternalClient;
+import net.devstudy.resume.profile.api.dto.internal.ProfileAuthResponse;
 
 @Service
 public class RememberMeService implements PersistentTokenRepository {
@@ -26,14 +26,14 @@ public class RememberMeService implements PersistentTokenRepository {
     private static final Duration DEFAULT_TTL = Duration.ofDays(14);
 
     private final RememberMeTokenRepository rememberMeTokenRepository;
-    private final ProfileReadService profileReadService;
+    private final ProfileInternalClient profileInternalClient;
     private final Duration tokenTtl;
 
     public RememberMeService(RememberMeTokenRepository rememberMeTokenRepository,
-            ProfileReadService profileReadService,
+            ProfileInternalClient profileInternalClient,
             @Value("${app.security.remember-me.token-ttl:PT336H}") Duration tokenTtl) {
         this.rememberMeTokenRepository = rememberMeTokenRepository;
-        this.profileReadService = profileReadService;
+        this.profileInternalClient = profileInternalClient;
         this.tokenTtl = normalizeTtl(tokenTtl);
     }
 
@@ -44,8 +44,8 @@ public class RememberMeService implements PersistentTokenRepository {
                 || !hasText(token.getTokenValue())) {
             return;
         }
-        Optional<Profile> profile = profileReadService.findByUid(token.getUsername().trim());
-        if (profile.isEmpty()) {
+        ProfileAuthResponse auth = profileInternalClient.loadForAuth(token.getUsername().trim());
+        if (auth == null || auth.id() == null) {
             LOGGER.debug("Remember-me token ignored: profile not found for uid={}", token.getUsername());
             return;
         }
@@ -54,7 +54,8 @@ public class RememberMeService implements PersistentTokenRepository {
         entity.setSeries(token.getSeries());
         entity.setToken(token.getTokenValue());
         entity.setLastUsed(toInstant(token.getDate()));
-        entity.setProfile(profile.get());
+        entity.setProfileId(auth.id());
+        entity.setUsername(auth.uid());
         rememberMeTokenRepository.save(entity);
     }
 
@@ -86,8 +87,7 @@ public class RememberMeService implements PersistentTokenRepository {
             return null;
         }
         RememberMeToken entity = token.get();
-        Profile profile = entity.getProfile();
-        if (profile == null || !hasText(profile.getUid())) {
+        if (!hasText(entity.getUsername())) {
             rememberMeTokenRepository.delete(entity);
             return null;
         }
@@ -96,7 +96,7 @@ public class RememberMeService implements PersistentTokenRepository {
             rememberMeTokenRepository.delete(entity);
             return null;
         }
-        return new PersistentRememberMeToken(profile.getUid(), entity.getSeries(), entity.getToken(),
+        return new PersistentRememberMeToken(entity.getUsername(), entity.getSeries(), entity.getToken(),
                 Date.from(lastUsed));
     }
 
@@ -106,7 +106,7 @@ public class RememberMeService implements PersistentTokenRepository {
         if (!hasText(username)) {
             return;
         }
-        rememberMeTokenRepository.deleteByProfileUid(username.trim());
+        rememberMeTokenRepository.deleteByUsername(username.trim());
     }
 
     private Instant toInstant(Date lastUsed) {

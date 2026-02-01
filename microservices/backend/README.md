@@ -1,39 +1,59 @@
-# Backend microservices (safe parallel setup)
+# Backend microservices (Kafka + OIDC + DB per service)
 
-This is an **additive** microservice layout that reuses the existing domain modules while keeping the monolith intact.
-Each service is a small Spring Boot runner with **explicit component scanning** and **explicit controller imports**.
-Nothing in the current build is modified.
+Це повноцінний microservices‑режим, який живе паралельно до моноліту.
+Можна запускати по сервісах або через Kubernetes.
 
-## Services and default ports
-- auth-service (8081) — auth, session, account, csrf
+## Services and ports
+- auth-service (8081) — OIDC Authorization Server, login/register/restore, account
 - profile-service (8082) — profile read/edit, connections, media uploads
-- search-service (8083) — search + suggest (Elasticsearch on)
+- search-service (8083) — Elasticsearch‑only search/suggest
 - staticdata-service (8084) — static data for UI
-- notification-service (8085) — mail templates + outbound mail worker (placeholder for event bus)
+- notification-service (8085) — mail worker (Kafka consumer)
+- gateway (8080) — Nginx API gateway
+
+## Data & messaging
+- PostgreSQL per service: `resume_auth`, `resume_profile`, `resume_staticdata`
+- Elasticsearch: search service only
+- Kafka topics:
+  - `profile.indexing`
+  - `profile.removed`
+  - `profile.password.changed`
+  - `profile.media.cleanup`
+  - `auth.restore.mail.requested`
+
+## Security
+- `auth-service` — Spring Authorization Server (OIDC)
+- Other services — JWT Resource Server
+- Profile internal API uses `X-Internal-Token`
 
 ## How to run (local)
-1) Build the root project once (installs shared modules to local Maven repo):
+1) Build once:
    `mvn -DskipTests install`
-2) Run a service directly:
+2) Start infra (Postgres/Kafka/Elasticsearch) or point to managed services.
+3) Run services:
    - `mvn -f microservices/backend/services/auth-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/profile-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/search-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/staticdata-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/notification-service/pom.xml spring-boot:run`
 
-## Configuration notes
-- Each service has its own `application.yml` with a dedicated port and `spring.application.name`.
-- Auth + Profile services set `app.search.elasticsearch.enabled=false` to avoid a hard ES dependency.
-- Search service keeps Elasticsearch enabled (default).
-- For services that do not need security, `SecurityAutoConfiguration` is disabled in their `application.yml`.
+## Key config knobs
+- `KAFKA_BOOTSTRAP_SERVERS`
+- `SPRING_DATASOURCE_URL/USERNAME/PASSWORD`
+- `PROFILE_INTERNAL_TOKEN`
+- `PROFILE_SERVICE_URL`
+- `AUTH_ISSUER_URI`, `AUTH_CLIENT_ID`, `AUTH_REDIRECT_URI`, `AUTH_POST_LOGOUT_REDIRECT_URI`
+- `APP_CORS_ALLOWED_ORIGINS`
+- `ELASTICSEARCH_URL`
 
 ## Gateway
-A minimal Nginx gateway config is provided at `microservices/backend/gateway/nginx.conf` to route API paths.
-It is optional and does not affect the monolith.
+Nginx config: `microservices/backend/gateway/nginx.conf`
+Routes `/api/*`, `/oauth2/*`, `/.well-known/*`, `/login`, `/logout` to the correct services.
 
-## Future extraction (recommended modern path)
-- Replace in-process Spring events with an outbox + message broker (Kafka/Redpanda/NATS).
-- Split shared DB into per-service databases (start with auth + search).
-- Replace session/CSRF with JWT/OIDC at the gateway and in services.
+## Kubernetes
+See `microservices/infra/k8s/README.md` for Kustomize and Helm‑based installs.
 
-This setup is intentionally conservative to keep the system safe while giving you a real microservices runway.
+## Cutover checklist
+1) Frontend switches to `authMode: 'oidc'`.
+2) Gateway becomes the only public backend entrypoint.
+3) Disable monolith deployment / DNS.

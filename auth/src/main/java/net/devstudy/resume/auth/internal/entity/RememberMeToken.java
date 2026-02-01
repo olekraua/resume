@@ -5,23 +5,17 @@ import java.time.Instant;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
-import net.devstudy.resume.profile.api.model.Profile;
 import net.devstudy.resume.shared.model.AbstractEntity;
 
 @Entity
 @Table(name = "remember_me_token",
         indexes = {
-                @Index(name = "idx_remember_me_profile", columnList = "profile_id")
+                @Index(name = "idx_remember_me_profile", columnList = "profile_id"),
+                @Index(name = "idx_remember_me_username", columnList = "username")
         })
 public class RememberMeToken extends AbstractEntity<String> {
 
@@ -38,19 +32,21 @@ public class RememberMeToken extends AbstractEntity<String> {
     @Column(name = "last_used", nullable = false)
     private Instant lastUsed;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id", nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private Profile profile;
+    @Column(name = "profile_id", nullable = false)
+    private Long profileId;
+
+    @Column(name = "username", nullable = false, length = 64)
+    private String username;
 
     public RememberMeToken() {
     }
 
-    public RememberMeToken(String series, String token, Instant lastUsed, Profile profile) {
+    public RememberMeToken(String series, String token, Instant lastUsed, Long profileId, String username) {
         this.series = series;
         this.token = token;
         this.lastUsed = lastUsed;
-        this.profile = profile;
+        this.profileId = profileId;
+        this.username = username;
     }
 
     @Override
@@ -82,11 +78,19 @@ public class RememberMeToken extends AbstractEntity<String> {
         this.lastUsed = lastUsed;
     }
 
-    public Profile getProfile() {
-        return profile;
+    public Long getProfileId() {
+        return profileId;
     }
 
-    public void setProfile(Profile profile) {
-        this.profile = profile;
+    public void setProfileId(Long profileId) {
+        this.profileId = profileId;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

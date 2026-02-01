@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ import org.springframework.util.StringUtils;
 import net.devstudy.resume.auth.internal.service.impl.RememberMeService;
 
 @Configuration
+@ConditionalOnProperty(name = "app.security.session.enabled", havingValue = "true", matchIfMissing = true)
 public class SecurityConfig {
 
     private static final String DEFAULT_REMEMBER_ME_KEY = "resume-remember-me-key";

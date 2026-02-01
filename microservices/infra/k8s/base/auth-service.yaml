@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resume-auth-service
+  namespace: resume
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: resume-auth-service
+  template:
+    metadata:
+      labels:
+        app: resume-auth-service
+    spec:
+      containers:
+        - name: auth-service
+          image: resume/auth-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+          envFrom:
+            - configMapRef:
+                name: resume-common-config
+            - secretRef:
+                name: resume-auth-db
+            - secretRef:
+                name: resume-internal-secret
+          env:
+            - name: PROFILE_SERVICE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: resume-common-config
+                  key: PROFILE_SERVICE_URL
+            - name: PROFILE_INTERNAL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: resume-internal-secret
+                  key: PROFILE_INTERNAL_TOKEN
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resume-auth-service
+  namespace: resume
+spec:
+  selector:
+    app: resume-auth-service
+  ports:
+    - name: http
+      port: 8081
+      targetPort: 8081

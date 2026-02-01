@@ -1,9 +1,10 @@
 package net.devstudy.resume.auth.internal.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import net.devstudy.resume.profile.api.model.Profile;
 import net.devstudy.resume.auth.api.model.CurrentProfile;
-import net.devstudy.resume.profile.api.service.ProfileReadService;
+import net.devstudy.resume.auth.internal.client.ProfileInternalClient;
+import net.devstudy.resume.profile.api.dto.internal.ProfileAuthResponse;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,12 +14,18 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CurrentProfileDetailsService implements UserDetailsService {
 
-    private final ProfileReadService profileReadService;
+    private final ProfileInternalClient profileInternalClient;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Profile profile = profileReadService.findByUid(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Profile not found: " + username));
-        return new CurrentProfile(profile);
+        try {
+            ProfileAuthResponse auth = profileInternalClient.loadForAuth(username);
+            if (auth == null || auth.uid() == null) {
+                throw new UsernameNotFoundException("Profile not found: " + username);
+            }
+            return new CurrentProfile(auth);
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new UsernameNotFoundException("Profile not found: " + username, ex);
+        }
     }
 }

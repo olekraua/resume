@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resume-search-service
+  namespace: resume
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: resume-search-service
+  template:
+    metadata:
+      labels:
+        app: resume-search-service
+    spec:
+      containers:
+        - name: search-service
+          image: resume/search-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8083
+          envFrom:
+            - configMapRef:
+                name: resume-common-config
+          env:
+            - name: ELASTICSEARCH_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: resume-common-config
+                  key: ELASTICSEARCH_URL
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resume-search-service
+  namespace: resume
+spec:
+  selector:
+    app: resume-search-service
+  ports:
+    - name: http
+      port: 8083
+      targetPort: 8083
