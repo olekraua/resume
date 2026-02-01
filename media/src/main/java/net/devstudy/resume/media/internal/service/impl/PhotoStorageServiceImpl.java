@@ -8,7 +8,10 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,17 +35,20 @@ public class PhotoStorageServiceImpl implements PhotoStorageService {
     private final ImageResizer imageResizer;
     private final UploadImageTempStorage uploadImageTempStorage;
     private final PhotoUploadProperties photoUploadProperties;
+    private final Executor mediaOptimizationExecutor;
 
     public PhotoStorageServiceImpl(ImageOptimizator imageOptimizator,
             ImageFormatConverter pngToJpegImageFormatConverter,
             ImageResizer imageResizer,
             UploadImageTempStorage uploadImageTempStorage,
-            PhotoUploadProperties photoUploadProperties) {
+            PhotoUploadProperties photoUploadProperties,
+            @Qualifier("mediaOptimizationExecutor") Executor mediaOptimizationExecutor) {
         this.imageOptimizator = imageOptimizator;
         this.pngToJpegImageFormatConverter = pngToJpegImageFormatConverter;
         this.imageResizer = imageResizer;
         this.uploadImageTempStorage = uploadImageTempStorage;
         this.photoUploadProperties = photoUploadProperties;
+        this.mediaOptimizationExecutor = mediaOptimizationExecutor;
     }
 
     @Override
@@ -83,8 +89,7 @@ public class PhotoStorageServiceImpl implements PhotoStorageService {
                 Files.write(tempLarge, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             }
             resizePhoto(tempLarge, tempSmall);
-            imageOptimizator.optimize(tempLarge);
-            imageOptimizator.optimize(tempSmall);
+            optimizeInParallel(tempLarge, tempSmall);
             Files.copy(tempLarge, largeTarget, StandardCopyOption.REPLACE_EXISTING);
             Files.copy(tempSmall, smallTarget, StandardCopyOption.REPLACE_EXISTING);
 
@@ -107,6 +112,16 @@ public class PhotoStorageServiceImpl implements PhotoStorageService {
         imageResizer.resize(largeTarget, largeTarget,
                 photoUploadProperties.getLargeWidth(),
                 photoUploadProperties.getLargeHeight());
+    }
+
+    private void optimizeInParallel(Path largeTarget, Path smallTarget) {
+        CompletableFuture<Void> largeTask = CompletableFuture.runAsync(
+                () -> imageOptimizator.optimize(largeTarget),
+                mediaOptimizationExecutor);
+        CompletableFuture<Void> smallTask = CompletableFuture.runAsync(
+                () -> imageOptimizator.optimize(smallTarget),
+                mediaOptimizationExecutor);
+        CompletableFuture.allOf(largeTask, smallTask).join();
     }
 
     private UploadTempPath resolveUploadTempPath() {

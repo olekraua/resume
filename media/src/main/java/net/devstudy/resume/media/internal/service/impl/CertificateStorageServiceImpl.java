@@ -8,11 +8,13 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.media.internal.annotation.EnableUploadImageTempStorage;
 import net.devstudy.resume.shared.component.DataBuilder;
 import net.devstudy.resume.media.internal.component.ImageFormatConverter;
@@ -26,7 +28,6 @@ import net.devstudy.resume.media.internal.model.UploadTempPath;
 import net.devstudy.resume.media.api.service.CertificateStorageService;
 
 @Service
-@RequiredArgsConstructor
 public class CertificateStorageServiceImpl implements CertificateStorageService {
 
     private final DataBuilder dataBuilder;
@@ -36,6 +37,25 @@ public class CertificateStorageServiceImpl implements CertificateStorageService 
     private final CertificateUploadProperties certificateUploadProperties;
     private final UploadCertificateLinkTempStorage uploadCertificateLinkTempStorage;
     private final UploadImageTempStorage uploadImageTempStorage;
+    private final Executor mediaOptimizationExecutor;
+
+    public CertificateStorageServiceImpl(DataBuilder dataBuilder,
+            ImageOptimizator imageOptimizator,
+            ImageFormatConverter pngToJpegImageFormatConverter,
+            ImageResizer imageResizer,
+            CertificateUploadProperties certificateUploadProperties,
+            UploadCertificateLinkTempStorage uploadCertificateLinkTempStorage,
+            UploadImageTempStorage uploadImageTempStorage,
+            @Qualifier("mediaOptimizationExecutor") Executor mediaOptimizationExecutor) {
+        this.dataBuilder = dataBuilder;
+        this.imageOptimizator = imageOptimizator;
+        this.pngToJpegImageFormatConverter = pngToJpegImageFormatConverter;
+        this.imageResizer = imageResizer;
+        this.certificateUploadProperties = certificateUploadProperties;
+        this.uploadCertificateLinkTempStorage = uploadCertificateLinkTempStorage;
+        this.uploadImageTempStorage = uploadImageTempStorage;
+        this.mediaOptimizationExecutor = mediaOptimizationExecutor;
+    }
 
     @Override
     @EnableUploadImageTempStorage
@@ -74,8 +94,7 @@ public class CertificateStorageServiceImpl implements CertificateStorageService 
                 Files.write(tempLarge, data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             }
             resizeCertificate(tempLarge, tempSmall);
-            imageOptimizator.optimize(tempLarge);
-            imageOptimizator.optimize(tempSmall);
+            optimizeInParallel(tempLarge, tempSmall);
             Files.copy(tempLarge, largeTarget, StandardCopyOption.REPLACE_EXISTING);
             Files.copy(tempSmall, smallTarget, StandardCopyOption.REPLACE_EXISTING);
 
@@ -101,6 +120,16 @@ public class CertificateStorageServiceImpl implements CertificateStorageService 
         imageResizer.resize(largeTarget, largeTarget,
                 certificateUploadProperties.getLargeWidth(),
                 certificateUploadProperties.getLargeHeight());
+    }
+
+    private void optimizeInParallel(Path largeTarget, Path smallTarget) {
+        CompletableFuture<Void> largeTask = CompletableFuture.runAsync(
+                () -> imageOptimizator.optimize(largeTarget),
+                mediaOptimizationExecutor);
+        CompletableFuture<Void> smallTask = CompletableFuture.runAsync(
+                () -> imageOptimizator.optimize(smallTarget),
+                mediaOptimizationExecutor);
+        CompletableFuture.allOf(largeTask, smallTask).join();
     }
 
     private UploadTempPath resolveUploadTempPath() {
