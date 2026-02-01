@@ -37,6 +37,7 @@ import net.devstudy.resume.profile.internal.repository.storage.EducationReposito
 import net.devstudy.resume.staticdata.api.service.StaticDataService;
 import net.devstudy.resume.profile.internal.repository.storage.LanguageRepository;
 import net.devstudy.resume.profile.internal.repository.storage.PracticRepository;
+import net.devstudy.resume.profile.internal.repository.storage.ProfileConnectionRepository;
 import net.devstudy.resume.profile.internal.repository.storage.ProfileRepository;
 import net.devstudy.resume.profile.internal.repository.storage.SkillRepository;
 import net.devstudy.resume.profile.api.service.ProfileSearchService;
@@ -55,6 +56,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final LanguageRepository languageRepository;
     private final StaticDataService staticDataService;
     private final CertificateRepository certificateRepository;
+    private final ProfileConnectionRepository profileConnectionRepository;
     private final PasswordEncoder passwordEncoder;
     private final ProfileSearchService profileSearchService;
     private final ApplicationEventPublisher eventPublisher;
@@ -140,6 +142,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
         java.util.List<String> photoUrls = collectProfilePhotoUrls(profile);
         java.util.List<String> certificateUrls = collectProfileCertificateUrls(profileId);
+        profileConnectionRepository.deleteByRequesterIdOrAddresseeId(profileId, profileId);
         profileRepository.delete(profile);
         publishMediaCleanup(photoUrls, certificateUrls, false);
         eventPublisher.publishEvent(new ProfileSearchRemovalRequestedEvent(profileId));

@@ -235,7 +235,7 @@ sequenceDiagram
 ## Власники даних (Source of Truth)
 
 ### Profile domain
-- `Profile`, `Contacts`, `Skill`, `Practic`, `Education`, `Course`, `Language`, `Certificate` у `src/main/java/net/devstudy/resume/profile/entity/*`.
+- `Profile`, `Contacts`, `ProfileConnection`, `Skill`, `Practic`, `Education`, `Course`, `Language`, `Certificate` у `src/main/java/net/devstudy/resume/profile/entity/*`.
 - Власник логіки оновлення: `src/main/java/net/devstudy/resume/profile/service/impl/ProfileServiceImpl.java`.
 
 ### StaticData domain
@@ -300,21 +300,21 @@ sequenceDiagram
 | Пакет | Класи |
 | --- | --- |
 | `net.devstudy.resume.web.controller` | `ProfileApiController`, `SearchApiController`, `StaticDataApiController`, `SuggestController`, `SessionApiController` |
-| `net.devstudy.resume.web.controller.api` | `AuthApiController`, `AccountApiController`, `ProfileEditApiController`, `CsrfApiController`, `ApiExceptionHandler` |
+| `net.devstudy.resume.web.controller.api` | `AuthApiController`, `AccountApiController`, `ProfileEditApiController`, `ProfileConnectionApiController`, `CsrfApiController`, `ApiExceptionHandler` |
 | `net.devstudy.resume.web.config` | `UploadResourceConfig` |
 | `net.devstudy.resume.web.filter` | `AbstractFilter` |
 
 ### profile
 | Пакет | Класи |
 | --- | --- |
-| `net.devstudy.resume.profile.api.model` | `AbstractEntity`, `AbstractFinishDateEntity`, `Profile`, `Contacts`, `Skill`, `Practic`, `Education`, `Course`, `Language`, `Certificate`, `ProfileEntity`, `ProfileCollectionField` |
-| `net.devstudy.resume.profile.api.service` | `ProfileService`, `ProfileReadService`, `EditProfileService`, `ProfileSearchService` |
+| `net.devstudy.resume.profile.api.model` | `AbstractEntity`, `AbstractFinishDateEntity`, `Profile`, `Contacts`, `ProfileConnection`, `ProfileConnectionStatus`, `Skill`, `Practic`, `Education`, `Course`, `Language`, `Certificate`, `ProfileEntity`, `ProfileCollectionField` |
+| `net.devstudy.resume.profile.api.service` | `ProfileService`, `ProfileReadService`, `ProfileConnectionService`, `EditProfileService`, `ProfileSearchService` |
 | `net.devstudy.resume.profile.api.dto` | `ProfileMainForm`, `InfoForm`, `ContactsForm`, `SkillForm`, `PracticForm`, `EducationForm`, `CourseForm`, `LanguageForm`, `CertificateForm`, `HobbyForm` |
 | `net.devstudy.resume.profile.api.annotation` | `ProfileInfoField`, `ProfileDataFieldGroup` |
 | `net.devstudy.resume.profile.api.exception` | `UidAlreadyExistsException` |
 | `net.devstudy.resume.profile.api.event` | `ProfilePasswordChangedEvent`, `ProfileIndexingRequestedEvent`, `ProfileIndexingSnapshot`, `ProfileSearchRemovalRequestedEvent` |
 | `net.devstudy.resume.profile.api.config` | `ProfileJpaConfig` |
-| `net.devstudy.resume.profile.internal.repository.storage` | `ProfileRepository`, `SkillRepository`, `PracticRepository`, `EducationRepository`, `CourseRepository`, `LanguageRepository`, `CertificateRepository` |
+| `net.devstudy.resume.profile.internal.repository.storage` | `ProfileRepository`, `ProfileConnectionRepository`, `SkillRepository`, `PracticRepository`, `EducationRepository`, `CourseRepository`, `LanguageRepository`, `CertificateRepository` |
 | `net.devstudy.resume.profile.internal.service.impl` | `ProfileServiceImpl`, `ProfileReadServiceImpl` |
 
 ### staticdata

@@ -921,6 +921,58 @@ ALTER TABLE ONLY public.profile_hobby
 ALTER TABLE ONLY public.skill
     ADD CONSTRAINT skill_fk FOREIGN KEY (id_profile) REFERENCES public.profile(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
+--
+-- Name: profile_connection; Type: TABLE; Schema: public; Owner: resume
+--
+
+CREATE TABLE public.profile_connection (
+    id bigserial NOT NULL,
+    pair_key character varying(64) NOT NULL,
+    requester_id bigint NOT NULL,
+    addressee_id bigint NOT NULL,
+    status character varying(16) NOT NULL,
+    created timestamp with time zone DEFAULT now() NOT NULL,
+    responded timestamp with time zone,
+    CONSTRAINT profile_connection_pkey PRIMARY KEY (id),
+    CONSTRAINT chk_profile_connection_self CHECK ((requester_id <> addressee_id))
+);
+
+
+ALTER TABLE public.profile_connection OWNER TO resume;
+
+--
+-- Name: profile_connection uk_profile_connection_pair; Type: CONSTRAINT; Schema: public; Owner: resume
+--
+
+ALTER TABLE ONLY public.profile_connection
+    ADD CONSTRAINT uk_profile_connection_pair UNIQUE (pair_key);
+
+--
+-- Name: idx_profile_connection_addressee_status; Type: INDEX; Schema: public; Owner: resume
+--
+
+CREATE INDEX idx_profile_connection_addressee_status ON public.profile_connection USING btree (addressee_id, status);
+
+--
+-- Name: idx_profile_connection_requester_status; Type: INDEX; Schema: public; Owner: resume
+--
+
+CREATE INDEX idx_profile_connection_requester_status ON public.profile_connection USING btree (requester_id, status);
+
+--
+-- Name: profile_connection fk_profile_connection_addressee; Type: FK CONSTRAINT; Schema: public; Owner: resume
+--
+
+ALTER TABLE ONLY public.profile_connection
+    ADD CONSTRAINT fk_profile_connection_addressee FOREIGN KEY (addressee_id) REFERENCES public.profile(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
+-- Name: profile_connection fk_profile_connection_requester; Type: FK CONSTRAINT; Schema: public; Owner: resume
+--
+
+ALTER TABLE ONLY public.profile_connection
+    ADD CONSTRAINT fk_profile_connection_requester FOREIGN KEY (requester_id) REFERENCES public.profile(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
 
 --
 -- Name: SCHEMA public; Type: ACL; Schema: -; Owner: pg_database_owner
@@ -934,4 +986,3 @@ GRANT ALL ON SCHEMA public TO postgres;
 --
 -- PostgreSQL database dump complete
 --
-

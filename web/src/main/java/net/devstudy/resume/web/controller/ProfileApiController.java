@@ -28,7 +28,9 @@ import net.devstudy.resume.profile.api.model.Education;
 import net.devstudy.resume.profile.api.model.Language;
 import net.devstudy.resume.profile.api.model.Practic;
 import net.devstudy.resume.profile.api.model.Profile;
+import net.devstudy.resume.profile.api.model.ProfileConnectionState;
 import net.devstudy.resume.profile.api.model.Skill;
+import net.devstudy.resume.profile.api.service.ProfileConnectionService;
 import net.devstudy.resume.profile.api.service.ProfileService;
 import net.devstudy.resume.shared.model.LanguageLevel;
 import net.devstudy.resume.shared.model.LanguageType;
@@ -45,6 +47,7 @@ public class ProfileApiController {
 
     private final ProfileService profileService;
     private final CurrentProfileProvider currentProfileProvider;
+    private final ProfileConnectionService profileConnectionService;
 
     @GetMapping
     public PageResponse<ProfileSummary> list(
@@ -84,6 +87,7 @@ public class ProfileApiController {
         List<CertificateItem> certificates = mapList(profile.getCertificates(), this::toCertificate);
         List<CourseItem> courses = mapList(profile.getCourses(), this::toCourse);
         List<EducationItem> educations = mapList(profile.getEducations(), this::toEducation);
+        ProfileConnectionState connectionState = resolveConnectionState(profile, ownProfile);
         return new ProfileDetails(
                 profile.getUid(),
                 profile.getFirstName(),
@@ -102,6 +106,7 @@ public class ProfileApiController {
                 profile.getEmail(),
                 profile.isCompleted(),
                 ownProfile,
+                connectionState,
                 contacts,
                 skills,
                 languages,
@@ -181,6 +186,20 @@ public class ProfileApiController {
         );
     }
 
+    private ProfileConnectionState resolveConnectionState(Profile profile, boolean ownProfile) {
+        if (profile == null) {
+            return ProfileConnectionState.NONE;
+        }
+        if (ownProfile) {
+            return ProfileConnectionState.SELF;
+        }
+        CurrentProfile currentProfile = currentProfileProvider.getCurrentProfile();
+        if (currentProfile == null) {
+            return ProfileConnectionState.NONE;
+        }
+        return profileConnectionService.getConnectionState(currentProfile.getId(), profile.getId());
+    }
+
     private int normalizeSize(Integer size) {
         int effective = size == null ? MAX_PROFILES_PER_PAGE : size;
         return Math.max(1, Math.min(effective, MAX_PAGE_SIZE));
@@ -219,6 +238,7 @@ public class ProfileApiController {
             String email,
             boolean completed,
             boolean ownProfile,
+            ProfileConnectionState connectionStatus,
             ContactsItem contacts,
             List<SkillItem> skills,
             List<LanguageItem> languages,

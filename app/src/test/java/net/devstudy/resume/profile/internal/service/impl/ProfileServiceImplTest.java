@@ -8,6 +8,7 @@ import org.mockito.Mockito;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import net.devstudy.resume.profile.internal.repository.storage.ProfileConnectionRepository;
 import net.devstudy.resume.profile.internal.repository.storage.ProfileRepository;
 import net.devstudy.resume.profile.api.service.ProfileSearchService;
 
@@ -18,11 +19,12 @@ class ProfileServiceImplTest {
     @BeforeEach
     void setUp() {
         ProfileRepository profileRepository = Mockito.mock(ProfileRepository.class);
+        ProfileConnectionRepository profileConnectionRepository = Mockito.mock(ProfileConnectionRepository.class);
         PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
         ProfileSearchService searchService = Mockito.mock(ProfileSearchService.class);
         ApplicationEventPublisher eventPublisher = Mockito.mock(ApplicationEventPublisher.class);
         service = new ProfileServiceImpl(profileRepository, null, null, null, null, null, null, null,
-                passwordEncoder, searchService, eventPublisher);
+                profileConnectionRepository, passwordEncoder, searchService, eventPublisher);
     }
 
     @Test
