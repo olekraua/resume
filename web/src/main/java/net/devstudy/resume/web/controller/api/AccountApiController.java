@@ -24,14 +24,15 @@ import net.devstudy.resume.auth.api.dto.ChangeLoginForm;
 import net.devstudy.resume.auth.api.dto.ChangePasswordForm;
 import net.devstudy.resume.auth.api.model.CurrentProfile;
 import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
+import net.devstudy.resume.auth.api.service.ProfileAccountService;
 import net.devstudy.resume.auth.api.service.UidSuggestionService;
-import net.devstudy.resume.auth.internal.client.ProfileInternalClient;
 import net.devstudy.resume.profile.api.dto.internal.ProfileAuthResponse;
 import net.devstudy.resume.profile.api.dto.internal.ProfilePasswordUpdateRequest;
 import net.devstudy.resume.profile.api.dto.internal.ProfileUidUpdateRequest;
 import net.devstudy.resume.profile.api.exception.UidAlreadyExistsException;
 import net.devstudy.resume.shared.dto.ApiErrorResponse;
 import net.devstudy.resume.web.security.RememberMeSupport;
+import net.devstudy.resume.web.api.ApiErrorUtils;
 
 @RestController
 @RequestMapping("/api/account")
@@ -42,7 +43,7 @@ public class AccountApiController {
     private final CurrentProfileProvider currentProfileProvider;
     private final UidSuggestionService uidSuggestionService;
     private final RememberMeSupport rememberMeSupport;
-    private final ProfileInternalClient profileInternalClient;
+    private final ProfileAccountService profileAccountService;
 
     @PostMapping("/password")
     public ResponseEntity<?> changePassword(@Valid @RequestBody ChangePasswordForm form,
@@ -59,7 +60,7 @@ public class AccountApiController {
         if (currentProfile == null) {
             return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
         }
-        ProfileAuthResponse profile = profileInternalClient.loadForAuth(currentProfile.getUsername());
+        ProfileAuthResponse profile = profileAccountService.loadForAuth(currentProfile.getUsername());
         if (profile == null || profile.id() == null) {
             return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
         }
@@ -72,7 +73,7 @@ public class AccountApiController {
             );
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
-        profileInternalClient.updatePassword(currentId, new ProfilePasswordUpdateRequest(form.getNewPassword()));
+        profileAccountService.updatePassword(currentId, new ProfilePasswordUpdateRequest(form.getNewPassword()));
         return ResponseEntity.noContent().build();
     }
 
@@ -89,7 +90,7 @@ public class AccountApiController {
             return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
         }
         try {
-            profileInternalClient.updateUid(currentId, new ProfileUidUpdateRequest(form.getNewUid()));
+            profileAccountService.updateUid(currentId, new ProfileUidUpdateRequest(form.getNewUid()));
         } catch (UidAlreadyExistsException ex) {
             List<String> suggestions = uidSuggestionService.suggest(ex.getUid());
             ApiErrorResponse error = ApiErrorResponse.of(
@@ -115,7 +116,7 @@ public class AccountApiController {
         if (currentId == null) {
             return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
         }
-        profileInternalClient.removeProfile(currentId);
+        profileAccountService.removeProfile(currentId);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         rememberMeSupport.logout(request, response, authentication);
         new SecurityContextLogoutHandler().logout(request, response, authentication);

@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +35,7 @@ public class SearchQueryApiController {
         if (normalized.isEmpty()) {
             return new PageResponse<>(List.of(), safePage, safeSize, 0, 0, false);
         }
-        PageRequest pageRequest = PageRequest.of(safePage, safeSize, Sort.by("id"));
+        PageRequest pageRequest = PageRequest.of(safePage, safeSize);
         Page<ProfileSearchDocument> result = searchQueryService.search(normalized, pageRequest);
         List<ProfileSummary> items = result.getContent().stream()
                 .map(ProfileSummary::from)
@@ -63,7 +62,8 @@ public class SearchQueryApiController {
         int size = Math.max(1, Math.min(limit, 50));
         Page<ProfileSearchDocument> result = searchQueryService.search(query.trim(), PageRequest.of(0, size));
         return result.getContent().stream()
-                .map(doc -> new SuggestItem(doc.getUid(), safeFullName(doc.getFullName())))
+                .map(doc -> new SuggestItem(doc.getUid(),
+                        normalizeFullName(doc.getFullName(), doc.getFirstName(), doc.getLastName())))
                 .toList();
     }
 
@@ -72,8 +72,14 @@ public class SearchQueryApiController {
         return Math.max(1, Math.min(effective, MAX_PAGE_SIZE));
     }
 
-    private String safeFullName(String fullName) {
-        return fullName == null ? "" : fullName.trim();
+    private String normalizeFullName(String fullName, String firstName, String lastName) {
+        if (fullName != null && !fullName.isBlank()) {
+            return fullName.trim();
+        }
+        String combined = String.format("%s %s",
+                firstName == null ? "" : firstName.trim(),
+                lastName == null ? "" : lastName.trim()).trim();
+        return combined;
     }
 
     public record SuggestItem(String uid, String fullName) {

@@ -35,23 +35,24 @@ import net.devstudy.resume.auth.api.dto.RestoreAccessForm;
 import net.devstudy.resume.auth.api.dto.RestorePasswordForm;
 import net.devstudy.resume.auth.api.model.CurrentProfile;
 import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
+import net.devstudy.resume.auth.api.service.ProfileAccountService;
 import net.devstudy.resume.auth.api.service.RestoreAccessService;
 import net.devstudy.resume.auth.api.service.UidSuggestionService;
 import net.devstudy.resume.profile.api.exception.UidAlreadyExistsException;
-import net.devstudy.resume.auth.internal.client.ProfileInternalClient;
 import net.devstudy.resume.profile.api.dto.internal.ProfileAuthResponse;
 import net.devstudy.resume.profile.api.dto.internal.ProfileRegistrationRequest;
 import net.devstudy.resume.shared.component.DataBuilder;
 import net.devstudy.resume.shared.dto.ApiErrorResponse;
 import net.devstudy.resume.web.controller.SessionApiController;
 import net.devstudy.resume.web.security.RememberMeSupport;
+import net.devstudy.resume.web.api.ApiErrorUtils;
 
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthApiController {
 
-    private final ProfileInternalClient profileInternalClient;
+    private final ProfileAccountService profileAccountService;
     private final CurrentProfileProvider currentProfileProvider;
     private final UidSuggestionService uidSuggestionService;
     private final RestoreAccessService restoreAccessService;
@@ -114,7 +115,7 @@ public class AuthApiController {
             return ApiErrorUtils.badRequest(bindingResult, request);
         }
         try {
-            ProfileAuthResponse profile = profileInternalClient.register(
+            ProfileAuthResponse profile = profileAccountService.register(
                     new ProfileRegistrationRequest(form.getUid(), form.getFirstName(), form.getLastName(),
                             form.getPassword()));
             CurrentProfile currentProfile = new CurrentProfile(profile);

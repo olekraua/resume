@@ -19,12 +19,7 @@ public record ProfileSummary(
         if (doc == null) {
             return null;
         }
-        String fullName = doc.getFullName();
-        if (fullName == null) {
-            fullName = "";
-        } else {
-            fullName = fullName.trim();
-        }
+        String fullName = normalizeFullName(doc.getFullName(), doc.getFirstName(), doc.getLastName());
         return new ProfileSummary(
                 doc.getUid(),
                 fullName,
@@ -46,5 +41,15 @@ public record ProfileSummary(
             return 0;
         }
         return Period.between(birthDay, now).getYears();
+    }
+
+    private static String normalizeFullName(String fullName, String firstName, String lastName) {
+        if (fullName != null && !fullName.isBlank()) {
+            return fullName.trim();
+        }
+        String combined = String.format("%s %s",
+                firstName == null ? "" : firstName.trim(),
+                lastName == null ? "" : lastName.trim()).trim();
+        return combined;
     }
 }

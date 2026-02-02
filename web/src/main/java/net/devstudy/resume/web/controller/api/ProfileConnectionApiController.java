@@ -33,6 +33,7 @@ import net.devstudy.resume.profile.api.model.ProfileConnectionState;
 import net.devstudy.resume.profile.api.model.ProfileConnectionStatus;
 import net.devstudy.resume.profile.api.service.ProfileConnectionService;
 import net.devstudy.resume.profile.api.service.ProfileReadService;
+import net.devstudy.resume.web.api.ApiErrorUtils;
 
 @RestController
 @RequestMapping("/api/profile/connections")

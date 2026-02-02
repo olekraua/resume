@@ -1,4 +1,4 @@
-package net.devstudy.resume.web.controller.api;
+package net.devstudy.resume.web.api;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,12 +13,13 @@ import org.springframework.validation.ObjectError;
 
 import net.devstudy.resume.shared.dto.ApiErrorResponse;
 
-final class ApiErrorUtils {
+public final class ApiErrorUtils {
 
     private ApiErrorUtils() {
     }
 
-    static ResponseEntity<ApiErrorResponse> badRequest(BindingResult bindingResult, HttpServletRequest request) {
+    public static ResponseEntity<ApiErrorResponse> badRequest(BindingResult bindingResult,
+            HttpServletRequest request) {
         ApiErrorResponse error = ApiErrorResponse.of(
                 HttpStatus.BAD_REQUEST,
                 "Validation failed",
@@ -28,18 +29,19 @@ final class ApiErrorUtils {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    static ResponseEntity<ApiErrorResponse> error(HttpStatus status, String message, HttpServletRequest request) {
+    public static ResponseEntity<ApiErrorResponse> error(HttpStatus status, String message,
+            HttpServletRequest request) {
         ApiErrorResponse error = ApiErrorResponse.of(status, message, resolvePath(request));
         return ResponseEntity.status(status).body(error);
     }
 
-    static ResponseEntity<ApiErrorResponse> error(HttpStatus status, String message, HttpServletRequest request,
-            List<ApiErrorResponse.FieldError> errors) {
+    public static ResponseEntity<ApiErrorResponse> error(HttpStatus status, String message,
+            HttpServletRequest request, List<ApiErrorResponse.FieldError> errors) {
         ApiErrorResponse error = ApiErrorResponse.of(status, message, resolvePath(request), errors);
         return ResponseEntity.status(status).body(error);
     }
 
-    static List<ApiErrorResponse.FieldError> toFieldErrors(BindingResult bindingResult) {
+    public static List<ApiErrorResponse.FieldError> toFieldErrors(BindingResult bindingResult) {
         if (bindingResult == null || !bindingResult.hasErrors()) {
             return List.of();
         }
@@ -53,7 +55,7 @@ final class ApiErrorUtils {
         return errors;
     }
 
-    static String resolvePath(HttpServletRequest request) {
+    public static String resolvePath(HttpServletRequest request) {
         if (request == null) {
             return "";
         }

@@ -86,6 +86,12 @@
       "description": "Enable Elasticsearch integration."
     },
     {
+      "name": "app.search.query-api.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Expose search query endpoints."
+    },
+    {
       "name": "app.restore.show-link",
       "type": "java.lang.Boolean",
       "defaultValue": false,

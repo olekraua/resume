@@ -54,7 +54,7 @@ public class ProfileSearchServiceImpl implements ProfileSearchService {
                                 "objective.en", "objective.uk",
                                 "info.en", "info.uk",
                                 "skills.en", "skills.uk")
-                        .type(TextQueryType.BestFields)))
+                        .type(TextQueryType.PhrasePrefix)))
                 .withPageable(pageable)
                 .build();
 

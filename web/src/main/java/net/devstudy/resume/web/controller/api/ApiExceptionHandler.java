@@ -12,12 +12,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import net.devstudy.resume.shared.dto.ApiErrorResponse;
+import net.devstudy.resume.web.api.ApiErrorUtils;
 
-@RestControllerAdvice(basePackages = "net.devstudy.resume.web.controller.api")
+@ControllerAdvice(basePackages = "net.devstudy.resume.web.controller.api")
+@ResponseBody
 public class ApiExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

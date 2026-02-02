@@ -10,10 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import net.devstudy.resume.auth.internal.service.impl.RememberMeService;
 
 @Component
 public class RememberMeSupport {
@@ -23,7 +22,7 @@ public class RememberMeSupport {
     private static final String DEFAULT_REMEMBER_ME_COOKIE_NAME = "remember-me";
     private static final Duration DEFAULT_REMEMBER_ME_TTL = Duration.ofDays(14);
 
-    private final ObjectProvider<RememberMeService> rememberMeServiceProvider;
+    private final ObjectProvider<PersistentTokenRepository> rememberMeServiceProvider;
     private final UserDetailsService userDetailsService;
 
     @Value("${app.security.remember-me.key:resume-remember-me-key}")
@@ -40,7 +39,7 @@ public class RememberMeSupport {
 
     private volatile PersistentTokenBasedRememberMeServices rememberMeServices;
 
-    public RememberMeSupport(ObjectProvider<RememberMeService> rememberMeServiceProvider,
+    public RememberMeSupport(ObjectProvider<PersistentTokenRepository> rememberMeServiceProvider,
             UserDetailsService userDetailsService) {
         this.rememberMeServiceProvider = rememberMeServiceProvider;
         this.userDetailsService = userDetailsService;
@@ -70,7 +69,7 @@ public class RememberMeSupport {
         if (rememberMeServices != null) {
             return rememberMeServices;
         }
-        RememberMeService repository = rememberMeServiceProvider.getIfAvailable();
+        PersistentTokenRepository repository = rememberMeServiceProvider.getIfAvailable();
         if (repository == null) {
             return null;
         }

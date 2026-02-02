@@ -22,11 +22,6 @@
 		</dependency>
 		<dependency>
 			<groupId>net.devstudy</groupId>
-			<artifactId>resume-search</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.devstudy</groupId>
 			<artifactId>resume-staticdata</artifactId>
 			<version>${project.version}</version>
 		</dependency>

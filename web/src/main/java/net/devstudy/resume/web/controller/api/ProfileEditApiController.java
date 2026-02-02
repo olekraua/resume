@@ -46,6 +46,7 @@ import net.devstudy.resume.profile.api.model.Profile;
 import net.devstudy.resume.profile.api.service.EditProfileService;
 import net.devstudy.resume.profile.api.service.ProfileService;
 import net.devstudy.resume.shared.dto.ApiErrorResponse;
+import net.devstudy.resume.web.api.ApiErrorUtils;
 
 @RestController
 @RequestMapping("/api/profile")
