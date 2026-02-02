@@ -15,83 +15,81 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import net.devstudy.resume.profile.api.model.Profile;
-import net.devstudy.resume.profile.api.service.ProfileSearchService;
+import net.devstudy.resume.search.api.service.SearchQueryService;
+import net.devstudy.resume.search.internal.document.ProfileSearchDocument;
 
 class SuggestControllerTest {
 
     @Test
     void suggestReturnsEmptyWhenQueryNull() {
-        ProfileSearchService profileSearchService = mock(ProfileSearchService.class);
-        SuggestController controller = new SuggestController(profileSearchService);
+        SearchQueryService searchQueryService = mock(SearchQueryService.class);
+        SuggestController controller = new SuggestController(searchQueryService);
 
         List<SuggestController.SuggestItem> result = controller.suggest(null, 5);
 
         assertTrue(result.isEmpty());
-        verifyNoInteractions(profileSearchService);
+        verifyNoInteractions(searchQueryService);
     }
 
     @Test
     void suggestReturnsEmptyWhenQueryBlank() {
-        ProfileSearchService profileSearchService = mock(ProfileSearchService.class);
-        SuggestController controller = new SuggestController(profileSearchService);
+        SearchQueryService searchQueryService = mock(SearchQueryService.class);
+        SuggestController controller = new SuggestController(searchQueryService);
 
         List<SuggestController.SuggestItem> result = controller.suggest("   ", 5);
 
         assertTrue(result.isEmpty());
-        verify(profileSearchService, never()).search(org.mockito.ArgumentMatchers.anyString(),
+        verify(searchQueryService, never()).search(org.mockito.ArgumentMatchers.anyString(),
                 org.mockito.ArgumentMatchers.any());
     }
 
     @Test
     void suggestUsesMinimumLimitAndMapsNullFullName() {
-        ProfileSearchService profileSearchService = mock(ProfileSearchService.class);
-        SuggestController controller = new SuggestController(profileSearchService);
+        SearchQueryService searchQueryService = mock(SearchQueryService.class);
+        SuggestController controller = new SuggestController(searchQueryService);
 
-        Profile profile = mock(Profile.class);
-        when(profile.getUid()).thenReturn("uid-1");
-        when(profile.getFullName()).thenReturn(null);
-        Page<Profile> page = new PageImpl<>(List.of(profile));
-        when(profileSearchService.search("java", PageRequest.of(0, 1))).thenReturn(page);
+        ProfileSearchDocument doc = new ProfileSearchDocument(1L, "uid-1", "John", "Doe", null,
+                null, null, null, null, null, null, null, null);
+        Page<ProfileSearchDocument> page = new PageImpl<>(List.of(doc));
+        when(searchQueryService.search("java", PageRequest.of(0, 1))).thenReturn(page);
 
         List<SuggestController.SuggestItem> result = controller.suggest("  java  ", 0);
 
         assertEquals(1, result.size());
         assertEquals("uid-1", result.getFirst().uid());
-        assertEquals("", result.getFirst().fullName());
-        verify(profileSearchService).search("java", PageRequest.of(0, 1));
+        assertEquals("John Doe", result.getFirst().fullName());
+        verify(searchQueryService).search("java", PageRequest.of(0, 1));
     }
 
     @Test
     void suggestCapsLimitAt50AndTrimsFullName() {
-        ProfileSearchService profileSearchService = mock(ProfileSearchService.class);
-        SuggestController controller = new SuggestController(profileSearchService);
+        SearchQueryService searchQueryService = mock(SearchQueryService.class);
+        SuggestController controller = new SuggestController(searchQueryService);
 
-        Profile profile = mock(Profile.class);
-        when(profile.getUid()).thenReturn("uid-2");
-        when(profile.getFullName()).thenReturn("  John Doe  ");
-        Page<Profile> page = new PageImpl<>(List.of(profile));
-        when(profileSearchService.search("john", PageRequest.of(0, 50))).thenReturn(page);
+        ProfileSearchDocument doc = new ProfileSearchDocument(2L, "uid-2", "John", "Doe",
+                "  John Doe  ", null, null, null, null, null, null, null, null);
+        Page<ProfileSearchDocument> page = new PageImpl<>(List.of(doc));
+        when(searchQueryService.search("john", PageRequest.of(0, 50))).thenReturn(page);
 
         List<SuggestController.SuggestItem> result = controller.suggest("john", 100);
 
         assertEquals(1, result.size());
         assertEquals("uid-2", result.getFirst().uid());
         assertEquals("John Doe", result.getFirst().fullName());
-        verify(profileSearchService).search("john", PageRequest.of(0, 50));
+        verify(searchQueryService).search("john", PageRequest.of(0, 50));
     }
 
     @Test
     void suggestUsesProvidedLimitWithinRange() {
-        ProfileSearchService profileSearchService = mock(ProfileSearchService.class);
-        SuggestController controller = new SuggestController(profileSearchService);
+        SearchQueryService searchQueryService = mock(SearchQueryService.class);
+        SuggestController controller = new SuggestController(searchQueryService);
 
-        Page<Profile> page = new PageImpl<>(List.of());
-        when(profileSearchService.search("q", PageRequest.of(0, 7))).thenReturn(page);
+        Page<ProfileSearchDocument> page = new PageImpl<>(List.of());
+        when(searchQueryService.search("q", PageRequest.of(0, 7))).thenReturn(page);
 
         List<SuggestController.SuggestItem> result = controller.suggest("q", 7);
 
         assertTrue(result.isEmpty());
-        verify(profileSearchService).search("q", PageRequest.of(0, 7));
+        verify(searchQueryService).search("q", PageRequest.of(0, 7));
     }
 }

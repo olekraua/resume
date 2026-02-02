@@ -7,14 +7,16 @@ import java.util.Objects;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import net.devstudy.resume.profile.api.model.Profile;
-import net.devstudy.resume.profile.api.service.ProfileService;
+import java.time.LocalDate;
+import java.time.Period;
+
+import net.devstudy.resume.search.api.service.SearchQueryService;
+import net.devstudy.resume.search.internal.document.ProfileSearchDocument;
 import net.devstudy.resume.web.dto.PageResponse;
 import net.devstudy.resume.web.dto.ProfileSummary;
 
@@ -24,7 +26,7 @@ public class SearchApiController {
 
     private static final int MAX_PAGE_SIZE = 50;
 
-    private final ProfileService profileService;
+    private final SearchQueryService searchQueryService;
 
     @GetMapping("/api/search")
     public PageResponse<ProfileSummary> search(
@@ -37,11 +39,11 @@ public class SearchApiController {
         if (normalized.isEmpty()) {
             return new PageResponse<>(List.of(), safePage, safeSize, 0, 0, false);
         }
-        PageRequest pageRequest = PageRequest.of(safePage, safeSize, Sort.by("id"));
-        Page<Profile> result = profileService.search(normalized, pageRequest);
+        PageRequest pageRequest = PageRequest.of(safePage, safeSize);
+        Page<ProfileSearchDocument> result = searchQueryService.search(normalized, pageRequest);
         List<ProfileSummary> items = result.getContent().stream()
                 .filter(Objects::nonNull)
-                .map(ProfileSummary::from)
+                .map(this::toSummary)
                 .filter(Objects::nonNull)
                 .toList();
         return new PageResponse<>(
@@ -57,5 +59,44 @@ public class SearchApiController {
     private int normalizeSize(Integer size) {
         int effective = size == null ? MAX_PROFILES_PER_PAGE : size;
         return Math.max(1, Math.min(effective, MAX_PAGE_SIZE));
+    }
+
+    private ProfileSummary toSummary(ProfileSearchDocument doc) {
+        if (doc == null) {
+            return null;
+        }
+        String fullName = normalizeFullName(doc.getFullName(), doc.getFirstName(), doc.getLastName());
+        int age = calculateAge(doc.getBirthDay());
+        return new ProfileSummary(
+                doc.getUid(),
+                fullName,
+                age,
+                doc.getCity(),
+                doc.getCountry(),
+                doc.getObjective(),
+                doc.getSummary(),
+                doc.getSmallPhoto()
+        );
+    }
+
+    private String normalizeFullName(String fullName, String firstName, String lastName) {
+        if (fullName != null && !fullName.isBlank()) {
+            return fullName.trim();
+        }
+        String combined = String.format("%s %s",
+                firstName == null ? "" : firstName.trim(),
+                lastName == null ? "" : lastName.trim()).trim();
+        return combined;
+    }
+
+    private int calculateAge(LocalDate birthDay) {
+        if (birthDay == null) {
+            return 0;
+        }
+        LocalDate now = LocalDate.now();
+        if (birthDay.isAfter(now)) {
+            return 0;
+        }
+        return Period.between(birthDay, now).getYears();
     }
 }

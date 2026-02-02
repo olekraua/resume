@@ -56,6 +56,9 @@ public class SecurityConfig {
     @Value("${app.security.csrf.ignore-auth-endpoints:false}")
     private boolean ignoreAuthEndpointsCsrf;
 
+    @Value("${app.security.csrf.ignore-api:false}")
+    private boolean ignoreApiCsrf;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http,
             UserDetailsService userDetailsService,
@@ -77,6 +80,11 @@ public class SecurityConfig {
                                             .matcher(HttpMethod.POST, "/api/auth/restore"),
                                     PathPatternRequestMatcher.withDefaults()
                                             .matcher(HttpMethod.POST, "/api/auth/restore/*")
+                            );
+                        }
+                        if (ignoreApiCsrf) {
+                            csrf.ignoringRequestMatchers(
+                                    PathPatternRequestMatcher.withDefaults().matcher("/api/**")
                             );
                         }
                 })

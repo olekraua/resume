@@ -51,3 +51,9 @@ Start here:
 cat microservices/backend/README.md
 cat microservices/infra/k8s/README.md
 ```
+
+## Database migrations (Flyway)
+
+Only Flyway migrations should live in `app/src/main/resources/db/migration` and must follow
+`V<version>__<description>.sql`. Schema dump snapshots are kept in `db/schema-dumps/` so
+they are not executed as migrations.

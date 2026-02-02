@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import net.devstudy.resume.profile.api.model.Profile;
-import net.devstudy.resume.profile.api.service.ProfileSearchService;
+import net.devstudy.resume.search.api.service.SearchQueryService;
+import net.devstudy.resume.search.internal.document.ProfileSearchDocument;
 
 @RestController
 @RequiredArgsConstructor
 public class SuggestController {
 
-    private final ProfileSearchService profileSearchService;
+    private final SearchQueryService searchQueryService;
 
     @GetMapping("/api/suggest")
     public List<SuggestItem> suggest(
@@ -29,15 +29,25 @@ public class SuggestController {
 
         int size = Math.max(1, Math.min(limit, 50));
 
-        return profileSearchService.search(query.trim(), PageRequest.of(0, size))
+        return searchQueryService.search(query.trim(), PageRequest.of(0, size))
                 .getContent().stream()
                 .map(this::toDto)
                 .toList();
     }
 
-    private SuggestItem toDto(Profile profile) {
-        String fullName = profile.getFullName();
-        return new SuggestItem(profile.getUid(), fullName == null ? "" : fullName.trim());
+    private SuggestItem toDto(ProfileSearchDocument doc) {
+        String fullName = normalizeFullName(doc.getFullName(), doc.getFirstName(), doc.getLastName());
+        return new SuggestItem(doc.getUid(), fullName);
+    }
+
+    private String normalizeFullName(String fullName, String firstName, String lastName) {
+        if (fullName != null && !fullName.isBlank()) {
+            return fullName.trim();
+        }
+        String combined = String.format("%s %s",
+                firstName == null ? "" : firstName.trim(),
+                lastName == null ? "" : lastName.trim()).trim();
+        return combined;
     }
 
     public record SuggestItem(String uid, String fullName) {
