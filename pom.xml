@@ -24,6 +24,7 @@
 		<module>search</module>
 		<module>media</module>
 		<module>notification</module>
+		<module>messaging</module>
 		<module>auth</module>
 		<module>web</module>
 		<module>app</module>

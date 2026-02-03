@@ -32,6 +32,7 @@ class ModuleDependencyRulesTest {
             "search",
             "media",
             "notification",
+            "messaging",
             "shared"
     );
 
@@ -43,6 +44,7 @@ class ModuleDependencyRulesTest {
             "search", Set.of("profile", "shared"),
             "media", Set.of("shared"),
             "notification", Set.of("shared"),
+            "messaging", Set.of("shared"),
             "staticdata", Set.of("shared"),
             "shared", Set.of()
     );
@@ -151,6 +153,9 @@ class ModuleDependencyRulesTest {
         }
         if (pkg.equals("net.devstudy.resume.notification") || pkg.startsWith("net.devstudy.resume.notification.")) {
             return "notification";
+        }
+        if (pkg.equals("net.devstudy.resume.messaging") || pkg.startsWith("net.devstudy.resume.messaging.")) {
+            return "messaging";
         }
         if (pkg.equals("net.devstudy.resume.shared") || pkg.startsWith("net.devstudy.resume.shared.")) {
             return "shared";

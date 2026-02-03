@@ -9,6 +9,7 @@
 - search-service (8083) — Elasticsearch‑only search/suggest
 - staticdata-service (8084) — static data for UI
 - notification-service (8085) — mail sender (optional; no async wiring)
+- messaging-service (8086) — realtime messaging (optional)
 - gateway (8080) — Nginx API gateway
 
 ## Data & messaging
@@ -32,6 +33,7 @@
    - `mvn -f microservices/backend/services/search-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/staticdata-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/notification-service/pom.xml spring-boot:run` (optional)
+   - `mvn -f microservices/backend/services/messaging-service/pom.xml spring-boot:run` (optional)
 4) Run local gateway (recommended):
    `docker run --rm --name resume-gateway -p 8080:8080 -v "$PWD/microservices/backend/gateway/nginx.local.conf:/etc/nginx/nginx.conf:ro" nginx:1.27-alpine`
 
