@@ -68,7 +68,6 @@ class EducationRepositoryIntegrationTest extends PostgresIntegrationTest {
         profile.setUid(uid);
         profile.setFirstName("John");
         profile.setLastName("Doe");
-        profile.setPassword("password");
         profile.setCompleted(true);
         return profileRepository.saveAndFlush(profile);
     }

@@ -34,7 +34,7 @@ public final class CurrentProfile extends User {
     public CurrentProfile(Profile profile) {
         super(
             profile.getUid(),
-            profile.getPassword(),
+            "",
             true,  // enabled
             true,  // accountNonExpired
             true,  // credentialsNonExpired

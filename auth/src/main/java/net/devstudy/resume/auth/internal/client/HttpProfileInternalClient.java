@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.profile.api.dto.internal.ProfileAuthResponse;
 import net.devstudy.resume.profile.api.dto.internal.ProfileIdentifierLookupRequest;
 import net.devstudy.resume.profile.api.dto.internal.ProfileLookupResponse;
-import net.devstudy.resume.profile.api.dto.internal.ProfilePasswordUpdateRequest;
 import net.devstudy.resume.profile.api.dto.internal.ProfileRegistrationRequest;
 import net.devstudy.resume.profile.api.dto.internal.ProfileUidUpdateRequest;
 
@@ -31,14 +30,6 @@ public class HttpProfileInternalClient implements ProfileInternalClient {
     }
 
     @Override
-    public ProfileAuthResponse loadForAuth(String uid) {
-        return profileInternalRestClient.get()
-                .uri("/internal/profiles/auth/{uid}", uid)
-                .retrieve()
-                .body(ProfileAuthResponse.class);
-    }
-
-    @Override
     public ProfileLookupResponse lookup(ProfileIdentifierLookupRequest request) {
         try {
             return profileInternalRestClient.post()
@@ -52,15 +43,6 @@ public class HttpProfileInternalClient implements ProfileInternalClient {
             }
             throw ex;
         }
-    }
-
-    @Override
-    public void updatePassword(Long profileId, ProfilePasswordUpdateRequest request) {
-        profileInternalRestClient.put()
-                .uri("/internal/profiles/{id}/password", profileId)
-                .body(request)
-                .retrieve()
-                .toBodilessEntity();
     }
 
     @Override

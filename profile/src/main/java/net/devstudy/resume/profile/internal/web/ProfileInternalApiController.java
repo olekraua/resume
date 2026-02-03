@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.profile.api.dto.internal.ProfileAuthResponse;
 import net.devstudy.resume.profile.api.dto.internal.ProfileIdentifierLookupRequest;
 import net.devstudy.resume.profile.api.dto.internal.ProfileLookupResponse;
-import net.devstudy.resume.profile.api.dto.internal.ProfilePasswordUpdateRequest;
 import net.devstudy.resume.profile.api.dto.internal.ProfileRegistrationRequest;
 import net.devstudy.resume.profile.api.dto.internal.ProfileUidUpdateRequest;
 import net.devstudy.resume.profile.api.exception.UidAlreadyExistsException;
@@ -50,14 +49,6 @@ public class ProfileInternalApiController {
         }
     }
 
-    @GetMapping("/auth/{uid}")
-    public ProfileAuthResponse loadForAuth(@PathVariable String uid) {
-        String normalized = normalize(uid);
-        Profile profile = profileReadService.findByUid(normalized)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
-        return toAuth(profile);
-    }
-
     @GetMapping("/exists/uid/{uid}")
     public boolean uidExists(@PathVariable String uid) {
         return profileReadService.uidExists(normalize(uid));
@@ -76,16 +67,6 @@ public class ProfileInternalApiController {
                 .or(() -> profileReadService.findByPhone(trimmed))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
         return toLookup(profile);
-    }
-
-    @PutMapping("/{id}/password")
-    public ResponseEntity<Void> updatePassword(@PathVariable Long id,
-            @Valid @RequestBody ProfilePasswordUpdateRequest request) {
-        if (id == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Profile id required");
-        }
-        profileService.updatePassword(id, request.password());
-        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}/uid")
@@ -121,7 +102,7 @@ public class ProfileInternalApiController {
         return new ProfileAuthResponse(
                 profile.getId(),
                 profile.getUid(),
-                profile.getPassword(),
+                null,
                 profile.getFirstName(),
                 profile.getLastName(),
                 profile.getEmail(),

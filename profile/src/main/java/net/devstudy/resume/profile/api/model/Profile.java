@@ -95,10 +95,6 @@ public class Profile extends AbstractEntity<Long> {
     @Column(nullable = false, length = 64, unique = true)
     private String uid;
 
-    @Column(nullable = false, length = 255)
-    @JsonIgnore
-    private String password;
-
     @Column(nullable = false)
     @JsonIgnore
     private boolean completed;
@@ -224,9 +220,6 @@ public class Profile extends AbstractEntity<Long> {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
 
     public boolean isCompleted() { return completed; }
     public void setCompleted(boolean completed) { this.completed = completed; }

@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -25,7 +24,6 @@ import net.devstudy.resume.profile.api.model.Skill;
 import net.devstudy.resume.profile.api.exception.UidAlreadyExistsException;
 import net.devstudy.resume.profile.api.event.ProfileIndexingRequestedEvent;
 import net.devstudy.resume.profile.api.event.ProfileIndexingSnapshot;
-import net.devstudy.resume.profile.api.event.ProfilePasswordChangedEvent;
 import net.devstudy.resume.profile.api.event.ProfileSearchRemovalRequestedEvent;
 import net.devstudy.resume.shared.event.ProfileMediaCleanupRequestedEvent;
 import net.devstudy.resume.profile.api.dto.ContactsForm;
@@ -57,7 +55,6 @@ public class ProfileServiceImpl implements ProfileService {
     private final StaticDataService staticDataService;
     private final CertificateRepository certificateRepository;
     private final ProfileConnectionRepository profileConnectionRepository;
-    private final PasswordEncoder passwordEncoder;
     private final ProfileSearchService profileSearchService;
     private final ApplicationEventPublisher eventPublisher;
 
@@ -102,15 +99,6 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     @Transactional
-    public void updatePassword(Long profileId, String rawPassword) {
-        Profile profile = getProfileOrThrow(profileId);
-        profile.setPassword(passwordEncoder.encode(rawPassword));
-        profileRepository.save(profile);
-        eventPublisher.publishEvent(new ProfilePasswordChangedEvent(profile.getId()));
-    }
-
-    @Override
-    @Transactional
     public Profile register(String uid, String firstName, String lastName, String rawPassword) {
         String normalizedUid = normalizeUid(uid);
         if (profileRepository.findByUid(normalizedUid).isPresent()) {
@@ -120,7 +108,6 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setUid(normalizedUid);
         profile.setFirstName(firstName);
         profile.setLastName(lastName);
-        profile.setPassword(passwordEncoder.encode(rawPassword));
         profile.setCompleted(false);
         profile.setConnectionsVisibleToConnections(true);
         if (profile.getContacts() == null) {

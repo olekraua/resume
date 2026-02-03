@@ -16,7 +16,6 @@ class CurrentProfileTest {
         Profile profile = new Profile();
         profile.setId(7L);
         profile.setUid("john-doe");
-        profile.setPassword("secret");
         profile.setFirstName("John");
         profile.setLastName("Doe");
 
@@ -25,7 +24,7 @@ class CurrentProfileTest {
         assertEquals(7L, currentProfile.getId());
         assertEquals("John Doe", currentProfile.getFullName());
         assertEquals("john-doe", currentProfile.getUsername());
-        assertEquals("secret", currentProfile.getPassword());
+        assertEquals("", currentProfile.getPassword());
         assertTrue(currentProfile.isEnabled());
         assertTrue(currentProfile.isAccountNonExpired());
         assertTrue(currentProfile.isAccountNonLocked());
@@ -39,7 +38,6 @@ class CurrentProfileTest {
         Profile profile = new Profile();
         profile.setId(3L);
         profile.setUid("user-3");
-        profile.setPassword("pwd");
         profile.setFirstName("User");
         profile.setLastName("Three");
 

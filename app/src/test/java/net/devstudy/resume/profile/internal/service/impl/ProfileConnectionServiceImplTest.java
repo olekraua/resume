@@ -148,7 +148,6 @@ class ProfileConnectionServiceImplTest {
         profile.setFirstName("First");
         profile.setLastName("Last");
         profile.setUid("user-" + id);
-        profile.setPassword("secret");
         profile.setCompleted(true);
         return profile;
     }

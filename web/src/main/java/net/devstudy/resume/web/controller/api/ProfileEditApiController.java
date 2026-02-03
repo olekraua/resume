@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import net.devstudy.resume.auth.api.service.ProfileAccountService;
 import net.devstudy.resume.auth.api.dto.ChangePasswordForm;
 import net.devstudy.resume.auth.api.security.CurrentProfileProvider;
 import net.devstudy.resume.media.api.dto.UploadCertificateResult;
@@ -38,6 +39,8 @@ import net.devstudy.resume.profile.api.dto.CourseForm;
 import net.devstudy.resume.profile.api.dto.EducationForm;
 import net.devstudy.resume.profile.api.dto.HobbyForm;
 import net.devstudy.resume.profile.api.dto.InfoForm;
+import net.devstudy.resume.profile.api.dto.internal.ProfileAuthResponse;
+import net.devstudy.resume.profile.api.dto.internal.ProfilePasswordUpdateRequest;
 import net.devstudy.resume.profile.api.dto.LanguageForm;
 import net.devstudy.resume.profile.api.dto.PracticForm;
 import net.devstudy.resume.profile.api.dto.SkillForm;
@@ -58,6 +61,7 @@ public class ProfileEditApiController {
     private final ProfileService profileService;
     private final EditProfileService editProfileService;
     private final CurrentProfileProvider currentProfileProvider;
+    private final ProfileAccountService profileAccountService;
     private final PhotoStorageService photoStorageService;
     private final CertificateStorageService certificateStorageService;
     private final PasswordEncoder passwordEncoder;
@@ -221,12 +225,14 @@ public class ProfileEditApiController {
         if (currentId == null) {
             return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
         }
-        Optional<Profile> profileOpt = profileService.findById(currentId);
-        if (profileOpt.isEmpty()) {
+        String currentUid = currentProfileProvider.getCurrentProfile() == null
+                ? null
+                : currentProfileProvider.getCurrentProfile().getUsername();
+        ProfileAuthResponse auth = profileAccountService.loadForAuth(currentUid);
+        if (auth == null || auth.id() == null) {
             return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
         }
-        Profile profile = profileOpt.get();
-        if (!passwordEncoder.matches(form.getCurrentPassword(), profile.getPassword())) {
+        if (!passwordEncoder.matches(form.getCurrentPassword(), auth.passwordHash())) {
             ApiErrorResponse error = ApiErrorResponse.of(
                     HttpStatus.BAD_REQUEST,
                     "Current password is invalid",
@@ -235,7 +241,7 @@ public class ProfileEditApiController {
             );
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
-        profileService.updatePassword(currentId, form.getNewPassword());
+        profileAccountService.updatePassword(currentId, new ProfilePasswordUpdateRequest(form.getNewPassword()));
         return ResponseEntity.noContent().build();
     }
 

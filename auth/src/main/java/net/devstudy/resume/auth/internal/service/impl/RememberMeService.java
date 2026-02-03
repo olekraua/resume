@@ -16,7 +16,7 @@ import org.springframework.util.StringUtils;
 
 import net.devstudy.resume.auth.internal.entity.RememberMeToken;
 import net.devstudy.resume.auth.internal.repository.storage.RememberMeTokenRepository;
-import net.devstudy.resume.auth.internal.client.ProfileInternalClient;
+import net.devstudy.resume.auth.api.service.ProfileAccountService;
 import net.devstudy.resume.profile.api.dto.internal.ProfileAuthResponse;
 
 @Service
@@ -26,14 +26,14 @@ public class RememberMeService implements PersistentTokenRepository {
     private static final Duration DEFAULT_TTL = Duration.ofDays(14);
 
     private final RememberMeTokenRepository rememberMeTokenRepository;
-    private final ProfileInternalClient profileInternalClient;
+    private final ProfileAccountService profileAccountService;
     private final Duration tokenTtl;
 
     public RememberMeService(RememberMeTokenRepository rememberMeTokenRepository,
-            ProfileInternalClient profileInternalClient,
+            ProfileAccountService profileAccountService,
             @Value("${app.security.remember-me.token-ttl:PT336H}") Duration tokenTtl) {
         this.rememberMeTokenRepository = rememberMeTokenRepository;
-        this.profileInternalClient = profileInternalClient;
+        this.profileAccountService = profileAccountService;
         this.tokenTtl = normalizeTtl(tokenTtl);
     }
 
@@ -44,7 +44,7 @@ public class RememberMeService implements PersistentTokenRepository {
                 || !hasText(token.getTokenValue())) {
             return;
         }
-        ProfileAuthResponse auth = profileInternalClient.loadForAuth(token.getUsername().trim());
+        ProfileAuthResponse auth = profileAccountService.loadForAuth(token.getUsername().trim());
         if (auth == null || auth.id() == null) {
             LOGGER.debug("Remember-me token ignored: profile not found for uid={}", token.getUsername());
             return;

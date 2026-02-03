@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.devstudy.resume.shared.component.DataBuilder;
+import net.devstudy.resume.auth.api.service.ProfileAccountService;
 import net.devstudy.resume.auth.internal.client.ProfileInternalClient;
 import net.devstudy.resume.auth.internal.entity.ProfileRestore;
 import net.devstudy.resume.notification.api.event.RestoreAccessMailRequestedEvent;
@@ -25,17 +26,20 @@ import net.devstudy.resume.auth.api.service.RestoreAccessService;
 public class RestoreAccessServiceImpl implements RestoreAccessService {
 
     private final ProfileInternalClient profileInternalClient;
+    private final ProfileAccountService profileAccountService;
     private final ProfileRestoreRepository profileRestoreRepository;
     private final DataBuilder dataBuilder;
     private final ApplicationEventPublisher eventPublisher;
     private final Duration tokenTtl;
 
     public RestoreAccessServiceImpl(ProfileInternalClient profileInternalClient,
+            ProfileAccountService profileAccountService,
             ProfileRestoreRepository profileRestoreRepository,
             DataBuilder dataBuilder,
             ApplicationEventPublisher eventPublisher,
             @Value("${app.restore.token-ttl:PT1H}") Duration tokenTtl) {
         this.profileInternalClient = profileInternalClient;
+        this.profileAccountService = profileAccountService;
         this.profileRestoreRepository = profileRestoreRepository;
         this.dataBuilder = dataBuilder;
         this.eventPublisher = eventPublisher;
@@ -87,7 +91,7 @@ public class RestoreAccessServiceImpl implements RestoreAccessService {
             profileRestoreRepository.delete(restore);
             throw new IllegalArgumentException("Невірний токен відновлення");
         }
-        profileInternalClient.updatePassword(restore.getProfileId(),
+        profileAccountService.updatePassword(restore.getProfileId(),
                 new net.devstudy.resume.profile.api.dto.internal.ProfilePasswordUpdateRequest(rawPassword));
         profileRestoreRepository.delete(restore);
     }

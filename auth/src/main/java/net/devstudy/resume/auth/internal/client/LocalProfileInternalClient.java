@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.profile.api.dto.internal.ProfileAuthResponse;
 import net.devstudy.resume.profile.api.dto.internal.ProfileIdentifierLookupRequest;
 import net.devstudy.resume.profile.api.dto.internal.ProfileLookupResponse;
-import net.devstudy.resume.profile.api.dto.internal.ProfilePasswordUpdateRequest;
 import net.devstudy.resume.profile.api.dto.internal.ProfileRegistrationRequest;
 import net.devstudy.resume.profile.api.dto.internal.ProfileUidUpdateRequest;
 import net.devstudy.resume.profile.api.model.Profile;
@@ -32,13 +31,6 @@ public class LocalProfileInternalClient implements ProfileInternalClient {
     }
 
     @Override
-    public ProfileAuthResponse loadForAuth(String uid) {
-        Profile profile = profileReadService.findByUid(normalize(uid))
-                .orElseThrow(() -> new IllegalArgumentException("Profile not found"));
-        return toAuth(profile);
-    }
-
-    @Override
     public ProfileLookupResponse lookup(ProfileIdentifierLookupRequest request) {
         String identifier = request.identifier();
         if (identifier == null || identifier.isBlank()) {
@@ -51,11 +43,6 @@ public class LocalProfileInternalClient implements ProfileInternalClient {
                 .or(() -> profileReadService.findByPhone(trimmed))
                 .orElse(null);
         return profile == null ? null : toLookup(profile);
-    }
-
-    @Override
-    public void updatePassword(Long profileId, ProfilePasswordUpdateRequest request) {
-        profileService.updatePassword(profileId, request.password());
     }
 
     @Override
@@ -77,7 +64,7 @@ public class LocalProfileInternalClient implements ProfileInternalClient {
         return new ProfileAuthResponse(
                 profile.getId(),
                 profile.getUid(),
-                profile.getPassword(),
+                null,
                 profile.getFirstName(),
                 profile.getLastName(),
                 profile.getEmail(),

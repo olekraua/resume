@@ -29,8 +29,6 @@ public interface ProfileService {
 
     Page<Profile> search(String query, Pageable pageable);
 
-    void updatePassword(Long profileId, String rawPassword);
-
     void removeProfile(Long profileId);
 
     Profile register(String uid, String firstName, String lastName, String rawPassword);

@@ -4,13 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import net.devstudy.resume.profile.internal.repository.storage.ProfileConnectionRepository;
-import net.devstudy.resume.profile.internal.repository.storage.ProfileRepository;
-import net.devstudy.resume.profile.api.service.ProfileSearchService;
+import java.lang.reflect.Constructor;
 
 class ProfileServiceImplTest {
 
@@ -18,13 +13,14 @@ class ProfileServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        ProfileRepository profileRepository = Mockito.mock(ProfileRepository.class);
-        ProfileConnectionRepository profileConnectionRepository = Mockito.mock(ProfileConnectionRepository.class);
-        PasswordEncoder passwordEncoder = Mockito.mock(PasswordEncoder.class);
-        ProfileSearchService searchService = Mockito.mock(ProfileSearchService.class);
-        ApplicationEventPublisher eventPublisher = Mockito.mock(ApplicationEventPublisher.class);
-        service = new ProfileServiceImpl(profileRepository, null, null, null, null, null, null, null,
-                profileConnectionRepository, passwordEncoder, searchService, eventPublisher);
+        try {
+            Constructor<?> constructor = ProfileServiceImpl.class.getDeclaredConstructors()[0];
+            constructor.setAccessible(true);
+            Object[] args = new Object[constructor.getParameterCount()];
+            service = (ProfileServiceImpl) constructor.newInstance(args);
+        } catch (Exception ex) {
+            throw new RuntimeException("Failed to create ProfileServiceImpl for tests", ex);
+        }
     }
 
     @Test

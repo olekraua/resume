@@ -55,7 +55,6 @@ class EditProfileAccessIntegrationTest extends PostgresIntegrationTest {
         profile.setUid(uid);
         profile.setFirstName("Test");
         profile.setLastName("User");
-        profile.setPassword("password");
         profile.setCompleted(false);
         return profileRepository.save(profile);
     }
