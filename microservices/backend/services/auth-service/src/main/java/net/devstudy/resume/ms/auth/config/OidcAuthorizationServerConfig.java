@@ -29,6 +29,9 @@ import org.springframework.security.oauth2.server.authorization.token.JwtEncodin
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -44,10 +47,21 @@ public class OidcAuthorizationServerConfig {
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
         OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
-                http.getConfigurer(OAuth2AuthorizationServerConfigurer.class);
+                new OAuth2AuthorizationServerConfigurer();
         authorizationServerConfigurer.oidc(withDefaults());
+
+        RequestMatcher endpointsMatcher = new OrRequestMatcher(
+                new AntPathRequestMatcher("/oauth2/**"),
+                new AntPathRequestMatcher("/.well-known/**")
+        );
+
+        http.securityMatcher(endpointsMatcher)
+                .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
+                .apply(authorizationServerConfigurer);
+
+        http.authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll());
 
         http.exceptionHandling(ex -> ex
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
@@ -60,7 +74,7 @@ public class OidcAuthorizationServerConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/csrf").permitAll()
+                        .requestMatchers("/.well-known/**", "/oauth2/jwks", "/api/auth/**", "/api/csrf").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(withDefaults());
         return http.build();

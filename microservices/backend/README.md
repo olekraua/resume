@@ -27,15 +27,23 @@
 - Profile internal API uses `X-Internal-Token`
 
 ## How to run (local)
-1) Build once:
+1) Start infra (Postgres/Kafka/Elasticsearch):
+   `docker compose -f docker-compose.infra.yml up -d`
+2) Build once:
    `mvn -DskipTests install`
-2) Start infra (Postgres/Kafka/Elasticsearch) or point to managed services.
 3) Run services:
    - `mvn -f microservices/backend/services/auth-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/profile-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/search-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/staticdata-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/notification-service/pom.xml spring-boot:run`
+4) Run local gateway (recommended):
+   `docker run --rm --name resume-gateway -p 8080:8080 -v "$PWD/microservices/backend/gateway/nginx.local.conf:/etc/nginx/nginx.conf:ro" nginx:1.27-alpine`
+
+Note: on Linux add `--add-host=host.docker.internal:host-gateway` to the gateway command.
+
+Required: gateway mode expects X-Forwarded headers + `server.forward-headers-strategy=framework` enabled in services
+(already set in configs) and `AUTH_ISSUER_URI=http://localhost:8080`.
 
 ## Key config knobs
 - `KAFKA_BOOTSTRAP_SERVERS`
@@ -47,7 +55,9 @@
 - `ELASTICSEARCH_URL`
 
 ## Gateway
-Nginx config: `microservices/backend/gateway/nginx.conf`
+Nginx config:
+- Local dev (services on host): `microservices/backend/gateway/nginx.local.conf`
+- K8s/containers: `microservices/backend/gateway/nginx.conf`
 Routes `/api/*`, `/oauth2/*`, `/.well-known/*`, `/login`, `/logout` to the correct services.
 
 ## Kubernetes
