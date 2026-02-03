@@ -122,6 +122,7 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setLastName(lastName);
         profile.setPassword(passwordEncoder.encode(rawPassword));
         profile.setCompleted(false);
+        profile.setConnectionsVisibleToConnections(true);
         if (profile.getContacts() == null) {
             profile.setContacts(new Contacts());
         }
@@ -341,6 +342,14 @@ public class ProfileServiceImpl implements ProfileService {
         publishCertificateCleanup(oldUrls, newUrls);
         profile.setCompleted(isProfileCompleted(profile));
         requestIndexing(profile);
+    }
+
+    @Override
+    @Transactional
+    public void updateConnectionsVisibility(Long profileId, boolean visibleToConnections) {
+        Profile profile = getProfileOrThrow(profileId);
+        profile.setConnectionsVisibleToConnections(visibleToConnections);
+        profileRepository.save(profile);
     }
 
     @Override

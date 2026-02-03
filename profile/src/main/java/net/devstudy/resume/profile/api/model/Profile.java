@@ -103,6 +103,9 @@ public class Profile extends AbstractEntity<Long> {
     @JsonIgnore
     private boolean completed;
 
+    @Column(name = "connections_visible", nullable = false)
+    private boolean connectionsVisibleToConnections = true;
+
     @Column(name = "created", insertable = false)
     @JsonIgnore
     private Instant created;
@@ -227,6 +230,11 @@ public class Profile extends AbstractEntity<Long> {
 
     public boolean isCompleted() { return completed; }
     public void setCompleted(boolean completed) { this.completed = completed; }
+
+    public boolean isConnectionsVisibleToConnections() { return connectionsVisibleToConnections; }
+    public void setConnectionsVisibleToConnections(boolean connectionsVisibleToConnections) {
+        this.connectionsVisibleToConnections = connectionsVisibleToConnections;
+    }
 
     public Instant getCreated() { return created; }
     public void setCreated(Instant created) { this.created = created; }

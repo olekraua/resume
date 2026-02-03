@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,6 +32,7 @@ import net.devstudy.resume.media.api.dto.UploadCertificateResult;
 import net.devstudy.resume.media.api.service.CertificateStorageService;
 import net.devstudy.resume.media.api.service.PhotoStorageService;
 import net.devstudy.resume.profile.api.dto.CertificateForm;
+import net.devstudy.resume.profile.api.dto.ConnectionsVisibilityForm;
 import net.devstudy.resume.profile.api.dto.ContactsForm;
 import net.devstudy.resume.profile.api.dto.CourseForm;
 import net.devstudy.resume.profile.api.dto.EducationForm;
@@ -237,6 +239,36 @@ public class ProfileEditApiController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/privacy/connections")
+    public ResponseEntity<?> getConnectionsVisibility(HttpServletRequest request) {
+        Long currentId = currentProfileProvider.getCurrentId();
+        if (currentId == null) {
+            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
+        }
+        Optional<Profile> profileOpt = profileService.findById(currentId);
+        if (profileOpt.isEmpty()) {
+            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
+        }
+        return ResponseEntity.ok(new ConnectionsVisibilityResponse(
+                profileOpt.get().isConnectionsVisibleToConnections()
+        ));
+    }
+
+    @PutMapping("/privacy/connections")
+    public ResponseEntity<?> updateConnectionsVisibility(@Valid @RequestBody ConnectionsVisibilityForm form,
+            BindingResult bindingResult,
+            HttpServletRequest request) {
+        if (bindingResult.hasErrors()) {
+            return ApiErrorUtils.badRequest(bindingResult, request);
+        }
+        Long currentId = currentProfileProvider.getCurrentId();
+        if (currentId == null) {
+            return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
+        }
+        profileService.updateConnectionsVisibility(currentId, form.getVisibleToConnections());
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/photo")
     public ResponseEntity<?> uploadPhoto(@RequestParam("profilePhoto") MultipartFile profilePhoto,
             HttpServletRequest request) {
@@ -289,5 +321,8 @@ public class ProfileEditApiController {
     }
 
     public record PhotoResponse(String largeUrl, String smallUrl) {
+    }
+
+    public record ConnectionsVisibilityResponse(boolean visibleToConnections) {
     }
 }
