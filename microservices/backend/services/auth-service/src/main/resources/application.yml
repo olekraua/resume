@@ -19,17 +19,6 @@ spring:
     port: ${SPRING_MAIL_PORT:}
     username: ${SMTP_USER:}
     password: ${SMTP_PASS:}
-  kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-    producer:
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        spring.json.add.type.headers: true
-    consumer:
-      group-id: resume-auth-service
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.trusted.packages: net.devstudy.resume.*
 
 app:
   cors:
@@ -38,8 +27,6 @@ app:
   search:
     elasticsearch:
       enabled: false
-  kafka:
-    enabled: true
   services:
     profile:
       mode: remote

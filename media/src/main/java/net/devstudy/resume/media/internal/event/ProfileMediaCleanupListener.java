@@ -1,6 +1,5 @@
 package net.devstudy.resume.media.internal.event;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +11,6 @@ import net.devstudy.resume.media.api.service.MediaCleanupService;
 import net.devstudy.resume.shared.event.ProfileMediaCleanupRequestedEvent;
 
 @Component
-@ConditionalOnProperty(name = "app.kafka.enabled", havingValue = "false", matchIfMissing = true)
 @RequiredArgsConstructor
 public class ProfileMediaCleanupListener {
 

@@ -2,7 +2,7 @@
 
 ## Структура
 - `base/` — сервіси + gateway + конфіги + PVC
-- `dev/` — локальні залежності (Postgres, Kafka, Elasticsearch)
+- `dev/` — локальні залежності (Postgres, Elasticsearch)
 
 ## Dev install (local cluster)
 ```
@@ -10,7 +10,7 @@ kubectl apply -k microservices/infra/k8s/dev
 ```
 
 ## Prod install (managed services)
-1) Використайте managed PostgreSQL/Kafka/Elasticsearch.
+1) Використайте managed PostgreSQL/Elasticsearch.
 2) Оновіть `base/config-common.yaml` та `base/secret-*.yaml`.
 3) Застосуйте тільки базу:
 ```

@@ -1,4 +1,4 @@
-# Backend microservices (Kafka + OIDC + DB per service)
+# Backend microservices (OIDC + DB per service)
 
 Це повноцінний microservices‑режим, який живе паралельно до моноліту.
 Можна запускати по сервісах або через Kubernetes.
@@ -8,18 +8,13 @@
 - profile-service (8082) — profile read/edit, connections, media uploads
 - search-service (8083) — Elasticsearch‑only search/suggest
 - staticdata-service (8084) — static data for UI
-- notification-service (8085) — mail worker (Kafka consumer)
+- notification-service (8085) — mail sender (optional; no async wiring)
 - gateway (8080) — Nginx API gateway
 
 ## Data & messaging
 - PostgreSQL per service: `resume_auth`, `resume_profile`, `resume_staticdata`
 - Elasticsearch: search service only
-- Kafka topics:
-  - `profile.indexing`
-  - `profile.removed`
-  - `profile.password.changed`
-  - `profile.media.cleanup`
-  - `auth.restore.mail.requested`
+- Async міжсервісних подій немає; події обробляються лише всередині сервісу.
 
 ## Security
 - `auth-service` — Spring Authorization Server (OIDC)
@@ -27,7 +22,7 @@
 - Profile internal API uses `X-Internal-Token`
 
 ## How to run (local)
-1) Start infra (Postgres/Kafka/Elasticsearch):
+1) Start infra (Postgres/Elasticsearch):
    `docker compose -f docker-compose.infra.yml up -d`
 2) Build once:
    `mvn -DskipTests install`
@@ -36,7 +31,7 @@
    - `mvn -f microservices/backend/services/profile-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/search-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/staticdata-service/pom.xml spring-boot:run`
-   - `mvn -f microservices/backend/services/notification-service/pom.xml spring-boot:run`
+   - `mvn -f microservices/backend/services/notification-service/pom.xml spring-boot:run` (optional)
 4) Run local gateway (recommended):
    `docker run --rm --name resume-gateway -p 8080:8080 -v "$PWD/microservices/backend/gateway/nginx.local.conf:/etc/nginx/nginx.conf:ro" nginx:1.27-alpine`
 
@@ -46,7 +41,6 @@ Required: gateway mode expects X-Forwarded headers + `server.forward-headers-str
 (already set in configs) and `AUTH_ISSUER_URI=http://localhost:8080`.
 
 ## Key config knobs
-- `KAFKA_BOOTSTRAP_SERVERS`
 - `SPRING_DATASOURCE_URL/USERNAME/PASSWORD`
 - `PROFILE_INTERNAL_TOKEN`
 - `PROFILE_SERVICE_URL`

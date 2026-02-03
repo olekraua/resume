@@ -8,24 +8,17 @@
 - Зберігання медіа: локальна файлова система (`uploads/...`).
 - Асинхронність: внутрішні Spring events після коміту транзакції.
 
-## Microservices mode (Kubernetes + Kafka + OIDC)
+## Microservices mode (Kubernetes + OIDC)
 Це **паралельний** режим, який не ламає моноліт. Увімкнення відбувається через
 `microservices/backend/services/*` (окремі Spring Boot раннери).
 
 - Сервіси: `auth-service` (OIDC + login/restore), `profile-service` (профіль + медіа),
   `search-service` (ES тільки), `staticdata-service`, `notification-service`, `gateway`.
-- Комунікація: синхронно через REST, асинхронно через Kafka (подієві топіки).
+- Комунікація: синхронно через REST; міжсервісні асинхронні події не використовуються.
 - Безпека: `auth-service` працює як OIDC Authorization Server, інші сервіси — JWT Resource Server.
 - Дані: окрема БД на сервіс (PostgreSQL), пошук — Elasticsearch.
 - Внутрішні API: `profile-service` має `/internal/profiles/**` з `X-Internal-Token` для auth‑сервісу.
 - Фронтенд: Module Federation (shell + remotes), з можливістю поетапної міграції маршрутів.
-
-### Kafka події (microservices)
-- `profile.indexing` → `search-service` індексує документи без доступу до БД профілю.
-- `profile.removed` → `search-service` видаляє документ.
-- `profile.password.changed` → `auth-service` скидає remember‑me токени.
-- `profile.media.cleanup` → `media` видаляє файли після оновлення профілю.
-- `auth.restore.mail.requested` → `notification-service` надсилає лист відновлення.
 
 ## Крок 3 (безпека)
 - Поточна модель: stateful session + CSRF (Spring Security за замовчуванням) для REST API з cookie-auth, `SecurityConfig` у `auth/src/main/java/net/devstudy/resume/auth/internal/config/SecurityConfig.java`.
@@ -410,43 +403,3 @@ sequenceDiagram
 | `net.devstudy.resume.shared.annotation` | `EnableFormErrorConversion` |
 | `net.devstudy.resume.shared.validation.annotation` | `Adulthood`, `EnglishLanguage`, `FieldMatch`, `FirstFieldLessThanSecond`, `MinDigitCount`, `MinLowerCharCount`, `MinSpecCharCount`, `MinUpperCharCount`, `PasswordStrength`, `PasswordsMatch`, `Phone`, `RestoreIdentifier` |
 | `net.devstudy.resume.shared.validation.validator` | `AdulthoodConstraintValidator`, `EnglishLanguageConstraintValidator`, `FieldMatchConstraintValidator`, `FirstFieldLessThanSecondConstraintValidator`, `MinDigitCountConstraintValidator`, `MinLowerCharCountConstraintValidator`, `MinSpecCharCountConstraintValidator`, `MinUpperCharCountConstraintValidator`, `PasswordsMatchValidator`, `PhoneConstraintValidator`, `RestoreIdentifierConstraintValidator`, `HtmlSanitized`, `HtmlSanitizedValidator` |
-
-## Microservices: Sequence diagrams
-
-### Профіль → Kafka → пошук
-```mermaid
-sequenceDiagram
-    actor User
-    participant Gateway
-    participant ProfileSvc as profile-service
-    participant Kafka
-    participant SearchSvc as search-service
-    participant ES as Elasticsearch
-
-    User->>Gateway: PUT /api/profile/...
-    Gateway->>ProfileSvc: forward
-    ProfileSvc->>ProfileSvc: save profile
-    ProfileSvc->>Kafka: publish profile.indexing
-    Gateway-->>User: 204 No Content
-    Kafka-->>SearchSvc: ProfileIndexingSnapshot
-    SearchSvc->>ES: upsert document
-```
-
-### Відновлення доступу → Kafka → email
-```mermaid
-sequenceDiagram
-    actor User
-    participant Gateway
-    participant AuthSvc as auth-service
-    participant Kafka
-    participant NotifySvc as notification-service
-    participant SMTP
-
-    User->>Gateway: POST /api/auth/restore
-    Gateway->>AuthSvc: forward
-    AuthSvc->>AuthSvc: save restore token
-    AuthSvc->>Kafka: publish auth.restore.mail.requested
-    Gateway-->>User: 200 OK (link)
-    Kafka-->>NotifySvc: RestoreAccessMailRequestedEvent
-    NotifySvc->>SMTP: send mail
-```

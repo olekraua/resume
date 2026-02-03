@@ -21,7 +21,6 @@ import net.devstudy.resume.profile.api.service.ProfileSearchService;
 
 @Component
 @ConditionalOnProperty(name = "app.search.profile-db.enabled", havingValue = "true", matchIfMissing = true)
-@ConditionalOnProperty(name = "app.kafka.enabled", havingValue = "false", matchIfMissing = true)
 @RequiredArgsConstructor
 public class ProfileSearchIndexingListener {
 

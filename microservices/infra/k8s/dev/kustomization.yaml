@@ -5,5 +5,4 @@ resources:
   - postgres-auth.yaml
   - postgres-profile.yaml
   - postgres-staticdata.yaml
-  - kafka.yaml
   - elasticsearch.yaml

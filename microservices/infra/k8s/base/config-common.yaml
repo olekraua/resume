@@ -4,7 +4,6 @@ metadata:
   name: resume-common-config
   namespace: resume
 data:
-  KAFKA_BOOTSTRAP_SERVERS: "resume-kafka:9092"
   AUTH_ISSUER_URI: "http://resume-gateway:8080"
   PROFILE_SERVICE_URL: "http://resume-profile-service:8082"
   ELASTICSEARCH_URL: "http://resume-elasticsearch:9200"

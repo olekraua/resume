@@ -1,6 +1,5 @@
 package net.devstudy.resume.auth.internal.event;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +11,6 @@ import net.devstudy.resume.auth.internal.repository.storage.RememberMeTokenRepos
 import net.devstudy.resume.profile.api.event.ProfilePasswordChangedEvent;
 
 @Component
-@ConditionalOnProperty(name = "app.kafka.enabled", havingValue = "false", matchIfMissing = true)
 @RequiredArgsConstructor
 public class ProfilePasswordChangedListener {
 
