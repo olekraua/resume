@@ -45,6 +45,7 @@ npm run build
 - Backend services: `microservices/backend`
 - Micro‑frontends: see `/Users/oleksandrkravchenko/Desktop/resume-frontend`
 - K8s manifests: `microservices/infra/k8s`
+ - Local infra: Elasticsearch via `docker-compose.elasticsearch.yml`, PostgreSQL runs natively
 
 Start here:
 ```

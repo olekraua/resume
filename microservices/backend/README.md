@@ -13,8 +13,8 @@
 - gateway (8080) — Nginx API gateway
 
 ## Data & messaging
-- PostgreSQL per service: `resume_auth`, `resume_profile`, `resume_staticdata`
-- Elasticsearch: search service only
+- PostgreSQL per service: `resume_auth`, `resume_profile`, `resume_staticdata`, `resume_messaging`
+- Elasticsearch: search service only (runs in Docker)
 - Async міжсервісних подій немає; події обробляються лише всередині сервісу.
 
 ## Security
@@ -23,18 +23,26 @@
 - Profile internal API uses `X-Internal-Token`
 
 ## How to run (local)
-1) Start infra (Postgres/Elasticsearch):
-   `docker compose -f docker-compose.infra.yml up -d`
-2) Build once:
+1) Start Elasticsearch (Docker only):
+   `docker compose -f docker-compose.elasticsearch.yml up -d`
+2) Start PostgreSQL natively and create DBs:
+   `createdb resume_auth`
+   `createdb resume_profile`
+   `createdb resume_staticdata`
+   `createdb resume_messaging`
+   (Adjust DB user/owner as needed.)
+3) Build once:
    `mvn -DskipTests install`
-3) Run services:
+4) Run services:
    - `mvn -f microservices/backend/services/auth-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/profile-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/search-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/staticdata-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/notification-service/pom.xml spring-boot:run` (optional)
    - `mvn -f microservices/backend/services/messaging-service/pom.xml spring-boot:run` (optional)
-4) Run local gateway (recommended):
+5) Run local gateway (recommended):
+   - Native Nginx: use `microservices/backend/gateway/nginx.local.conf`, but replace `host.docker.internal` with `127.0.0.1`.
+   - Docker gateway:
    `docker run --rm --name resume-gateway -p 8080:8080 -v "$PWD/microservices/backend/gateway/nginx.local.conf:/etc/nginx/nginx.conf:ro" nginx:1.27-alpine`
 
 Note: on Linux add `--add-host=host.docker.internal:host-gateway` to the gateway command.
