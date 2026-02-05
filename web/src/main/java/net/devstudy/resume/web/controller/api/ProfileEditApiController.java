@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.context.MessageSource;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -61,7 +62,7 @@ public class ProfileEditApiController {
     private final ProfileService profileService;
     private final EditProfileService editProfileService;
     private final CurrentProfileProvider currentProfileProvider;
-    private final ProfileAccountService profileAccountService;
+    private final ObjectProvider<ProfileAccountService> profileAccountServiceProvider;
     private final PhotoStorageService photoStorageService;
     private final CertificateStorageService certificateStorageService;
     private final PasswordEncoder passwordEncoder;
@@ -228,6 +229,12 @@ public class ProfileEditApiController {
         String currentUid = currentProfileProvider.getCurrentProfile() == null
                 ? null
                 : currentProfileProvider.getCurrentProfile().getUsername();
+        ProfileAccountService profileAccountService = profileAccountServiceProvider.getIfAvailable();
+        if (profileAccountService == null) {
+            return ApiErrorUtils.error(HttpStatus.NOT_IMPLEMENTED,
+                    "Password change is handled by auth-service in OIDC mode",
+                    request);
+        }
         ProfileAuthResponse auth = profileAccountService.loadForAuth(currentUid);
         if (auth == null || auth.id() == null) {
             return ApiErrorUtils.error(HttpStatus.UNAUTHORIZED, "Unauthorized", request);
