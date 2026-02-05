@@ -267,12 +267,16 @@ public class ProfileServiceImpl implements ProfileService {
     @Transactional
     public void updateHobbies(Long profileId, java.util.List<Long> hobbyIds) {
         Profile profile = getProfileOrThrow(profileId);
-        java.util.List<Hobby> selected = staticDataService.findHobbiesByIds(hobbyIds);
-        if (profile.getHobbies() == null) {
-            profile.setHobbies(new java.util.ArrayList<>());
-        }
-        profile.getHobbies().clear();
-        profile.getHobbies().addAll(selected);
+        java.util.List<Long> safeIds = hobbyIds == null ? java.util.List.of()
+                : hobbyIds.stream()
+                        .filter(java.util.Objects::nonNull)
+                        .distinct()
+                        .toList();
+        java.util.List<Long> selectedIds = staticDataService.findHobbiesByIds(safeIds).stream()
+                .map(Hobby::getId)
+                .filter(java.util.Objects::nonNull)
+                .toList();
+        profile.setHobbyIds(new java.util.ArrayList<>(selectedIds));
         profile.setCompleted(isProfileCompleted(profile));
         profileRepository.save(profile);
         requestIndexing(profile);
@@ -625,8 +629,8 @@ public class ProfileServiceImpl implements ProfileService {
         if (profile.getLanguages() != null) {
             profile.getLanguages().size();
         }
-        if (profile.getHobbies() != null) {
-            profile.getHobbies().size();
+        if (profile.getHobbyIds() != null) {
+            profile.getHobbyIds().size();
         }
         if (profile.getSkills() != null) {
             profile.getSkills().size();

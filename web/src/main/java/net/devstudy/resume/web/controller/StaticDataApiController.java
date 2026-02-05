@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import net.devstudy.resume.shared.model.LanguageType;
+import net.devstudy.resume.staticdata.api.dto.StaticDataResponse;
 import net.devstudy.resume.staticdata.api.model.Hobby;
 import net.devstudy.resume.staticdata.api.model.SkillCategory;
 import net.devstudy.resume.staticdata.api.service.StaticDataService;
@@ -26,21 +27,21 @@ public class StaticDataApiController {
 
     @GetMapping
     public StaticDataResponse staticData() {
-        List<SkillCategoryItem> skillCategories = staticDataService.findSkillCategories().stream()
+        List<StaticDataResponse.SkillCategoryItem> skillCategories = staticDataService.findSkillCategories().stream()
                 .filter(Objects::nonNull)
                 .map(this::toSkillCategory)
                 .toList();
-        List<LanguageTypeItem> languageTypes = buildLanguageTypes();
-        List<LanguageLevelItem> languageLevels = staticDataService.findAllLanguageLevels().stream()
+        List<StaticDataResponse.LanguageTypeItem> languageTypes = buildLanguageTypes();
+        List<StaticDataResponse.LanguageLevelItem> languageLevels = staticDataService.findAllLanguageLevels().stream()
                 .filter(Objects::nonNull)
-                .map(level -> new LanguageLevelItem(level.name(), level.getSliderIntValue()))
+                .map(level -> new StaticDataResponse.LanguageLevelItem(level.name(), level.getSliderIntValue()))
                 .toList();
-        List<HobbyItem> hobbies = staticDataService.findAllHobbies().stream()
+        List<StaticDataResponse.HobbyItem> hobbies = staticDataService.findAllHobbies().stream()
                 .filter(Objects::nonNull)
                 .map(this::toHobby)
                 .toList();
-        List<MonthItem> months = staticDataService.findMonthMap().entrySet().stream()
-                .map(entry -> new MonthItem(entry.getKey(), entry.getValue()))
+        List<StaticDataResponse.MonthItem> months = staticDataService.findMonthMap().entrySet().stream()
+                .map(entry -> new StaticDataResponse.MonthItem(entry.getKey(), entry.getValue()))
                 .toList();
         return new StaticDataResponse(
                 skillCategories,
@@ -54,15 +55,15 @@ public class StaticDataApiController {
         );
     }
 
-    private SkillCategoryItem toSkillCategory(SkillCategory category) {
-        return new SkillCategoryItem(category.getId(), category.getCategory());
+    private StaticDataResponse.SkillCategoryItem toSkillCategory(SkillCategory category) {
+        return new StaticDataResponse.SkillCategoryItem(category.getId(), category.getCategory());
     }
 
-    private HobbyItem toHobby(Hobby hobby) {
-        return new HobbyItem(hobby.getId(), hobby.getName(), hobby.getCssClassName());
+    private StaticDataResponse.HobbyItem toHobby(Hobby hobby) {
+        return new StaticDataResponse.HobbyItem(hobby.getId(), hobby.getName(), hobby.getCssClassName());
     }
 
-    private List<LanguageTypeItem> buildLanguageTypes() {
+    private List<StaticDataResponse.LanguageTypeItem> buildLanguageTypes() {
         Locale locale = LocaleContextHolder.getLocale();
         return staticDataService.findAllLanguageTypes().stream()
                 .filter(Objects::nonNull)
@@ -70,55 +71,12 @@ public class StaticDataApiController {
                 .toList();
     }
 
-    private LanguageTypeItem toLanguageType(LanguageType type, Locale locale) {
+    private StaticDataResponse.LanguageTypeItem toLanguageType(LanguageType type, Locale locale) {
         String code = type.name();
         String label = messageSource.getMessage("language.type." + code, null, code, locale);
         if (label == null || label.isBlank()) {
             label = code;
         }
-        return new LanguageTypeItem(code, label);
-    }
-
-    public record StaticDataResponse(
-            List<SkillCategoryItem> skillCategories,
-            List<LanguageTypeItem> languageTypes,
-            List<LanguageLevelItem> languageLevels,
-            List<HobbyItem> hobbies,
-            List<Integer> practicYears,
-            List<Integer> courseYears,
-            List<Integer> educationYears,
-            List<MonthItem> months
-    ) {
-    }
-
-    public record SkillCategoryItem(
-            Long id,
-            String category
-    ) {
-    }
-
-    public record LanguageTypeItem(
-            String code,
-            String label
-    ) {
-    }
-
-    public record LanguageLevelItem(
-            String code,
-            int sliderValue
-    ) {
-    }
-
-    public record HobbyItem(
-            Long id,
-            String name,
-            String cssClassName
-    ) {
-    }
-
-    public record MonthItem(
-            int value,
-            String label
-    ) {
+        return new StaticDataResponse.LanguageTypeItem(code, label);
     }
 }

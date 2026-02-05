@@ -44,6 +44,7 @@ import net.devstudy.resume.profile.api.service.ProfileService;
 import net.devstudy.resume.shared.model.LanguageLevel;
 import net.devstudy.resume.shared.model.LanguageType;
 import net.devstudy.resume.staticdata.api.model.Hobby;
+import net.devstudy.resume.staticdata.api.service.StaticDataService;
 import net.devstudy.resume.web.dto.PageResponse;
 import net.devstudy.resume.web.dto.ProfileSummary;
 
@@ -58,6 +59,7 @@ public class ProfileApiController {
     private final CurrentProfileProvider currentProfileProvider;
     private final ProfileConnectionService profileConnectionService;
     private final ProfileReadService profileReadService;
+    private final StaticDataService staticDataService;
 
     @GetMapping
     public PageResponse<ProfileSummary> list(
@@ -152,7 +154,7 @@ public class ProfileApiController {
         ContactsItem contacts = toContacts(profile.getContacts());
         List<SkillItem> skills = mapList(profile.getSkills(), this::toSkill);
         List<LanguageItem> languages = mapList(profile.getLanguages(), this::toLanguage);
-        List<HobbyItem> hobbies = mapList(profile.getHobbies(), this::toHobby);
+        List<HobbyItem> hobbies = mapList(resolveHobbies(profile), this::toHobby);
         List<PracticItem> practics = mapList(profile.getPractics(), this::toPractic);
         List<CertificateItem> certificates = mapList(profile.getCertificates(), this::toCertificate);
         List<CourseItem> courses = mapList(profile.getCourses(), this::toCourse);
@@ -194,6 +196,21 @@ public class ProfileApiController {
                 connectionsCount,
                 mutualConnectionsCount
         );
+    }
+
+    private List<Hobby> resolveHobbies(Profile profile) {
+        List<Long> hobbyIds = profile.getHobbyIds();
+        if (hobbyIds == null || hobbyIds.isEmpty()) {
+            return List.of();
+        }
+        List<Hobby> hobbies = staticDataService.findHobbiesByIds(hobbyIds);
+        if (hobbies == null || hobbies.isEmpty()) {
+            return List.of();
+        }
+        return hobbies.stream()
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(Hobby::getName, Comparator.nullsLast(String::compareToIgnoreCase)))
+                .toList();
     }
 
     private SkillItem toSkill(Skill skill) {

@@ -34,7 +34,6 @@ import net.devstudy.resume.profile.api.model.Practic;
 import net.devstudy.resume.profile.api.model.Profile;
 import net.devstudy.resume.profile.api.service.EditProfileService;
 import net.devstudy.resume.shared.model.LanguageType;
-import net.devstudy.resume.staticdata.api.model.Hobby;
 
 @Service
 @RequiredArgsConstructor
@@ -113,8 +112,7 @@ public class EditProfileServiceImpl implements EditProfileService {
             return certificateForm;
         }
         if (emptyForm instanceof HobbyForm hobbyForm) {
-            List<Long> ids = profile.getHobbies() == null ? List.of()
-                    : profile.getHobbies().stream().map(Hobby::getId).toList();
+            List<Long> ids = profile.getHobbyIds() == null ? List.of() : profile.getHobbyIds();
             hobbyForm.setHobbyIds(ids);
             return hobbyForm;
         }

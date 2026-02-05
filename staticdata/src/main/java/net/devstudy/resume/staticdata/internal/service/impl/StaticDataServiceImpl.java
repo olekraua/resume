@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import net.devstudy.resume.staticdata.api.service.StaticDataService;
 
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "app.services.staticdata.mode", havingValue = "local", matchIfMissing = true)
 public class StaticDataServiceImpl implements StaticDataService {
 
     private final SkillCategoryRepository skillCategoryRepository;

@@ -8,18 +8,16 @@ import java.time.Period;
 import java.util.List;
 
 import net.devstudy.resume.profile.api.annotation.ProfileInfoField;
-import net.devstudy.resume.staticdata.api.model.Hobby;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Embedded;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
@@ -42,7 +40,7 @@ import net.devstudy.resume.shared.model.AbstractEntity;
 @NoArgsConstructor
 @Entity
 @Table(name = "profile")
-@ToString(exclude = {"certificates","educations","hobbies","languages","practics","skills","courses","contacts"})
+@ToString(exclude = {"certificates","educations","hobbyIds","languages","practics","skills","courses","contacts"})
 @EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class Profile extends AbstractEntity<Long> {
     @Serial
@@ -114,13 +112,11 @@ public class Profile extends AbstractEntity<Long> {
     @JsonIgnore
     private List<Education> educations;
 
-    @ManyToMany
-    @JoinTable(name = "profile_hobby",
-            joinColumns = @JoinColumn(name = "id_profile"),
-            inverseJoinColumns = @JoinColumn(name = "id_hobby"))
-    @OrderBy("name ASC")
+    @ElementCollection
+    @CollectionTable(name = "profile_hobby", joinColumns = @JoinColumn(name = "id_profile"))
+    @Column(name = "id_hobby")
     @JsonIgnore
-    private List<Hobby> hobbies;
+    private List<Long> hobbyIds;
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Language> languages;
@@ -180,9 +176,9 @@ public class Profile extends AbstractEntity<Long> {
         updateListSetProfile(this.educations);
     }
 
-    public List<Hobby> getHobbies() { return this.hobbies; }
-    public void setHobbies(List<Hobby> hobbies) {
-        this.hobbies = hobbies;
+    public List<Long> getHobbyIds() { return this.hobbyIds; }
+    public void setHobbyIds(List<Long> hobbyIds) {
+        this.hobbyIds = hobbyIds;
     }
 
     public List<Language> getLanguages() { return this.languages; }
