@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Component;
 import net.devstudy.resume.shared.dto.ApiErrorResponse;
 
 @Component
+@ConditionalOnProperty(name = "app.security.session.enabled", havingValue = "true", matchIfMissing = true)
 public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AccessDeniedHandlerImpl.class);

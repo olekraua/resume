@@ -458,28 +458,49 @@ public class ProfileApiController {
         String summary = normalizeFilter(profile.getSummary());
         String city = normalizeFilter(profile.getCity());
         String country = normalizeFilter(profile.getCountry());
-        if (filter.name != null && !contains(name, filter.name)) {
-            return false;
+        return matchesName(filter, name)
+                && matchesCompany(filter, objective, summary)
+                && matchesCity(filter, city)
+                && matchesCountry(filter, country)
+                && matchesQuery(filter, name, objective, summary, city, country);
+    }
+
+    private boolean matchesName(ConnectionFilter filter, String name) {
+        return filter.name == null || contains(name, filter.name);
+    }
+
+    private boolean matchesCompany(ConnectionFilter filter, String objective, String summary) {
+        if (filter.company == null) {
+            return true;
         }
-        if (filter.company != null && !contains(objective, filter.company) && !contains(summary, filter.company)) {
-            return false;
+        return contains(objective, filter.company) || contains(summary, filter.company);
+    }
+
+    private boolean matchesCity(ConnectionFilter filter, String city) {
+        return filter.city == null || contains(city, filter.city);
+    }
+
+    private boolean matchesCountry(ConnectionFilter filter, String country) {
+        return filter.country == null || contains(country, filter.country);
+    }
+
+    private boolean matchesQuery(ConnectionFilter filter, String... fields) {
+        if (filter.query == null) {
+            return true;
         }
-        if (filter.city != null && !contains(city, filter.city)) {
-            return false;
+        return containsAny(filter.query, fields);
+    }
+
+    private boolean containsAny(String needle, String... fields) {
+        if (needle == null || needle.isBlank()) {
+            return true;
         }
-        if (filter.country != null && !contains(country, filter.country)) {
-            return false;
-        }
-        if (filter.query != null) {
-            if (!contains(name, filter.query)
-                    && !contains(objective, filter.query)
-                    && !contains(summary, filter.query)
-                    && !contains(city, filter.query)
-                    && !contains(country, filter.query)) {
-                return false;
+        for (String field : fields) {
+            if (contains(field, needle)) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     private void sortConnections(List<ConnectionProfile> items, String sort, String order) {
