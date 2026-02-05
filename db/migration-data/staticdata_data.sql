@@ -20,7 +20,9 @@ SET row_security = off;
 -- Data for Name: hobby; Type: TABLE DATA; Schema: public; Owner: resume
 --
 
-COPY public.hobby (id, name) FROM stdin;
+DROP TABLE IF EXISTS tmp_hobby;
+CREATE TEMP TABLE tmp_hobby (LIKE public.hobby EXCLUDING CONSTRAINTS);
+COPY tmp_hobby (id, name) FROM stdin;
 1	Cycling
 2	Handball
 3	Football
@@ -70,13 +72,19 @@ COPY public.hobby (id, name) FROM stdin;
 47	Badminton
 48	Disco
 \.
+INSERT INTO public.hobby (id, name)
+SELECT id, name FROM tmp_hobby
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name;
+DROP TABLE tmp_hobby;
 
 
 --
 -- Data for Name: skill_category; Type: TABLE DATA; Schema: public; Owner: resume
 --
 
-COPY public.skill_category (id, category) FROM stdin;
+DROP TABLE IF EXISTS tmp_skill_category;
+CREATE TEMP TABLE tmp_skill_category (LIKE public.skill_category EXCLUDING CONSTRAINTS);
+COPY tmp_skill_category (id, category) FROM stdin;
 1	Languages
 2	DBMS
 3	Web
@@ -91,9 +99,12 @@ COPY public.skill_category (id, category) FROM stdin;
 12	Testing
 13	Other
 \.
+INSERT INTO public.skill_category (id, category)
+SELECT id, category FROM tmp_skill_category
+ON CONFLICT (id) DO UPDATE SET category = EXCLUDED.category;
+DROP TABLE tmp_skill_category;
 
 
 --
 -- PostgreSQL database dump complete
 --
-
