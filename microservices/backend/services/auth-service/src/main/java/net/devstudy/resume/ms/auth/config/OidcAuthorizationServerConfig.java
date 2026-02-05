@@ -57,6 +57,7 @@ public class OidcAuthorizationServerConfig {
         );
 
         http.securityMatcher(endpointsMatcher)
+                .cors(withDefaults())
                 .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
                 .apply(authorizationServerConfigurer);
 
@@ -73,6 +74,7 @@ public class OidcAuthorizationServerConfig {
     @Order(Ordered.LOWEST_PRECEDENCE)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/.well-known/**", "/oauth2/jwks", "/api/auth/**", "/api/csrf").permitAll()
                         .anyRequest().authenticated())
