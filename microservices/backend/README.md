@@ -10,12 +10,14 @@
 - staticdata-service (8084) — static data for UI
 - notification-service (8085) — mail sender (optional; no async wiring)
 - messaging-service (8086) — realtime messaging (optional)
+- outbox-relay-service (no HTTP) — publishes profile outbox events to RabbitMQ (optional)
 - gateway (8080) — Nginx API gateway
 
 ## Data & messaging
 - PostgreSQL per service: `resume_auth`, `resume_profile`, `resume_staticdata`, `resume_messaging`
 - Elasticsearch: search service only (runs in Docker)
-- Async міжсервісних подій немає; події обробляються лише всередині сервісу.
+- RabbitMQ (optional): profile outbox → RabbitMQ → search indexing consumer
+- Async міжсервісних подій немає; події обробляються лише всередині сервісу (окрім outbox‑relay).
 
 ## Security
 - `auth-service` — Spring Authorization Server (OIDC)
@@ -40,6 +42,7 @@
    - `mvn -f microservices/backend/services/staticdata-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/notification-service/pom.xml spring-boot:run` (optional)
    - `mvn -f microservices/backend/services/messaging-service/pom.xml spring-boot:run` (optional)
+   - `mvn -f microservices/backend/services/outbox-relay-service/pom.xml spring-boot:run` (optional, RabbitMQ)
 5) Run local gateway (recommended):
    - Native Nginx: use `microservices/backend/gateway/nginx.local.conf`, but replace `host.docker.internal` with `127.0.0.1`.
    - Docker gateway:
@@ -58,6 +61,8 @@ Required: gateway mode expects X-Forwarded headers + `server.forward-headers-str
 - `AUTH_ISSUER_URI`, `AUTH_CLIENT_ID`, `AUTH_REDIRECT_URI`, `AUTH_POST_LOGOUT_REDIRECT_URI`
 - `APP_CORS_ALLOWED_ORIGINS`
 - `ELASTICSEARCH_URL`
+- `RABBITMQ_HOST`, `RABBITMQ_PORT`, `RABBITMQ_USER`, `RABBITMQ_PASS`
+- `APP_OUTBOX_ENABLED`, `APP_OUTBOX_RELAY_*`
 
 ## Gateway
 Nginx config:

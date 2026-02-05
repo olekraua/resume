@@ -7,6 +7,11 @@ spring:
     name: resume-search-service
   elasticsearch:
     uris: ${ELASTICSEARCH_URL:http://localhost:9200}
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USER:guest}
+    password: ${RABBITMQ_PASS:guest}
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
@@ -25,3 +30,5 @@ app:
       enabled: true
     profile-db:
       enabled: false
+    indexing:
+      enabled: true

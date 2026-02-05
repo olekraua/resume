@@ -11,8 +11,8 @@
 		<relativePath>../../../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>resume-search-service</artifactId>
-	<name>resume-search-service</name>
+	<artifactId>resume-outbox-relay-service</artifactId>
+	<name>resume-outbox-relay-service</name>
 	<packaging>jar</packaging>
 
 	<properties>
@@ -20,11 +20,6 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>net.devstudy</groupId>
-			<artifactId>resume-web</artifactId>
-			<version>${project.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>net.devstudy</groupId>
 			<artifactId>resume-search</artifactId>
@@ -37,7 +32,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>resume-search-service-${project.version}</finalName>
+		<finalName>resume-outbox-relay-service-${project.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
