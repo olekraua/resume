@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -49,6 +50,7 @@ import net.devstudy.resume.web.api.ApiErrorUtils;
 
 @RestController
 @RequestMapping("/api/auth")
+@ConditionalOnProperty(name = "app.security.session.enabled", havingValue = "true", matchIfMissing = true)
 @RequiredArgsConstructor
 public class AuthApiController {
 
