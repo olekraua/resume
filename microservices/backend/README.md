@@ -18,7 +18,9 @@
 - Elasticsearch: search service only (runs in Docker)
 - RabbitMQ (optional): profile outbox → RabbitMQ → search indexing consumer
 - RabbitMQ (optional): auth outbox → RabbitMQ → notification consumer
-- Async міжсервісних подій немає; події обробляються лише всередині сервісу (окрім outbox‑relay).
+- Restore email: auth-service публікує подію `RestoreAccessMailRequestedEvent` і може обробляти її локально
+  (включи `APP_RESTORE_MAIL_ENABLED=true` + SMTP), або асинхронно через RabbitMQ
+  (outbox‑relay `auth` + notification-service; локальну відправку в такому разі вимкни).
 
 ## Security
 - `auth-service` — Spring Authorization Server (OIDC)

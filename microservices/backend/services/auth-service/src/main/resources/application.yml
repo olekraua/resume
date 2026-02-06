@@ -29,6 +29,9 @@ app:
   search:
     elasticsearch:
       enabled: false
+  restore:
+    mail:
+      enabled: ${APP_RESTORE_MAIL_ENABLED:true}
   services:
     profile:
       mode: remote

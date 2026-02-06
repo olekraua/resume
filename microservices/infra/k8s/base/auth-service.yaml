@@ -22,10 +22,14 @@ spec:
           envFrom:
             - configMapRef:
                 name: resume-common-config
+            - configMapRef:
+                name: resume-mail-config
             - secretRef:
                 name: resume-auth-db
             - secretRef:
                 name: resume-internal-secret
+            - secretRef:
+                name: resume-mail-secret
           env:
             - name: SERVER_ADDRESS
               value: "0.0.0.0"
