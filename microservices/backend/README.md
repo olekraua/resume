@@ -17,6 +17,7 @@
 - PostgreSQL per service: `resume_auth`, `resume_profile`, `resume_staticdata`, `resume_messaging`
 - Elasticsearch: search service only (runs in Docker)
 - RabbitMQ (optional): profile outbox → RabbitMQ → search indexing consumer
+- RabbitMQ (optional): auth outbox → RabbitMQ → notification consumer
 - Async міжсервісних подій немає; події обробляються лише всередині сервісу (окрім outbox‑relay).
 
 ## Security
@@ -43,6 +44,7 @@
    - `mvn -f microservices/backend/services/notification-service/pom.xml spring-boot:run` (optional)
    - `mvn -f microservices/backend/services/messaging-service/pom.xml spring-boot:run` (optional)
    - `mvn -f microservices/backend/services/outbox-relay-service/pom.xml spring-boot:run` (optional, RabbitMQ)
+     - For auth outbox: set `APP_OUTBOX_RELAY_MODE=auth` and point `SPRING_DATASOURCE_URL` to `resume_auth`.
 5) Run local gateway (recommended):
    - Native Nginx: use `microservices/backend/gateway/nginx.local.conf`, but replace `host.docker.internal` with `127.0.0.1`.
    - Docker gateway:
@@ -62,7 +64,7 @@ Required: gateway mode expects X-Forwarded headers + `server.forward-headers-str
 - `APP_CORS_ALLOWED_ORIGINS`
 - `ELASTICSEARCH_URL`
 - `RABBITMQ_HOST`, `RABBITMQ_PORT`, `RABBITMQ_USER`, `RABBITMQ_PASS`
-- `APP_OUTBOX_ENABLED`, `APP_OUTBOX_RELAY_*`
+- `APP_OUTBOX_ENABLED`, `APP_OUTBOX_RELAY_*`, `APP_OUTBOX_RELAY_MODE`
 
 ## Gateway
 Nginx config:

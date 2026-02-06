@@ -5,15 +5,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import net.devstudy.resume.search.api.messaging.SearchIndexingMessaging;
+import net.devstudy.resume.notification.api.messaging.NotificationMessaging;
 
 @Configuration
 @ConditionalOnProperty(name = "app.outbox.relay.enabled", havingValue = "true")
-@ConditionalOnProperty(name = "app.outbox.relay.mode", havingValue = "profile", matchIfMissing = true)
-public class OutboxRelayAmqpConfig {
+@ConditionalOnProperty(name = "app.outbox.relay.mode", havingValue = "auth")
+public class OutboxRelayNotificationAmqpConfig {
 
     @Bean
-    public TopicExchange profileSearchExchange() {
-        return new TopicExchange(SearchIndexingMessaging.EXCHANGE, true, false);
+    public TopicExchange notificationExchange() {
+        return new TopicExchange(NotificationMessaging.EXCHANGE, true, false);
     }
 }

@@ -9,21 +9,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import net.devstudy.resume.profile.api.model.ProfileOutboxEvent;
-import net.devstudy.resume.profile.api.model.ProfileOutboxEventType;
-import net.devstudy.resume.profile.api.model.ProfileOutboxStatus;
-import net.devstudy.resume.profile.internal.repository.storage.ProfileOutboxRepository;
-import net.devstudy.resume.search.api.messaging.SearchIndexingMessaging;
+import net.devstudy.resume.auth.internal.entity.AuthOutboxEvent;
+import net.devstudy.resume.auth.internal.entity.AuthOutboxEventType;
+import net.devstudy.resume.auth.internal.entity.AuthOutboxStatus;
+import net.devstudy.resume.auth.internal.repository.storage.AuthOutboxRepository;
+import net.devstudy.resume.notification.api.messaging.NotificationMessaging;
 
 @Service
 @RequiredArgsConstructor
 @ConditionalOnProperty(name = "app.outbox.relay.enabled", havingValue = "true")
-@ConditionalOnProperty(name = "app.outbox.relay.mode", havingValue = "profile", matchIfMissing = true)
-public class ProfileOutboxRelay {
+@ConditionalOnProperty(name = "app.outbox.relay.mode", havingValue = "auth")
+public class AuthOutboxRelay {
 
     private static final int MAX_BACKOFF_MULTIPLIER = 10;
 
-    private final ProfileOutboxRepository outboxRepository;
+    private final AuthOutboxRepository outboxRepository;
     private final RabbitTemplate rabbitTemplate;
     private final OutboxRelayProperties properties;
 
@@ -37,7 +37,7 @@ public class ProfileOutboxRelay {
         if (batch.isEmpty()) {
             return;
         }
-        for (ProfileOutboxEvent event : batch) {
+        for (AuthOutboxEvent event : batch) {
             if (event == null) {
                 continue;
             }
@@ -51,7 +51,7 @@ public class ProfileOutboxRelay {
         }
     }
 
-    private void publish(ProfileOutboxEvent event) {
+    private void publish(AuthOutboxEvent event) {
         String routingKey = resolveRoutingKey(event.getEventType());
         if (routingKey == null) {
             throw new IllegalArgumentException("Unknown outbox event type: " + event.getEventType());
@@ -60,30 +60,29 @@ public class ProfileOutboxRelay {
         if (payload == null || payload.isBlank()) {
             throw new IllegalArgumentException("Outbox payload is empty");
         }
-        rabbitTemplate.convertAndSend(SearchIndexingMessaging.EXCHANGE, routingKey, payload);
+        rabbitTemplate.convertAndSend(NotificationMessaging.EXCHANGE, routingKey, payload);
     }
 
-    private String resolveRoutingKey(ProfileOutboxEventType type) {
+    private String resolveRoutingKey(AuthOutboxEventType type) {
         if (type == null) {
             return null;
         }
         return switch (type) {
-            case PROFILE_INDEX -> SearchIndexingMessaging.ROUTING_KEY_INDEX;
-            case PROFILE_REMOVE -> SearchIndexingMessaging.ROUTING_KEY_REMOVE;
+            case RESTORE_ACCESS_MAIL -> NotificationMessaging.ROUTING_KEY_RESTORE;
         };
     }
 
-    private void markSent(ProfileOutboxEvent event, Instant now) {
-        event.setStatus(ProfileOutboxStatus.SENT);
+    private void markSent(AuthOutboxEvent event, Instant now) {
+        event.setStatus(AuthOutboxStatus.SENT);
         event.setSentAt(now);
         event.setAvailableAt(now);
         event.setLastError(null);
     }
 
-    private void markFailed(ProfileOutboxEvent event, Exception ex, Instant now) {
+    private void markFailed(AuthOutboxEvent event, Exception ex, Instant now) {
         int attempts = Math.max(0, event.getAttempts()) + 1;
         event.setAttempts(attempts);
-        event.setStatus(ProfileOutboxStatus.ERROR);
+        event.setStatus(AuthOutboxStatus.ERROR);
         event.setLastError(truncate(ex.getMessage(), 1000));
         long baseDelay = Math.max(1000L, properties.getRetryDelayMs());
         long multiplier = Math.min(attempts, MAX_BACKOFF_MULTIPLIER);

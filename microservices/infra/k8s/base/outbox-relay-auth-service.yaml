@@ -1,30 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: resume-outbox-relay-service
+  name: resume-outbox-relay-auth-service
   namespace: resume
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: resume-outbox-relay-service
+      app: resume-outbox-relay-auth-service
   template:
     metadata:
       labels:
-        app: resume-outbox-relay-service
+        app: resume-outbox-relay-auth-service
     spec:
       containers:
-        - name: outbox-relay-service
+        - name: outbox-relay-auth-service
           image: resume/outbox-relay-service:latest
           imagePullPolicy: IfNotPresent
           envFrom:
             - secretRef:
-                name: resume-outbox-db
+                name: resume-outbox-auth-db
             - secretRef:
                 name: resume-rabbitmq
           env:
             - name: APP_OUTBOX_RELAY_MODE
-              value: profile
+              value: auth
           resources:
             requests:
               cpu: "50m"

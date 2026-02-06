@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: resume-rabbitmq-config
+  namespace: resume
+data:
+  rabbitmq.conf: |
+    management.load_definitions = /etc/rabbitmq/definitions.json
+  definitions.json: |
+    {
+      "policies": [
+        {
+          "vhost": "/",
+          "name": "dlq-retention",
+          "pattern": "^resume\\.notification\\.mail\\.dlq$",
+          "apply-to": "queues",
+          "definition": {
+            "message-ttl": 604800000,
+            "max-length": 10000,
+            "max-length-bytes": 104857600
+          },
+          "priority": 10
+        }
+      ]
+    }

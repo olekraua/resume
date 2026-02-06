@@ -41,3 +41,10 @@ spec:
               value: guest
             - name: RABBITMQ_DEFAULT_PASS
               value: guest
+          volumeMounts:
+            - name: rabbitmq-config
+              mountPath: /etc/rabbitmq
+      volumes:
+        - name: rabbitmq-config
+          configMap:
+            name: resume-rabbitmq-config

@@ -21,6 +21,7 @@ app:
   outbox:
     relay:
       enabled: true
+      mode: profile
       poll-interval-ms: 2000
       batch-size: 100
       max-attempts: 10

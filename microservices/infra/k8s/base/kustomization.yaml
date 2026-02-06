@@ -6,6 +6,7 @@ resources:
   - config-mail.yaml
   - secret-internal.yaml
   - secret-auth-db.yaml
+  - secret-outbox-auth-db.yaml
   - secret-outbox-db.yaml
   - secret-profile-db.yaml
   - secret-rabbitmq.yaml
@@ -18,5 +19,6 @@ resources:
   - staticdata-service.yaml
   - notification-service.yaml
   - outbox-relay-service.yaml
+  - outbox-relay-auth-service.yaml
   - gateway-config.yaml
   - gateway.yaml

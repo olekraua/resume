@@ -46,3 +46,4 @@ kubectl apply -k microservices/infra/k8s/base
 - OIDC redirect URLs у `config-common.yaml` потрібно під ваш домен.
 - Для продакшну бажано винести секрети у Secret Manager.
 - У `dev/` додано RabbitMQ для outbox‑relay (локальна індексація ES).
+- У `dev/` запускаються два outbox‑relay інстанси: profile → search та auth → notification.

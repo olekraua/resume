@@ -4,7 +4,7 @@
 Моноліт у `app/` не ламається і може співіснувати — для максимально безпечної міграції.
 
 Асинхронні міжсервісні події видалені. Якщо вони потрібні, інтегруйте власний брокер.
-Для пошуку можна увімкнути outbox‑relay (RabbitMQ) — див. `microservices/backend/README.md`.
+Для пошуку/notification можна увімкнути outbox‑relay (RabbitMQ) — див. `microservices/backend/README.md`.
 
 Вміст:
 - `backend/` — сервіси + gateway + конфіги.

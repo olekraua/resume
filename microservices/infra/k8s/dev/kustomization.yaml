@@ -7,6 +7,7 @@ resources:
   - postgres-staticdata.yaml
   - elasticsearch.yaml
   - rabbitmq.yaml
+  - rabbitmq-config.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
@@ -16,6 +17,12 @@ secretGenerator:
     behavior: replace
     literals:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://resume-profile-db:5432/resume_profile
+      - SPRING_DATASOURCE_USERNAME=resume
+      - SPRING_DATASOURCE_PASSWORD=resume
+  - name: resume-outbox-auth-db
+    behavior: replace
+    literals:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://resume-auth-db:5432/resume_auth
       - SPRING_DATASOURCE_USERNAME=resume
       - SPRING_DATASOURCE_PASSWORD=resume
   - name: resume-rabbitmq

@@ -20,6 +20,8 @@ spec:
           ports:
             - containerPort: 8085
           envFrom:
+            - secretRef:
+                name: resume-rabbitmq
             - configMapRef:
                 name: resume-common-config
             - configMapRef:

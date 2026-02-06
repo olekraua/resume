@@ -24,6 +24,8 @@ app:
   cors:
     allowed-origins:
       - ${APP_CORS_ALLOWED_ORIGINS:http://localhost:4200}
+  outbox:
+    enabled: true
   search:
     elasticsearch:
       enabled: false
