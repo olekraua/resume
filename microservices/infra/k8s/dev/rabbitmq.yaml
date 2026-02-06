@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: resume-rabbitmq
+  namespace: resume
+spec:
+  selector:
+    app: resume-rabbitmq
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: 5672
+    - name: mgmt
+      port: 15672
+      targetPort: 15672
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resume-rabbitmq
+  namespace: resume
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resume-rabbitmq
+  template:
+    metadata:
+      labels:
+        app: resume-rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3.13-management
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              value: guest
+            - name: RABBITMQ_DEFAULT_PASS
+              value: guest

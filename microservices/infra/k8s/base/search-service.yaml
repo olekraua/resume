@@ -22,6 +22,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: resume-common-config
+            - secretRef:
+                name: resume-rabbitmq
           env:
             - name: ELASTICSEARCH_URL
               valueFrom:

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resume-outbox-relay-service
+  namespace: resume
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resume-outbox-relay-service
+  template:
+    metadata:
+      labels:
+        app: resume-outbox-relay-service
+    spec:
+      containers:
+        - name: outbox-relay-service
+          image: resume/outbox-relay-service:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: resume-outbox-db
+            - secretRef:
+                name: resume-rabbitmq
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"

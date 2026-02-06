@@ -6,3 +6,22 @@ resources:
   - postgres-profile.yaml
   - postgres-staticdata.yaml
   - elasticsearch.yaml
+  - rabbitmq.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+secretGenerator:
+  - name: resume-outbox-db
+    behavior: replace
+    literals:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://resume-profile-db:5432/resume_profile
+      - SPRING_DATASOURCE_USERNAME=resume
+      - SPRING_DATASOURCE_PASSWORD=resume
+  - name: resume-rabbitmq
+    behavior: replace
+    literals:
+      - RABBITMQ_HOST=resume-rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_USER=guest
+      - RABBITMQ_PASS=guest
