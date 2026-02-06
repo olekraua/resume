@@ -8,8 +8,8 @@
 - profile-service (8082) — profile read/edit, connections, media uploads
 - search-service (8083) — Elasticsearch‑only search/suggest
 - staticdata-service (8084) — static data for UI
-- notification-service (8085) — mail sender (optional; no async wiring)
-- messaging-service (8086) — realtime messaging (optional)
+- notification-service (8085) — mail sender (optional; RabbitMQ async)
+- messaging-service (8086) — realtime messaging
 - outbox-relay-service (no HTTP) — publishes profile outbox events to RabbitMQ (optional)
 - gateway (8080) — Nginx API gateway
 
@@ -42,7 +42,7 @@
    - `mvn -f microservices/backend/services/search-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/staticdata-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/notification-service/pom.xml spring-boot:run` (optional)
-   - `mvn -f microservices/backend/services/messaging-service/pom.xml spring-boot:run` (optional)
+   - `mvn -f microservices/backend/services/messaging-service/pom.xml spring-boot:run`
    - `mvn -f microservices/backend/services/outbox-relay-service/pom.xml spring-boot:run` (optional, RabbitMQ)
      - For auth outbox: set `APP_OUTBOX_RELAY_MODE=auth` and point `SPRING_DATASOURCE_URL` to `resume_auth`.
 5) Run local gateway (recommended):

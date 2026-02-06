@@ -4,6 +4,7 @@ resources:
   - ../base
   - postgres-auth.yaml
   - postgres-profile.yaml
+  - postgres-messaging.yaml
   - postgres-staticdata.yaml
   - elasticsearch.yaml
   - rabbitmq.yaml

@@ -32,6 +32,7 @@ public class MessagingSecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     auth
                             .requestMatchers("/ws/**").permitAll()
+                            .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                             .requestMatchers("/actuator/**").authenticated()
                             .requestMatchers("/api/**").authenticated();
                     auth.anyRequest().denyAll();

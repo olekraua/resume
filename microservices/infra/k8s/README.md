@@ -29,6 +29,7 @@ kubectl apply -k microservices/infra/k8s/base
 - `resume/search-service:latest`
 - `resume/staticdata-service:latest`
 - `resume/notification-service:latest`
+- `resume/messaging-service:latest`
 - `resume/outbox-relay-service:latest`
 
 ### Приклад build (local)
@@ -38,11 +39,12 @@ kubectl apply -k microservices/infra/k8s/base
 ./mvnw -pl microservices/backend/services/search-service -DskipTests spring-boot:build-image -Dspring-boot.build-image.imageName=resume/search-service:latest
 ./mvnw -pl microservices/backend/services/staticdata-service -DskipTests spring-boot:build-image -Dspring-boot.build-image.imageName=resume/staticdata-service:latest
 ./mvnw -pl microservices/backend/services/notification-service -DskipTests spring-boot:build-image -Dspring-boot.build-image.imageName=resume/notification-service:latest
+./mvnw -pl microservices/backend/services/messaging-service -DskipTests spring-boot:build-image -Dspring-boot.build-image.imageName=resume/messaging-service:latest
 ./mvnw -pl microservices/backend/services/outbox-relay-service -DskipTests spring-boot:build-image -Dspring-boot.build-image.imageName=resume/outbox-relay-service:latest
 ```
 
 ## Notes
-- `resume-uploads` PVC використовується profile‑service для фото/сертифікатів.
+- `resume-uploads` PVC використовується profile‑service та messaging‑service для файлів.
 - OIDC redirect URLs у `config-common.yaml` потрібно під ваш домен.
 - Для продакшну бажано винести секрети у Secret Manager.
 - У `dev/` додано RabbitMQ для outbox‑relay (локальна індексація ES).

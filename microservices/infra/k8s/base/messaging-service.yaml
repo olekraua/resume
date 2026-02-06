@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resume-messaging-service
+  namespace: resume
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: resume-messaging-service
+  template:
+    metadata:
+      labels:
+        app: resume-messaging-service
+    spec:
+      containers:
+        - name: messaging-service
+          image: resume/messaging-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8086
+          envFrom:
+            - configMapRef:
+                name: resume-common-config
+            - secretRef:
+                name: resume-messaging-db
+          env:
+            - name: MESSAGE_UPLOAD_DIR
+              value: /data/uploads/messages
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8086
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8086
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+          volumeMounts:
+            - name: uploads
+              mountPath: /data/uploads
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+      volumes:
+        - name: uploads
+          persistentVolumeClaim:
+            claimName: resume-uploads
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resume-messaging-service
+  namespace: resume
+spec:
+  selector:
+    app: resume-messaging-service
+  ports:
+    - name: http
+      port: 8086
+      targetPort: 8086

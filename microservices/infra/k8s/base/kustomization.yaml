@@ -8,6 +8,7 @@ resources:
   - secret-auth-db.yaml
   - secret-outbox-auth-db.yaml
   - secret-outbox-db.yaml
+  - secret-messaging-db.yaml
   - secret-profile-db.yaml
   - secret-rabbitmq.yaml
   - secret-staticdata-db.yaml
@@ -18,6 +19,7 @@ resources:
   - search-service.yaml
   - staticdata-service.yaml
   - notification-service.yaml
+  - messaging-service.yaml
   - outbox-relay-service.yaml
   - outbox-relay-auth-service.yaml
   - gateway-config.yaml
