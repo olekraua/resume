@@ -11,6 +11,7 @@ import net.devstudy.resume.web.controller.SessionApiController;
 import net.devstudy.resume.web.controller.api.AccountApiController;
 import net.devstudy.resume.web.controller.api.AuthApiController;
 import net.devstudy.resume.web.controller.api.CsrfApiController;
+import net.devstudy.resume.web.controller.api.PublicAuthApiController;
 
 @SpringBootApplication
 @EnableCaching
@@ -25,6 +26,7 @@ import net.devstudy.resume.web.controller.api.CsrfApiController;
 })
 @Import({
         AuthApiController.class,
+        PublicAuthApiController.class,
         AccountApiController.class,
         SessionApiController.class,
         CsrfApiController.class

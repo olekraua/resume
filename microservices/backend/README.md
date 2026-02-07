@@ -77,7 +77,7 @@ For k8s/prod use public gateway URL and keep it identical in frontend `oidc.issu
 Nginx config:
 - Local dev (services on host): `microservices/backend/gateway/nginx.local.conf`
 - K8s/containers: `microservices/backend/gateway/nginx.conf`
-Routes `/api/*`, `/oauth2/*`, `/.well-known/*`, `/login`, `/logout` to the correct services.
+Routes `/api/*`, `/oauth2/*`, `/.well-known/*`, `/login`, `/error`, `/logout` to the correct services.
 
 ## Kubernetes
 See `microservices/infra/k8s/README.md` for Kustomize and Helm‑based installs.
