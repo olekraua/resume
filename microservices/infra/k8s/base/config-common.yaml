@@ -4,7 +4,7 @@ metadata:
   name: resume-common-config
   namespace: resume
 data:
-  AUTH_ISSUER_URI: "http://resume-gateway:8080"
+  AUTH_ISSUER_URI: "http://resume-gateway.resume.svc.cluster.local:8080"
   PROFILE_SERVICE_URL: "http://resume-profile-service:8082"
   ELASTICSEARCH_URL: "http://resume-elasticsearch:9200"
   AUTH_CLIENT_ID: "resume-spa"

@@ -45,6 +45,10 @@ kubectl apply -k microservices/infra/k8s/base
 
 ## Notes
 - `resume-uploads` PVC використовується profile‑service та messaging‑service для файлів.
+- `AUTH_ISSUER_URI` у `config-common.yaml` має бути canonical gateway URL для середовища.
+  Той самий URL має використовуватись у frontend (`oidc.issuer`) і backend resource servers (`issuer-uri`).
+- `AUTH_SIGNING_KEY_ENCRYPTION_KEY` має приходити із `resume-internal-secret` (base64, 32 bytes).
+  Згенерувати: `openssl rand -base64 32`
 - OIDC redirect URLs у `config-common.yaml` потрібно під ваш домен.
 - Для продакшну бажано винести секрети у Secret Manager.
 - У `dev/` додано RabbitMQ для outbox‑relay (локальна індексація ES).
@@ -52,12 +56,14 @@ kubectl apply -k microservices/infra/k8s/base
 
 ## OIDC smoke (e2e stability)
 Скрипт перевіряє сценарій:
-1) `signinRedirect` (`/oauth2/authorize`)  
-2) callback redirect з `code`  
-3) `token` exchange з PKCE  
-4) `/api/me` повертає `authenticated=true`  
-5) restart одного `auth-service` pod  
-6) повторна перевірка `/api/me` через перезапущений pod
+1) OIDC discovery (`/.well-known/openid-configuration`) і контракт `issuer`/`jwks_uri`  
+2) `signinRedirect` (`/oauth2/authorize`)  
+3) callback redirect з `code`  
+4) `token` exchange з PKCE  
+5) `/api/me` повертає `authenticated=true`  
+6) restart одного `auth-service` pod  
+7) повторна перевірка `/api/me` через перезапущений pod  
+8) `rollout restart` deployment + перевірка `/api/me` через gateway
 
 Запуск:
 ```
@@ -71,13 +77,23 @@ microservices/infra/k8s/scripts/oidc-smoke.sh
 - `GATEWAY_SERVICE` (default: `resume-gateway`)
 - `CLIENT_ID` (default: `resume-spa`)
 - `REDIRECT_URI` (default: `http://localhost:4200/auth/callback`)
+- `EXPECTED_ISSUER` (default: значення `AUTH_ISSUER_URI` з `resume-common-config`)
+- `AUTH_DEPLOYMENT_NAME` (default: `resume-auth-service`)
 
 ## CI/CD contract smoke
 - Workflow: `.github/workflows/oidc-contract-smoke.yml`
-- Перевіряє OIDC контракт у kind-кластері: deploy auth+gateway, `signinRedirect -> callback -> /api/me(authenticated=true)`, restart auth pod, повторна валідація `/api/me`.
+- Перевіряє OIDC контракт у kind-кластері: canonical `issuer`/`jwks_uri` через gateway, `signinRedirect -> callback -> /api/me(authenticated=true)`, restart+rollout auth deployment, повторна валідація `/api/me`.
+- Після smoke запускає `jwt-error-alert-check.sh`: job падає, якщо в логах є `invalid_signature` або `unknown_kid`.
 - Запускається на `pull_request`, `push` у `main` (по релевантних шляхах) та вручну через `workflow_dispatch`.
 
 ## Gateway edge OIDC error observation
 - У gateway додано окремі access-log entries з міткою `edge_oidc_error=1`.
 - Логується лише `404/401/5xx` для endpoint-ів `/.well-known/*`, `/userinfo`, `/connect/logout`.
 - Для алертів у лог-агрегаторі фільтруйте по `edge_oidc_error=1`.
+
+## JWT validation alerts
+- Resource-server логи містять структуровані події:
+  `jwt_validation_error=1 jwt_error_type=invalid_signature|unknown_kid`.
+- Для лог-алертів використовуйте ці 2 типи помилок (рівень `ERROR`).
+- Локальна перевірка:
+  `microservices/infra/k8s/scripts/jwt-error-alert-check.sh`

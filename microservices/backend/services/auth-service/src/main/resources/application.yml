@@ -53,3 +53,9 @@ app:
       client-id: ${AUTH_CLIENT_ID:resume-spa}
       redirect-uri: ${AUTH_REDIRECT_URI:http://localhost:4200/auth/callback}
       post-logout-redirect-uri: ${AUTH_POST_LOGOUT_REDIRECT_URI:http://localhost:4200/}
+      access-token-ttl: ${AUTH_ACCESS_TOKEN_TTL:PT10M}
+      signing-key:
+        rotation-interval: ${AUTH_SIGNING_KEY_ROTATION_INTERVAL:PT24H}
+        token-ttl: ${AUTH_SIGNING_KEY_TOKEN_TTL:${AUTH_ACCESS_TOKEN_TTL:PT10M}}
+        clock-skew: ${AUTH_SIGNING_KEY_CLOCK_SKEW:PT1M}
+        encryption-key: ${AUTH_SIGNING_KEY_ENCRYPTION_KEY:}

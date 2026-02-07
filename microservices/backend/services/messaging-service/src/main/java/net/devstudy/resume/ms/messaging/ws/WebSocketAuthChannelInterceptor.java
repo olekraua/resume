@@ -1,6 +1,7 @@
 package net.devstudy.resume.ms.messaging.ws;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -15,11 +16,15 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.devstudy.resume.web.security.CurrentProfileJwtConverter;
 
 @Component
 public class WebSocketAuthChannelInterceptor implements ChannelInterceptor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketAuthChannelInterceptor.class);
 
     private static final List<String> AUTH_HEADER_NAMES = List.of(
             "Authorization",
@@ -47,7 +52,13 @@ public class WebSocketAuthChannelInterceptor implements ChannelInterceptor {
             if (token == null || token.isBlank()) {
                 throw new AccessDeniedException("Unauthorized");
             }
-            Jwt jwt = jwtDecoder.decode(token);
+            Jwt jwt;
+            try {
+                jwt = jwtDecoder.decode(token);
+            } catch (RuntimeException ex) {
+                logJwtValidationError(ex);
+                throw ex;
+            }
             AbstractAuthenticationToken authentication = jwtConverter.convert(jwt);
             if (authentication == null) {
                 throw new AccessDeniedException("Unauthorized");
@@ -82,5 +93,40 @@ public class WebSocketAuthChannelInterceptor implements ChannelInterceptor {
             }
         }
         return null;
+    }
+
+    private void logJwtValidationError(RuntimeException ex) {
+        String message = ex.getMessage() == null ? "" : ex.getMessage();
+        String normalized = message.toLowerCase(Locale.ROOT);
+        String errorType;
+        if (normalized.contains("invalid signature")
+                || normalized.contains("bad jws signature")
+                || normalized.contains("jws verification failed")) {
+            errorType = "invalid_signature";
+        } else if (normalized.contains("no matching key(s) found")
+                || normalized.contains("no matching key found")
+                || (normalized.contains("kid") && normalized.contains("not found"))) {
+            errorType = "unknown_kid";
+        } else {
+            return;
+        }
+        LOGGER.error("jwt_validation_error=1 jwt_error_type={} transport=websocket error_class={} reason=\"{}\"",
+                errorType,
+                ex.getClass().getSimpleName(),
+                sanitize(message));
+    }
+
+    private String sanitize(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+        String normalized = value.replace('\n', ' ')
+                .replace('\r', ' ')
+                .replace('"', '\'')
+                .trim();
+        if (normalized.length() > 300) {
+            return normalized.substring(0, 300);
+        }
+        return normalized;
     }
 }

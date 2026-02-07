@@ -79,7 +79,6 @@ jobs:
 
           kubectl -n "${NAMESPACE}" rollout status statefulset/resume-auth-db --timeout=5m
           kubectl -n "${NAMESPACE}" rollout status deployment/resume-gateway --timeout=5m
-          kubectl -n "${NAMESPACE}" scale deployment/resume-auth-service --replicas=1
           kubectl -n "${NAMESPACE}" rollout status deployment/resume-auth-service --timeout=10m
 
       - name: Seed smoke user in auth DB
@@ -106,7 +105,15 @@ jobs:
           NAMESPACE="${NAMESPACE}" \
           GATEWAY_SERVICE="resume-gateway" \
           AUTH_SELECTOR="app=resume-auth-service" \
+          AUTH_DEPLOYMENT_NAME="resume-auth-service" \
           microservices/infra/k8s/scripts/oidc-smoke.sh
+
+      - name: Check JWT validation alerts
+        run: |
+          NAMESPACE="${NAMESPACE}" \
+          DEPLOYMENTS="resume-auth-service" \
+          SINCE="20m" \
+          microservices/infra/k8s/scripts/jwt-error-alert-check.sh
 
       - name: Collect diagnostics on failure
         if: failure()

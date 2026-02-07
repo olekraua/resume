@@ -55,7 +55,9 @@
 Note: on Linux add `--add-host=host.docker.internal:host-gateway` to the gateway command.
 
 Required: gateway mode expects X-Forwarded headers + `server.forward-headers-strategy=framework` enabled in services
-(already set in configs) and `AUTH_ISSUER_URI=http://localhost:8080`.
+(already set in configs) and one canonical issuer via gateway (`AUTH_ISSUER_URI`).
+For local run use `AUTH_ISSUER_URI=http://localhost:8080`.
+For k8s/prod use public gateway URL and keep it identical in frontend `oidc.issuer`.
 
 ## Key config knobs
 - `SPRING_DATASOURCE_URL/USERNAME/PASSWORD`
@@ -63,6 +65,9 @@ Required: gateway mode expects X-Forwarded headers + `server.forward-headers-str
 - `PROFILE_SERVICE_URL`
 - `STATICDATA_SERVICE_URL`
 - `AUTH_ISSUER_URI`, `AUTH_CLIENT_ID`, `AUTH_REDIRECT_URI`, `AUTH_POST_LOGOUT_REDIRECT_URI`
+- `AUTH_ACCESS_TOKEN_TTL`, `AUTH_SIGNING_KEY_TOKEN_TTL`, `AUTH_SIGNING_KEY_CLOCK_SKEW`
+- `AUTH_SIGNING_KEY_ENCRYPTION_KEY` (base64 key, 32 bytes, required for auth-service)
+- Guardrail: `AUTH_ACCESS_TOKEN_TTL` must be `<= AUTH_SIGNING_KEY_TOKEN_TTL` (fail-fast on startup).
 - `APP_CORS_ALLOWED_ORIGINS`
 - `ELASTICSEARCH_URL`
 - `RABBITMQ_HOST`, `RABBITMQ_PORT`, `RABBITMQ_USER`, `RABBITMQ_PASS`

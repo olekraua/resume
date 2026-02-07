@@ -59,6 +59,9 @@ public class PublicAuthApiController {
     @Value("${app.security.session.enabled:true}")
     private boolean sessionEnabled;
 
+    @Value("${app.security.oidc.enabled:false}")
+    private boolean oidcEnabled;
+
     @Value("${app.auth.self-register.enabled:true}")
     private boolean selfRegisterEnabled;
 
@@ -70,11 +73,12 @@ public class PublicAuthApiController {
 
     @GetMapping("/features")
     public AuthFeaturesResponse features() {
+        boolean localPasswordAuthEnabled = isLocalPasswordAuthEnabled();
         return new AuthFeaturesResponse(
-                sessionEnabled,
+                localPasswordAuthEnabled,
                 selfRegisterEnabled,
                 passwordRestoreEnabled,
-                sessionEnabled
+                localPasswordAuthEnabled
         );
     }
 
@@ -181,7 +185,7 @@ public class PublicAuthApiController {
     private boolean establishSessionIfEnabled(CurrentProfile currentProfile,
             HttpServletRequest request,
             HttpServletResponse response) {
-        if (!sessionEnabled) {
+        if (!isLocalPasswordAuthEnabled()) {
             return false;
         }
         Authentication authentication = new UsernamePasswordAuthenticationToken(
@@ -196,6 +200,10 @@ public class PublicAuthApiController {
             rememberMeSupport.loginSuccess(request, response, authentication, false);
         }
         return true;
+    }
+
+    private boolean isLocalPasswordAuthEnabled() {
+        return sessionEnabled && !oidcEnabled;
     }
 
     private CurrentProfile resolveCurrentProfile() {

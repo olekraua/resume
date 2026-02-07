@@ -2,9 +2,11 @@ package net.devstudy.resume.ms.auth.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+import java.time.Duration;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,14 +35,13 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
 import net.devstudy.resume.auth.api.model.CurrentProfile;
 import net.devstudy.resume.ms.auth.security.PersistentJwtSigningKeyStore;
 import net.devstudy.resume.web.security.CurrentProfileJwtConverter;
+import net.devstudy.resume.web.security.JwtAuthenticationFailureEntryPoint;
 
 @Configuration
 @ConditionalOnProperty(name = "app.security.oidc.enabled", havingValue = "true")
@@ -72,14 +73,22 @@ public class OidcAuthorizationServerConfig {
     @Bean
     @Order(Ordered.LOWEST_PRECEDENCE)
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http,
-            CurrentProfileJwtConverter currentProfileJwtConverter) throws Exception {
+            CurrentProfileJwtConverter currentProfileJwtConverter,
+            JwtAuthenticationFailureEntryPoint jwtAuthenticationFailureEntryPoint) throws Exception {
         http
                 .cors(withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/me").permitAll()
-                        .requestMatchers("/api/auth/**", "/api/csrf").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/features").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/uid-hint").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/restore").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/auth/restore/*").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/restore/*").permitAll()
+                        .requestMatchers("/api/csrf").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
+                        .authenticationEntryPoint(jwtAuthenticationFailureEntryPoint)
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(currentProfileJwtConverter)))
                 .formLogin(withDefaults());
         return http.build();
@@ -89,12 +98,13 @@ public class OidcAuthorizationServerConfig {
     public RegisteredClientRepository registeredClientRepository(JdbcTemplate jdbcTemplate,
             @Value("${app.security.oidc.client-id:resume-spa}") String clientId,
             @Value("${app.security.oidc.redirect-uri:http://localhost:4200/auth/callback}") String redirectUri,
-            @Value("${app.security.oidc.post-logout-redirect-uri:http://localhost:4200/}") String postLogoutRedirectUri) {
+            @Value("${app.security.oidc.post-logout-redirect-uri:http://localhost:4200/}") String postLogoutRedirectUri,
+            @Value("${app.security.oidc.access-token-ttl:PT10M}") Duration accessTokenTtl) {
         JdbcRegisteredClientRepository repository = new JdbcRegisteredClientRepository(jdbcTemplate);
         RegisteredClient existing = repository.findByClientId(clientId);
-        if (!isPublicSpaClientUpToDate(existing, redirectUri, postLogoutRedirectUri)) {
+        if (!isPublicSpaClientUpToDate(existing, redirectUri, postLogoutRedirectUri, accessTokenTtl)) {
             String id = existing != null ? existing.getId() : UUID.randomUUID().toString();
-            repository.save(buildPublicSpaClient(id, clientId, redirectUri, postLogoutRedirectUri));
+            repository.save(buildPublicSpaClient(id, clientId, redirectUri, postLogoutRedirectUri, accessTokenTtl));
         }
         return repository;
     }
@@ -113,9 +123,22 @@ public class OidcAuthorizationServerConfig {
 
     @Bean
     public JWKSource<SecurityContext> jwkSource(PersistentJwtSigningKeyStore persistentJwtSigningKeyStore) {
-        RSAKey rsaKey = persistentJwtSigningKeyStore.loadOrCreateSigningKey();
-        JWKSet jwkSet = new JWKSet(rsaKey);
-        return (jwkSelector, securityContext) -> jwkSelector.select(jwkSet);
+        return (jwkSelector, securityContext) ->
+                jwkSelector.select(persistentJwtSigningKeyStore.loadOrCreateSigningJwkSet());
+    }
+
+    @Bean
+    public SmartInitializingSingleton oidcSigningKeyStoreFailFastInitializer(
+            PersistentJwtSigningKeyStore persistentJwtSigningKeyStore) {
+        return persistentJwtSigningKeyStore::verifyStoreAvailabilityOrFailFast;
+    }
+
+    @Bean
+    public SmartInitializingSingleton oidcTokenLifetimeWindowGuard(
+            @Value("${app.security.oidc.access-token-ttl:PT10M}") Duration accessTokenTtl,
+            @Value("${app.security.oidc.signing-key.token-ttl:${app.security.oidc.access-token-ttl:PT10M}}") Duration signingKeyTokenTtl,
+            @Value("${app.security.oidc.signing-key.clock-skew:PT1M}") Duration signingKeyClockSkew) {
+        return () -> validateTokenLifetimeWindow(accessTokenTtl, signingKeyTokenTtl, signingKeyClockSkew);
     }
 
     @Bean
@@ -138,7 +161,8 @@ public class OidcAuthorizationServerConfig {
     }
 
     private RegisteredClient buildPublicSpaClient(String id, String clientId, String redirectUri,
-            String postLogoutRedirectUri) {
+            String postLogoutRedirectUri,
+            Duration accessTokenTtl) {
         return RegisteredClient.withId(id)
                 .clientId(clientId)
                 .clientAuthenticationMethod(ClientAuthenticationMethod.NONE)
@@ -154,6 +178,7 @@ public class OidcAuthorizationServerConfig {
                         .requireAuthorizationConsent(false)
                         .build())
                 .tokenSettings(TokenSettings.builder()
+                        .accessTokenTimeToLive(accessTokenTtl)
                         .reuseRefreshTokens(false)
                         .build())
                 .build();
@@ -161,7 +186,8 @@ public class OidcAuthorizationServerConfig {
 
     private boolean isPublicSpaClientUpToDate(RegisteredClient existing,
             String redirectUri,
-            String postLogoutRedirectUri) {
+            String postLogoutRedirectUri,
+            Duration accessTokenTtl) {
         if (existing == null) {
             return false;
         }
@@ -177,6 +203,25 @@ public class OidcAuthorizationServerConfig {
                 && existing.getClientSettings().isRequireProofKey()
                 && !existing.getClientSettings().isRequireAuthorizationConsent()
                 && tokenSettings != null
+                && accessTokenTtl.equals(tokenSettings.getAccessTokenTimeToLive())
                 && !tokenSettings.isReuseRefreshTokens();
+    }
+
+    private void validateTokenLifetimeWindow(Duration accessTokenTtl,
+            Duration signingKeyTokenTtl,
+            Duration signingKeyClockSkew) {
+        if (accessTokenTtl == null || accessTokenTtl.isNegative() || accessTokenTtl.isZero()) {
+            throw new IllegalStateException("app.security.oidc.access-token-ttl must be positive");
+        }
+        if (signingKeyTokenTtl == null || signingKeyTokenTtl.isNegative() || signingKeyTokenTtl.isZero()) {
+            throw new IllegalStateException("app.security.oidc.signing-key.token-ttl must be positive");
+        }
+        if (signingKeyClockSkew != null && signingKeyClockSkew.isNegative()) {
+            throw new IllegalStateException("app.security.oidc.signing-key.clock-skew must be non-negative");
+        }
+        if (accessTokenTtl.compareTo(signingKeyTokenTtl) > 0) {
+            throw new IllegalStateException(
+                    "access-token-ttl must be <= signing-key.token-ttl to keep old kid available for active tokens");
+        }
     }
 }

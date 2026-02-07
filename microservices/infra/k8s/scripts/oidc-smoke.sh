@@ -6,11 +6,13 @@ GATEWAY_SERVICE="${GATEWAY_SERVICE:-resume-gateway}"
 GATEWAY_PORT="${GATEWAY_PORT:-8080}"
 LOCAL_GATEWAY_PORT="${LOCAL_GATEWAY_PORT:-18080}"
 AUTH_SELECTOR="${AUTH_SELECTOR:-app=resume-auth-service}"
+AUTH_DEPLOYMENT_NAME="${AUTH_DEPLOYMENT_NAME:-resume-auth-service}"
 AUTH_CONTAINER_PORT="${AUTH_CONTAINER_PORT:-8081}"
 LOCAL_AUTH_PORT="${LOCAL_AUTH_PORT:-18081}"
 CLIENT_ID="${CLIENT_ID:-resume-spa}"
 REDIRECT_URI="${REDIRECT_URI:-http://localhost:4200/auth/callback}"
 OIDC_SCOPE="${OIDC_SCOPE:-openid profile offline_access}"
+EXPECTED_ISSUER="${EXPECTED_ISSUER:-}"
 SMOKE_USERNAME="${SMOKE_USERNAME:-}"
 SMOKE_PASSWORD="${SMOKE_PASSWORD:-}"
 WAIT_TIMEOUT_SECONDS="${WAIT_TIMEOUT_SECONDS:-300}"
@@ -21,7 +23,7 @@ if [[ -z "${SMOKE_USERNAME}" || -z "${SMOKE_PASSWORD}" ]]; then
   exit 1
 fi
 
-for cmd in kubectl curl jq openssl awk sed grep; do
+for cmd in kubectl curl jq openssl awk sed grep seq; do
   if ! command -v "${cmd}" >/dev/null 2>&1; then
     echo "Required command not found: ${cmd}" >&2
     exit 1
@@ -35,6 +37,8 @@ login_html="${tmp_dir}/login.html"
 login_headers="${tmp_dir}/login.headers"
 callback_headers="${tmp_dir}/callback.headers"
 token_response="${tmp_dir}/token.json"
+discovery_response="${tmp_dir}/discovery.json"
+jwks_response="${tmp_dir}/jwks.json"
 gateway_pf_log="${tmp_dir}/gateway-port-forward.log"
 auth_pf_log="${tmp_dir}/auth-port-forward.log"
 gateway_pf_pid=""
@@ -64,6 +68,24 @@ urlencode() {
 urldecode() {
   local value="${1//+/ }"
   printf '%b' "${value//%/\\x}"
+}
+
+normalize_uri() {
+  local uri="${1%/}"
+  printf '%s\n' "${uri}"
+}
+
+uri_authority() {
+  sed -E 's#^[a-zA-Z][a-zA-Z0-9+.-]*://##; s#/.*$##' <<< "$1"
+}
+
+uri_path() {
+  local path
+  path="$(sed -E 's#^[a-zA-Z][a-zA-Z0-9+.-]*://[^/]+##' <<< "$1")"
+  if [[ -z "${path}" ]]; then
+    path="/"
+  fi
+  printf '%s\n' "${path}"
 }
 
 absolute_url() {
@@ -130,11 +152,90 @@ restart_auth_pod() {
   printf '%s\n' "${restarted_pod}"
 }
 
+rollout_restart_auth_deployment() {
+  log "Rolling restart for deployment/${AUTH_DEPLOYMENT_NAME}"
+  kubectl -n "${NAMESPACE}" rollout restart "deployment/${AUTH_DEPLOYMENT_NAME}" >/dev/null
+  kubectl -n "${NAMESPACE}" rollout status "deployment/${AUTH_DEPLOYMENT_NAME}" --timeout="${WAIT_TIMEOUT_SECONDS}s" >/dev/null
+}
+
+assert_api_me_authenticated() {
+  local url="$1"
+  local token="$2"
+  local max_attempts="${3:-3}"
+  local payload=""
+  local authenticated="false"
+  for attempt in $(seq 1 "${max_attempts}"); do
+    payload="$(curl -sS --max-time "${HTTP_TIMEOUT_SECONDS}" -H "Authorization: Bearer ${token}" "${url}" || true)"
+    authenticated="$(jq -r '.authenticated // false' <<< "${payload}" 2>/dev/null || echo false)"
+    if [[ "${authenticated}" == "true" ]]; then
+      printf '%s\n' "${payload}"
+      return 0
+    fi
+    sleep 2
+  done
+  echo "Expected /api/me authenticated=true at ${url}" >&2
+  echo "${payload}" >&2
+  return 1
+}
+
 log "Port-forwarding gateway service ${GATEWAY_SERVICE}:${GATEWAY_PORT} -> localhost:${LOCAL_GATEWAY_PORT}"
 kubectl -n "${NAMESPACE}" port-forward "svc/${GATEWAY_SERVICE}" "${LOCAL_GATEWAY_PORT}:${GATEWAY_PORT}" >"${gateway_pf_log}" 2>&1 &
 gateway_pf_pid=$!
 wait_http_ok "http://127.0.0.1:${LOCAL_GATEWAY_PORT}/health" "${WAIT_TIMEOUT_SECONDS}"
 gateway_base_url="http://127.0.0.1:${LOCAL_GATEWAY_PORT}"
+
+if [[ -z "${EXPECTED_ISSUER}" ]]; then
+  EXPECTED_ISSUER="$(kubectl -n "${NAMESPACE}" get configmap resume-common-config -o jsonpath='{.data.AUTH_ISSUER_URI}')"
+fi
+if [[ -z "${EXPECTED_ISSUER}" ]]; then
+  echo "EXPECTED_ISSUER is empty and AUTH_ISSUER_URI is missing in resume-common-config" >&2
+  exit 1
+fi
+EXPECTED_ISSUER="$(normalize_uri "${EXPECTED_ISSUER}")"
+
+log "Step 1/8: OIDC discovery contract"
+discovery_status="$(
+  curl -sS --max-time "${HTTP_TIMEOUT_SECONDS}" -o "${discovery_response}" -w '%{http_code}' \
+    "${gateway_base_url}/.well-known/openid-configuration"
+)"
+if [[ "${discovery_status}" != "200" ]]; then
+  echo "OIDC discovery failed with status ${discovery_status}" >&2
+  cat "${discovery_response}" >&2
+  exit 1
+fi
+discovery_issuer="$(jq -r '.issuer // empty' "${discovery_response}")"
+discovery_jwks_uri="$(jq -r '.jwks_uri // empty' "${discovery_response}")"
+if [[ -z "${discovery_issuer}" || -z "${discovery_jwks_uri}" ]]; then
+  echo "OIDC discovery missing issuer or jwks_uri" >&2
+  cat "${discovery_response}" >&2
+  exit 1
+fi
+discovery_issuer="$(normalize_uri "${discovery_issuer}")"
+if [[ "${discovery_issuer}" != "${EXPECTED_ISSUER}" ]]; then
+  echo "OIDC discovery issuer mismatch: expected ${EXPECTED_ISSUER}, got ${discovery_issuer}" >&2
+  exit 1
+fi
+expected_jwks_uri="${EXPECTED_ISSUER}/oauth2/jwks"
+if [[ "${discovery_jwks_uri}" != "${expected_jwks_uri}" ]]; then
+  echo "OIDC jwks_uri mismatch: expected ${expected_jwks_uri}, got ${discovery_jwks_uri}" >&2
+  exit 1
+fi
+jwks_status="$(
+  curl -sS --max-time "${HTTP_TIMEOUT_SECONDS}" -o "${jwks_response}" -w '%{http_code}' \
+    -H "Host: $(uri_authority "${EXPECTED_ISSUER}")" \
+    "${gateway_base_url}$(uri_path "${discovery_jwks_uri}")"
+)"
+if [[ "${jwks_status}" != "200" ]]; then
+  echo "JWKS endpoint failed with status ${jwks_status}" >&2
+  cat "${jwks_response}" >&2
+  exit 1
+fi
+if ! jq -e '.keys | type == "array" and length > 0' "${jwks_response}" >/dev/null; then
+  echo "JWKS response does not contain signing keys" >&2
+  cat "${jwks_response}" >&2
+  exit 1
+fi
+log "Discovery verified: issuer=${discovery_issuer}, jwks_uri=${discovery_jwks_uri}"
 
 code_verifier="$(openssl rand -base64 72 | tr '+/' '-_' | tr -d '=[:space:]' | cut -c1-96)"
 code_challenge="$(printf '%s' "${code_verifier}" | openssl dgst -binary -sha256 | openssl base64 -A | tr '+/' '-_' | tr -d '=')"
@@ -143,7 +244,7 @@ nonce="$(openssl rand -hex 16)"
 
 authorize_url="${gateway_base_url}/oauth2/authorize?response_type=code&client_id=$(urlencode "${CLIENT_ID}")&redirect_uri=$(urlencode "${REDIRECT_URI}")&scope=$(urlencode "${OIDC_SCOPE}")&code_challenge=$(urlencode "${code_challenge}")&code_challenge_method=S256&state=$(urlencode "${state}")&nonce=$(urlencode "${nonce}")"
 
-log "Step 1/6: signinRedirect (authorize)"
+log "Step 2/8: signinRedirect (authorize)"
 curl -sS --max-time "${HTTP_TIMEOUT_SECONDS}" -D "${authorize_headers}" -o /dev/null \
   --cookie-jar "${cookie_jar}" \
   "${authorize_url}"
@@ -155,7 +256,7 @@ fi
 login_url="$(absolute_url "${gateway_base_url}" "${login_location}")"
 log "Authorize redirected to login: ${login_url}"
 
-log "Step 2/6: login form submit"
+log "Step 3/8: login form submit"
 curl -sS --max-time "${HTTP_TIMEOUT_SECONDS}" -o "${login_html}" \
   --cookie "${cookie_jar}" \
   --cookie-jar "${cookie_jar}" \
@@ -187,7 +288,7 @@ if [[ -z "${login_redirect}" ]]; then
   exit 1
 fi
 
-log "Step 3/6: callback redirect with authorization code"
+log "Step 4/8: callback redirect with authorization code"
 curl -sS --max-time "${HTTP_TIMEOUT_SECONDS}" -D "${callback_headers}" -o /dev/null \
   --cookie "${cookie_jar}" \
   --cookie-jar "${cookie_jar}" \
@@ -216,7 +317,7 @@ fi
 authorization_code="$(urldecode "${authorization_code_encoded}")"
 log "Callback captured successfully: ${callback_location}"
 
-log "Step 4/6: token exchange (authorization_code + PKCE)"
+log "Step 5/8: token exchange (authorization_code + PKCE)"
 token_status="$(
   curl -sS --max-time "${HTTP_TIMEOUT_SECONDS}" -o "${token_response}" -w '%{http_code}' \
     -H 'Content-Type: application/x-www-form-urlencoded' \
@@ -240,30 +341,23 @@ if [[ -z "${refresh_token}" ]]; then
   exit 1
 fi
 
-log "Step 5/6: /api/me before restart"
-me_before="$(curl -sS --max-time "${HTTP_TIMEOUT_SECONDS}" -H "Authorization: Bearer ${access_token}" "${gateway_base_url}/api/me")"
-if [[ "$(jq -r '.authenticated // false' <<< "${me_before}")" != "true" ]]; then
-  echo "Expected /api/me authenticated=true before restart" >&2
-  echo "${me_before}" >&2
-  exit 1
-fi
+log "Step 6/8: /api/me before restart"
+me_before="$(assert_api_me_authenticated "${gateway_base_url}/api/me" "${access_token}" 3)"
 log "/api/me before restart: ${me_before}"
 
-log "Step 6/6: restart one auth pod and validate /api/me on restarted pod"
+log "Step 7/8: restart one auth pod and validate /api/me on restarted pod"
 restarted_pod="$(restart_auth_pod)"
 log "Port-forwarding restarted pod ${restarted_pod}:${AUTH_CONTAINER_PORT} -> localhost:${LOCAL_AUTH_PORT}"
 kubectl -n "${NAMESPACE}" port-forward "pod/${restarted_pod}" "${LOCAL_AUTH_PORT}:${AUTH_CONTAINER_PORT}" >"${auth_pf_log}" 2>&1 &
 auth_pf_pid=$!
 wait_http_ok "http://127.0.0.1:${LOCAL_AUTH_PORT}/actuator/health" "${WAIT_TIMEOUT_SECONDS}"
 
-for attempt in 1 2 3; do
-  me_after="$(curl -sS --max-time "${HTTP_TIMEOUT_SECONDS}" -H "Authorization: Bearer ${access_token}" "http://127.0.0.1:${LOCAL_AUTH_PORT}/api/me")"
-  if [[ "$(jq -r '.authenticated // false' <<< "${me_after}")" != "true" ]]; then
-    echo "Expected /api/me authenticated=true on restarted pod (attempt ${attempt})" >&2
-    echo "${me_after}" >&2
-    exit 1
-  fi
-done
+me_after="$(assert_api_me_authenticated "http://127.0.0.1:${LOCAL_AUTH_PORT}/api/me" "${access_token}" 3)"
 log "/api/me after restart: ${me_after}"
+
+log "Step 8/8: rollout restart auth deployment and validate /api/me via gateway"
+rollout_restart_auth_deployment
+me_after_rollout="$(assert_api_me_authenticated "${gateway_base_url}/api/me" "${access_token}" 5)"
+log "/api/me after rollout: ${me_after_rollout}"
 
 log "OIDC smoke passed"
