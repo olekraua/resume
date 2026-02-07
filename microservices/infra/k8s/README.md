@@ -76,3 +76,8 @@ microservices/infra/k8s/scripts/oidc-smoke.sh
 - Workflow: `.github/workflows/oidc-contract-smoke.yml`
 - Перевіряє OIDC контракт у kind-кластері: deploy auth+gateway, `signinRedirect -> callback -> /api/me(authenticated=true)`, restart auth pod, повторна валідація `/api/me`.
 - Запускається на `pull_request`, `push` у `main` (по релевантних шляхах) та вручну через `workflow_dispatch`.
+
+## Gateway edge OIDC error observation
+- У gateway додано окремі access-log entries з міткою `edge_oidc_error=1`.
+- Логується лише `404/401/5xx` для endpoint-ів `/.well-known/*`, `/userinfo`, `/connect/logout`.
+- Для алертів у лог-агрегаторі фільтруйте по `edge_oidc_error=1`.
