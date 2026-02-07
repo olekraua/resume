@@ -14,6 +14,11 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration/auth
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8080}
   mail:
     host: ${SPRING_MAIL_HOST:}
     port: ${SPRING_MAIL_PORT:}
@@ -40,9 +45,11 @@ app:
   security:
     session:
       enabled: false
+    jwt:
+      enabled: true
     oidc:
       enabled: true
-      issuer: ${AUTH_ISSUER_URI:http://localhost:8081}
+      issuer: ${AUTH_ISSUER_URI:http://localhost:8080}
       client-id: ${AUTH_CLIENT_ID:resume-spa}
       redirect-uri: ${AUTH_REDIRECT_URI:http://localhost:4200/auth/callback}
       post-logout-redirect-uri: ${AUTH_POST_LOGOUT_REDIRECT_URI:http://localhost:4200/}

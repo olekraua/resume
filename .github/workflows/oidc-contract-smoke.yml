@@ -1,0 +1,122 @@
+name: OIDC Contract Smoke
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/oidc-contract-smoke.yml'
+      - 'pom.xml'
+      - 'auth/**'
+      - 'web/**'
+      - 'microservices/backend/services/auth-service/**'
+      - 'microservices/infra/k8s/**'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/oidc-contract-smoke.yml'
+      - 'pom.xml'
+      - 'auth/**'
+      - 'web/**'
+      - 'microservices/backend/services/auth-service/**'
+      - 'microservices/infra/k8s/**'
+  workflow_dispatch:
+
+jobs:
+  oidc-contract-smoke:
+    name: OIDC contract smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    permissions:
+      contents: read
+
+    env:
+      NAMESPACE: resume
+      SMOKE_USERNAME: oidc-smoke-user
+      SMOKE_PASSWORD: SmokePass!123
+      SMOKE_PASSWORD_BCRYPT: '$2a$10$Il0VQMDDthQVmILOgPrXQOyg08QWxaaUdfjZqsUgZHGxQkETJ/xYu'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Setup kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: oidc-smoke
+          wait: 180s
+
+      - name: Build auth-service image
+        run: |
+          ./mvnw -B -pl microservices/backend/services/auth-service -DskipTests \
+            spring-boot:build-image \
+            -Dspring-boot.build-image.imageName=resume/auth-service:latest
+
+      - name: Load auth-service image into kind
+        run: kind load docker-image resume/auth-service:latest --name oidc-smoke
+
+      - name: Deploy OIDC smoke stack
+        run: |
+          kubectl apply -f microservices/infra/k8s/base/namespace.yaml
+          kubectl apply -f microservices/infra/k8s/base/config-common.yaml
+          kubectl apply -f microservices/infra/k8s/base/config-mail.yaml
+          kubectl apply -f microservices/infra/k8s/base/secret-auth-db.yaml
+          kubectl apply -f microservices/infra/k8s/base/secret-internal.yaml
+          kubectl apply -f microservices/infra/k8s/base/secret-mail.yaml
+          kubectl apply -f microservices/infra/k8s/dev/postgres-auth.yaml
+          kubectl apply -f microservices/infra/k8s/base/gateway-config.yaml
+          kubectl apply -f microservices/infra/k8s/base/gateway.yaml
+          kubectl apply -f microservices/infra/k8s/base/auth-service.yaml
+
+          kubectl -n "${NAMESPACE}" rollout status statefulset/resume-auth-db --timeout=5m
+          kubectl -n "${NAMESPACE}" rollout status deployment/resume-gateway --timeout=5m
+          kubectl -n "${NAMESPACE}" scale deployment/resume-auth-service --replicas=1
+          kubectl -n "${NAMESPACE}" rollout status deployment/resume-auth-service --timeout=10m
+
+      - name: Seed smoke user in auth DB
+        run: |
+          kubectl -n "${NAMESPACE}" exec resume-auth-db-0 -- psql -U resume -d resume_auth -v ON_ERROR_STOP=1 -c "
+            WITH next_id AS (
+              SELECT COALESCE(MAX(id), 0) + 1 AS id
+              FROM public.auth_user
+            )
+            INSERT INTO public.auth_user (id, uid, password_hash, first_name, last_name, created, enabled)
+            SELECT next_id.id, '${SMOKE_USERNAME}', '${SMOKE_PASSWORD_BCRYPT}', 'OIDC', 'Smoke', now(), true
+            FROM next_id
+            ON CONFLICT (uid) DO UPDATE
+            SET password_hash = EXCLUDED.password_hash,
+                first_name = EXCLUDED.first_name,
+                last_name = EXCLUDED.last_name,
+                enabled = true;
+          "
+
+      - name: Run OIDC contract smoke
+        run: |
+          SMOKE_USERNAME="${SMOKE_USERNAME}" \
+          SMOKE_PASSWORD="${SMOKE_PASSWORD}" \
+          NAMESPACE="${NAMESPACE}" \
+          GATEWAY_SERVICE="resume-gateway" \
+          AUTH_SELECTOR="app=resume-auth-service" \
+          microservices/infra/k8s/scripts/oidc-smoke.sh
+
+      - name: Collect diagnostics on failure
+        if: failure()
+        run: |
+          set +e
+          kubectl -n "${NAMESPACE}" get all -o wide
+          kubectl -n "${NAMESPACE}" get events --sort-by=.metadata.creationTimestamp | tail -n 200
+          kubectl -n "${NAMESPACE}" describe deployment resume-auth-service
+          kubectl -n "${NAMESPACE}" describe deployment resume-gateway
+          kubectl -n "${NAMESPACE}" describe statefulset resume-auth-db
+          kubectl -n "${NAMESPACE}" logs deployment/resume-auth-service --all-containers=true --tail=300
+          kubectl -n "${NAMESPACE}" logs deployment/resume-gateway --all-containers=true --tail=300
+          kubectl -n "${NAMESPACE}" logs statefulset/resume-auth-db --all-containers=true --tail=300

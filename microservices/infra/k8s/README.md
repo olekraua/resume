@@ -49,3 +49,30 @@ kubectl apply -k microservices/infra/k8s/base
 - Для продакшну бажано винести секрети у Secret Manager.
 - У `dev/` додано RabbitMQ для outbox‑relay (локальна індексація ES).
 - У `dev/` запускаються два outbox‑relay інстанси: profile → search та auth → notification.
+
+## OIDC smoke (e2e stability)
+Скрипт перевіряє сценарій:
+1) `signinRedirect` (`/oauth2/authorize`)  
+2) callback redirect з `code`  
+3) `token` exchange з PKCE  
+4) `/api/me` повертає `authenticated=true`  
+5) restart одного `auth-service` pod  
+6) повторна перевірка `/api/me` через перезапущений pod
+
+Запуск:
+```
+SMOKE_USERNAME=<uid> \
+SMOKE_PASSWORD=<password> \
+microservices/infra/k8s/scripts/oidc-smoke.sh
+```
+
+Опційно:
+- `NAMESPACE` (default: `resume`)
+- `GATEWAY_SERVICE` (default: `resume-gateway`)
+- `CLIENT_ID` (default: `resume-spa`)
+- `REDIRECT_URI` (default: `http://localhost:4200/auth/callback`)
+
+## CI/CD contract smoke
+- Workflow: `.github/workflows/oidc-contract-smoke.yml`
+- Перевіряє OIDC контракт у kind-кластері: deploy auth+gateway, `signinRedirect -> callback -> /api/me(authenticated=true)`, restart auth pod, повторна валідація `/api/me`.
+- Запускається на `pull_request`, `push` у `main` (по релевантних шляхах) та вручну через `workflow_dispatch`.

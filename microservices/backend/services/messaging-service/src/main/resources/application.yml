@@ -18,7 +18,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8081}
+          issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8080}
   servlet:
     multipart:
       max-file-size: 10MB

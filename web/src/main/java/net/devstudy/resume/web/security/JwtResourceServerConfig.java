@@ -2,7 +2,7 @@ package net.devstudy.resume.web.security;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "app.security.jwt.enabled", havingValue = "true")
+@ConditionalOnExpression("${app.security.jwt.enabled:false} && !${app.security.oidc.enabled:false}")
 public class JwtResourceServerConfig {
 
     private final CurrentProfileJwtConverter currentProfileJwtConverter;
