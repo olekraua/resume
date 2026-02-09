@@ -30,6 +30,8 @@ spec:
                 configMapKeyRef:
                   name: resume-common-config
                   key: ELASTICSEARCH_URL
+            - name: APP_SEARCH_INDEXING_MESSAGING_ENABLED
+              value: "true"
           resources:
             requests:
               cpu: "100m"

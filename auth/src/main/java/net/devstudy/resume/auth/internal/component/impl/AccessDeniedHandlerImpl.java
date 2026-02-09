@@ -51,11 +51,11 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
                         path);
                 return;
             }
-            response.sendRedirect(request.getContextPath() + "/login?expired");
+            response.sendRedirect("/login?expired");
             return;
         }
         if (isAnonymousOnlyPath(path)) {
-            response.sendRedirect(request.getContextPath() + "/me");
+            response.sendRedirect("/me");
             return;
         }
         if (apiRequest) {

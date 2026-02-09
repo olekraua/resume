@@ -15,7 +15,10 @@ import net.devstudy.resume.ms.search.indexing.ProfileSnapshotIndexer;
 
 @Component
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "app.search.indexing.enabled", havingValue = "true")
+@ConditionalOnProperty(name = {
+        "app.search.indexing.enabled",
+        "app.search.indexing.messaging.enabled"
+}, havingValue = "true")
 public class SearchIndexingConsumer {
 
     private final ObjectMapper objectMapper;

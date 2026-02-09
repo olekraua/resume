@@ -83,7 +83,7 @@ public class OidcAuthorizationServerConfig {
                 .apply(authorizationServerConfigurer);
 
         http.authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll());
+                .anyRequest().authenticated());
 
         http.exceptionHandling(ex -> ex
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
@@ -220,7 +220,9 @@ public class OidcAuthorizationServerConfig {
     public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
         return context -> {
             if (context.getPrincipal() != null && context.getPrincipal().getPrincipal() instanceof CurrentProfile profile) {
-                context.getClaims().claim("profile_id", profile.getId());
+                if (profile.getId() != null) {
+                    context.getClaims().claim("profile_id", profile.getId().toString());
+                }
                 context.getClaims().claim("uid", profile.getUsername());
                 context.getClaims().claim("name", profile.getFullName());
             }

@@ -20,7 +20,7 @@ public class CurrentProfileJwtConverter implements Converter<Jwt, AbstractAuthen
         if (jwt == null) {
             return null;
         }
-        Long profileId = jwt.getClaim("profile_id");
+        Long profileId = resolveProfileId(jwt.getClaim("profile_id"));
         String uid = jwt.getClaimAsString("uid");
         if (uid == null || uid.isBlank()) {
             uid = jwt.getSubject();
@@ -37,6 +37,20 @@ public class CurrentProfileJwtConverter implements Converter<Jwt, AbstractAuthen
                 jwt,
                 List.of(new SimpleGrantedAuthority(Constants.UI.USER))
         );
+    }
+
+    private Long resolveProfileId(Object claimValue) {
+        if (claimValue instanceof Number number) {
+            return number.longValue();
+        }
+        if (claimValue instanceof String text && !text.isBlank()) {
+            try {
+                return Long.parseLong(text.trim());
+            } catch (NumberFormatException ignored) {
+                return null;
+            }
+        }
+        return null;
     }
 
     private String buildFullName(String first, String last) {

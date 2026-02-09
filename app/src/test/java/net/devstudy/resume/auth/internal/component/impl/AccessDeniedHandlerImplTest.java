@@ -27,7 +27,7 @@ class AccessDeniedHandlerImplTest {
 
         handler.handle(request, response, new MissingCsrfTokenException("missing"));
 
-        assertEquals("/resume/login?expired", response.getRedirectedUrl());
+        assertEquals("/login?expired", response.getRedirectedUrl());
     }
 
     @Test
@@ -52,7 +52,7 @@ class AccessDeniedHandlerImplTest {
 
         handler.handle(request, response, new AccessDeniedException("denied"));
 
-        assertEquals("/resume/me", response.getRedirectedUrl());
+        assertEquals("/me", response.getRedirectedUrl());
     }
 
     @Test

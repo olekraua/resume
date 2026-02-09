@@ -71,6 +71,7 @@ For k8s/prod use public gateway URL and keep it identical in frontend `oidc.issu
 - `APP_CORS_ALLOWED_ORIGINS`
 - `ELASTICSEARCH_URL`
 - `RABBITMQ_HOST`, `RABBITMQ_PORT`, `RABBITMQ_USER`, `RABBITMQ_PASS`
+- `APP_SEARCH_INDEXING_MESSAGING_ENABLED` (`false` by default for local run; set `true` when RabbitMQ indexing consumer is needed)
 - `APP_OUTBOX_ENABLED`, `APP_OUTBOX_RELAY_*`, `APP_OUTBOX_RELAY_MODE`
 
 ## Gateway

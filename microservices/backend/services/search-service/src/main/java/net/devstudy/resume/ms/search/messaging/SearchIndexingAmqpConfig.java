@@ -12,7 +12,10 @@ import org.springframework.amqp.core.TopicExchange;
 import net.devstudy.resume.search.api.messaging.SearchIndexingMessaging;
 
 @Configuration
-@ConditionalOnProperty(name = "app.search.indexing.enabled", havingValue = "true")
+@ConditionalOnProperty(name = {
+        "app.search.indexing.enabled",
+        "app.search.indexing.messaging.enabled"
+}, havingValue = "true")
 public class SearchIndexingAmqpConfig {
 
     @Bean

@@ -33,3 +33,5 @@ app:
       enabled: false
     indexing:
       enabled: true
+      messaging:
+        enabled: ${APP_SEARCH_INDEXING_MESSAGING_ENABLED:false}
