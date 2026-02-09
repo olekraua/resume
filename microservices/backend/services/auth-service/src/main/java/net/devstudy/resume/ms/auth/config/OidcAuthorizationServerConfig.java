@@ -103,7 +103,6 @@ public class OidcAuthorizationServerConfig {
                 .requestCache(cache -> cache.requestCache(requestCache))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/me").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/auth/features").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/auth/uid-hint").permitAll()
                         .requestMatchers("/error", "/favicon.ico", "/default-ui.css").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()

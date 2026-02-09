@@ -71,17 +71,6 @@ public class PublicAuthApiController {
     @Value("${app.restore.show-link:false}")
     private boolean showRestoreLink;
 
-    @GetMapping("/features")
-    public AuthFeaturesResponse features() {
-        boolean localPasswordAuthEnabled = isLocalPasswordAuthEnabled();
-        return new AuthFeaturesResponse(
-                localPasswordAuthEnabled,
-                selfRegisterEnabled,
-                passwordRestoreEnabled,
-                localPasswordAuthEnabled
-        );
-    }
-
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegistrationForm form, BindingResult bindingResult,
             HttpServletRequest request, HttpServletResponse response) {
@@ -226,11 +215,4 @@ public class PublicAuthApiController {
     public record UidConflictResponse(ApiErrorResponse error, List<String> uidSuggestions) {
     }
 
-    public record AuthFeaturesResponse(
-            @com.fasterxml.jackson.annotation.JsonProperty("password_login") boolean passwordLogin,
-            @com.fasterxml.jackson.annotation.JsonProperty("self_register") boolean selfRegister,
-            @com.fasterxml.jackson.annotation.JsonProperty("password_restore") boolean passwordRestore,
-            @com.fasterxml.jackson.annotation.JsonProperty("local_password_change") boolean localPasswordChange
-    ) {
-    }
 }
