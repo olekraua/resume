@@ -59,6 +59,23 @@ Required: gateway mode expects X-Forwarded headers + `server.forward-headers-str
 For local run use `AUTH_ISSUER_URI=http://localhost:8080`.
 For k8s/prod use public gateway URL and keep it identical in frontend `oidc.issuer`.
 
+## Split into standalone repos
+
+Use the helper script to generate one independent git repository per backend service:
+
+`./microservices/backend/scripts/split-microservices-into-repos.sh /Users/oleksandrkravchenko/Desktop/resume-microservices-repos`
+
+This creates:
+- `resume-auth-service`
+- `resume-profile-service`
+- `resume-search-service`
+- `resume-staticdata-service`
+- `resume-messaging-service`
+- `resume-notification-service`
+- `resume-outbox-relay-service`
+
+Each generated repository contains its own root `pom.xml`, required internal modules, and local `.git`.
+
 ## Key config knobs
 - `SPRING_DATASOURCE_URL/USERNAME/PASSWORD`
 - `PROFILE_INTERNAL_TOKEN`
